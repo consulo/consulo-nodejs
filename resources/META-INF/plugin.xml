@@ -1,0 +1,14 @@
+<idea-plugin>
+	<id>org.mustbe.consulo.nodejs</id>
+	<name>NodeJS</name>
+	<depends>org.mustbe.consulo.javascript</depends>
+
+	<extensions defaultExtensionNs="com.intellij">
+		<sdkType implementation="org.mustbe.consulo.nodejs.bundle.NodeJSBundle"/>
+		<moduleExtensionProvider name="NodeJS"
+								 key="nodejs"
+								 icon="/icons/nodejs.png"
+								 immutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension"
+								 mutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
+	</extensions>
+</idea-plugin>
