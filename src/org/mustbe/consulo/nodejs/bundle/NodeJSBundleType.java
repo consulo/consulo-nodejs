@@ -13,6 +13,7 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;
 import com.intellij.openapi.projectRoots.AdditionalDataConfigurable;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkAdditionalData;
 import com.intellij.openapi.projectRoots.SdkModel;
 import com.intellij.openapi.projectRoots.SdkModificator;
@@ -24,15 +25,23 @@ import com.intellij.openapi.util.text.StringUtil;
  * @author VISTALL
  * @since 14.03.14
  */
-public class NodeJSBundle extends SdkType
+public class NodeJSBundleType extends SdkType
 {
+	@NotNull
+	public static String getExePath(@NotNull Sdk sdk)
+	{
+		String homePath = sdk.getHomePath();
+		assert homePath != null;
+		return getExePath(homePath);
+	}
+
 	@NotNull
 	public static String getExePath(@NotNull String home)
 	{
 		return home + "/" + (SystemInfo.isWindows ? "node.exe" : "node");
 	}
 
-	public NodeJSBundle()
+	public NodeJSBundleType()
 	{
 		super("NODEJS");
 	}

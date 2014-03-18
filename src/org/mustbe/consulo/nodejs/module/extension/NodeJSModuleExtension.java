@@ -3,7 +3,7 @@ package org.mustbe.consulo.nodejs.module.extension;
 import org.consulo.module.extension.ModuleExtensionWithSdk;
 import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.nodejs.bundle.NodeJSBundle;
+import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.ModifiableRootModel;
 
@@ -21,6 +21,6 @@ public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModu
 	@Override
 	protected Class<? extends SdkType> getSdkTypeClass()
 	{
-		return NodeJSBundle.class;
+		return NodeJSBundleType.class;
 	}
 }

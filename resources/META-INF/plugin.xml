@@ -4,11 +4,12 @@
 	<depends>org.mustbe.consulo.javascript</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<sdkType implementation="org.mustbe.consulo.nodejs.bundle.NodeJSBundle"/>
+		<sdkType implementation="org.mustbe.consulo.nodejs.bundle.NodeJSBundleType"/>
 		<moduleExtensionProvider name="NodeJS"
 								 key="nodejs"
 								 icon="/icons/nodejs.png"
 								 immutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension"
 								 mutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
+		<configurationType implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationType" />
 	</extensions>
 </idea-plugin>
