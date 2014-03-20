@@ -45,13 +45,21 @@ public class V8StackFrame extends XStackFrame
 			switch(variableScope.getType())
 			{
 				case LOCAL:
+					break;
+				default:
+					xValueChildrenList.add(new V8ScopeValue(variableScope));
+					break;
+			}
+		}
+		for(JsScope variableScope : variableScopes)
+		{
+			switch(variableScope.getType())
+			{
+				case LOCAL:
 					for(JsVariable jsVariable : variableScope.getVariables())
 					{
 						xValueChildrenList.add(new V8VariableValue(jsVariable));
 					}
-					break;
-				default:
-					xValueChildrenList.addTopGroup(new V8ScopeValue(variableScope));
 					break;
 			}
 		}
