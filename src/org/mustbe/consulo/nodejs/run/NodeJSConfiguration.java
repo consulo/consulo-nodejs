@@ -6,24 +6,15 @@ import java.util.Collection;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
 import org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension;
-import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
-import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.ModuleBasedConfiguration;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
 import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.execution.runners.ProgramRunner;
-import com.intellij.execution.ui.ConsoleView;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -88,24 +79,7 @@ public class NodeJSConfiguration extends ModuleBasedConfiguration<RunConfigurati
 			throw new ExecutionException("NodeJS bundle is not set");
 		}
 
-		return new RunProfileState()
-		{
-			@Nullable
-			@Override
-			public ExecutionResult execute(Executor executor, @NotNull ProgramRunner programRunner) throws ExecutionException
-			{
-				GeneralCommandLine generalCommandLine = new GeneralCommandLine();
-				generalCommandLine.setWorkDirectory(module.getModuleDirPath());
-				generalCommandLine.setExePath(NodeJSBundleType.getExePath(sdk));
-				generalCommandLine.addParameter(myScriptName);
-
-				TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(getProject());
-				ConsoleView console = builder.getConsole();
-				OSProcessHandler processHandler = new OSProcessHandler(generalCommandLine);
-				console.attachToProcess(processHandler);
-				return new DefaultExecutionResult(console, processHandler);
-			}
-		};
+		return new NodeJSRunState(module, myScriptName, sdk);
 	}
 
 	@Override

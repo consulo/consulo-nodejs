@@ -35,6 +35,33 @@
             <SOURCES />
           </library>
         </orderEntry>
+        <orderEntry type="module-library">
+          <library>
+            <CLASSES>
+              <root url="jar://$MODULE_DIR$/lib/json_simple-1.1.jar!/" />
+            </CLASSES>
+            <DOCUMENTATION />
+            <SOURCES />
+          </library>
+        </orderEntry>
+        <orderEntry type="module-library">
+          <library>
+            <CLASSES>
+              <root url="jar://$MODULE_DIR$/lib/lib.org.chromium.sdk.jar!/" />
+            </CLASSES>
+            <DOCUMENTATION />
+            <SOURCES />
+          </library>
+        </orderEntry>
+        <orderEntry type="module-library">
+          <library>
+            <CLASSES>
+              <root url="jar://$MODULE_DIR$/lib/lib.org.chromium.sdk.wipbackend.protocol_1_0.jar!/" />
+            </CLASSES>
+            <DOCUMENTATION />
+            <SOURCES />
+          </library>
+        </orderEntry>
       </module>
     </modules>
   </component>
