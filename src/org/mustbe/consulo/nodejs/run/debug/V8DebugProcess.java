@@ -6,6 +6,7 @@ import org.chromium.sdk.Breakpoint;
 import org.chromium.sdk.BrowserFactory;
 import org.chromium.sdk.DebugContext;
 import org.chromium.sdk.JavascriptVm;
+import org.chromium.sdk.Script;
 import org.chromium.sdk.StandaloneVm;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,11 +14,16 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.ui.ExecutionConsole;
+import com.intellij.execution.ui.RunnerLayoutUi;
 import com.intellij.lang.javascript.JavaScriptFileType;
+import com.intellij.lang.javascript.JavaScriptIcons;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.ui.content.Content;
+import com.intellij.util.ui.UIUtil;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerBundle;
@@ -27,6 +33,7 @@ import com.intellij.xdebugger.breakpoints.XBreakpointProperties;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import com.intellij.xdebugger.evaluation.XDebuggerEditorsProvider;
 import com.intellij.xdebugger.evaluation.XDebuggerEditorsProviderBase;
+import com.intellij.xdebugger.ui.XDebugTabLayouter;
 
 /**
  * @author VISTALL
@@ -37,10 +44,20 @@ public class V8DebugProcess extends XDebugProcess
 	private final ExecutionResult myResult;
 	private final StandaloneVm myVm;
 	private DebugContext myCurrentDebugContext;
+	private JavaScriptListPanel<Script> myScriptListPanel;
 
 	public V8DebugProcess(@NotNull XDebugSession session, ExecutionResult result, int port) throws ExecutionException
 	{
 		super(session);
+		myScriptListPanel = new JavaScriptListPanel<Script>(session.getProject())
+		{
+			@Nullable
+			@Override
+			public VirtualFile toVirtualFile(@NotNull Script value, boolean toOpen)
+			{
+				return V8ScriptUtil.toVirtualFile(value, toOpen);
+			}
+		};
 		myResult = result;
 		getSession().setPauseActionSupported(true);
 		myVm = BrowserFactory.getInstance().createStandalone(new InetSocketAddress("localhost", port), null);
@@ -98,22 +115,24 @@ public class V8DebugProcess extends XDebugProcess
 	@Override
 	public XBreakpointHandler<?>[] getBreakpointHandlers()
 	{
-		return new XBreakpointHandler[]{new XBreakpointHandler<XLineBreakpoint<XBreakpointProperties>>(JavaScriptLineBreakpointType.class)
-		{
-			@Override
-			public void registerBreakpoint(@NotNull XLineBreakpoint xBreakpoint)
-			{
-				String presentableFilePath = xBreakpoint.getPresentableFilePath();
-				myVm.setBreakpoint(new Breakpoint.Target.ScriptName(presentableFilePath), xBreakpoint.getLine(), 0, true, null, null, null);
-			}
+		return new XBreakpointHandler[]{
+				new XBreakpointHandler<XLineBreakpoint<XBreakpointProperties>>(JavaScriptLineBreakpointType.class)
+				{
+					@Override
+					public void registerBreakpoint(@NotNull XLineBreakpoint xBreakpoint)
+					{
+						String presentableFilePath = xBreakpoint.getPresentableFilePath();
+						myVm.setBreakpoint(new Breakpoint.Target.ScriptName(presentableFilePath), xBreakpoint.getLine(), 0, true, null, null, null);
+					}
 
-			@Override
-			public void unregisterBreakpoint(@NotNull XLineBreakpoint xBreakpoint, boolean b)
-			{
-				String presentableFilePath = xBreakpoint.getPresentableFilePath();
-				myVm.setBreakpoint(new Breakpoint.Target.ScriptName(presentableFilePath), xBreakpoint.getLine(), 0, false, null, null, null);
-			}
-		}};
+					@Override
+					public void unregisterBreakpoint(@NotNull XLineBreakpoint xBreakpoint, boolean b)
+					{
+						String presentableFilePath = xBreakpoint.getPresentableFilePath();
+						myVm.setBreakpoint(new Breakpoint.Target.ScriptName(presentableFilePath), xBreakpoint.getLine(), 0, false, null, null, null);
+					}
+				}
+		};
 	}
 
 	@Override
@@ -176,6 +195,23 @@ public class V8DebugProcess extends XDebugProcess
 
 	}
 
+	@NotNull
+	@Override
+	public XDebugTabLayouter createTabLayouter()
+	{
+		return new XDebugTabLayouter()
+		{
+			@Override
+			public void registerAdditionalContent(@NotNull RunnerLayoutUi ui)
+			{
+				Content content = ui.createContent("ScriptListView", myScriptListPanel, "Scripts", JavaScriptIcons.JavaScript, null);
+				content.setCloseable(false);
+
+				ui.addContent(content);
+			}
+		};
+	}
+
 	@Override
 	public String getCurrentStateMessage()
 	{
@@ -199,6 +235,18 @@ public class V8DebugProcess extends XDebugProcess
 				return "Disconnected: " + disconnectReason;
 			}
 		}
+	}
+
+	public void addScript(final Script script)
+	{
+		UIUtil.invokeLaterIfNeeded(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				myScriptListPanel.add(script);
+			}
+		});
 	}
 
 	public void setCurrentDebugContext(DebugContext debugContext)

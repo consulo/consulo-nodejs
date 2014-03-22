@@ -1,6 +1,5 @@
 package org.mustbe.consulo.nodejs.run.debug;
 
-import java.io.File;
 import java.util.List;
 
 import org.chromium.sdk.CallFrame;
@@ -10,8 +9,6 @@ import org.chromium.sdk.TextStreamPosition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.ColoredTextContainer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.xdebugger.XDebuggerUtil;
@@ -90,12 +87,11 @@ public class V8StackFrame extends XStackFrame
 	public XSourcePosition getSourcePosition()
 	{
 		TextStreamPosition statementStartPosition = myCallFrame.getStatementStartPosition();
-
-		VirtualFile file = LocalFileSystem.getInstance().findFileByIoFile(new File(myCallFrame.getScript().getName()));
-		if(file == null)
+		if(myCallFrame.getScript().getName() == null)
 		{
 			return null;
 		}
-		return XDebuggerUtil.getInstance().createPosition(file, statementStartPosition.getLine());
+		return XDebuggerUtil.getInstance().createPosition(V8ScriptUtil.toVirtualFile(myCallFrame.getScript(), true),
+				statementStartPosition.getLine());
 	}
 }

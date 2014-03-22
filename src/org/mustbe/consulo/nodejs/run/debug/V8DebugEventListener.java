@@ -39,7 +39,12 @@ public class V8DebugEventListener implements DebugEventListener
 	@Override
 	public void scriptLoaded(Script script)
 	{
-
+		String name = script.getName();
+		if(name == null)
+		{
+			return;
+		}
+		myV8DebugProcess.addScript(script);
 	}
 
 	@Override
