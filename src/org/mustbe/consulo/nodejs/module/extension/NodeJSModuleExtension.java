@@ -34,8 +34,9 @@ public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModu
 		super(id, rootModel);
 	}
 
+	@NotNull
 	@Override
-	protected Class<? extends SdkType> getSdkTypeClass()
+	public Class<? extends SdkType> getSdkTypeClass()
 	{
 		return NodeJSBundleType.class;
 	}
