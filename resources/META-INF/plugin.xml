@@ -17,6 +17,8 @@
 <idea-plugin>
 	<id>org.mustbe.consulo.nodejs</id>
 	<name>NodeJS</name>
+	<version>SNAPSHOT</version>
+	<vendor>Must-Be.org</vendor>
 	<depends>org.mustbe.consulo.javascript</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
