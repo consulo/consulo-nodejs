@@ -21,7 +21,7 @@ import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
 import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootLayer;
 
 /**
  * @author VISTALL
@@ -29,7 +29,7 @@ import com.intellij.openapi.roots.ModifiableRootModel;
  */
 public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModuleExtension> implements ModuleExtensionWithSdk<NodeJSModuleExtension>
 {
-	public NodeJSModuleExtension(@NotNull String id, @NotNull ModifiableRootModel rootModel)
+	public NodeJSModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
 	{
 		super(id, rootModel);
 	}
