@@ -16,6 +16,8 @@
 
 package org.mustbe.consulo.nodejs.run;
 
+import java.io.IOException;
+
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.nodejs.run.debug.V8DebugProcess;
 import com.intellij.execution.ExecutionException;
@@ -28,6 +30,7 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.util.net.NetUtils;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugProcessStarter;
 import com.intellij.xdebugger.XDebugSession;
@@ -51,20 +54,29 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 			final ExecutionEnvironment env) throws ExecutionException
 	{
 		FileDocumentManager.getInstance().saveAllDocuments();
-		NodeJSRunState nodeJSRunState = (NodeJSRunState) state;
-		nodeJSRunState.addArgument("--debug-brk=9555");
-
-		final XDebugSession debugSession = XDebuggerManager.getInstance(project).startSession(this, env, contentToReuse, new XDebugProcessStarter()
+		try
 		{
-			@NotNull
-			@Override
-			public XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException
+			final int availableSocketPort = NetUtils.findAvailableSocketPort();
+			NodeJSRunState nodeJSRunState = (NodeJSRunState) state;
+			nodeJSRunState.addArgument("--debug-brk=" + availableSocketPort);
+
+			final XDebugSession debugSession = XDebuggerManager.getInstance(project).startSession(this, env, contentToReuse,
+					new XDebugProcessStarter()
 			{
-				final ExecutionResult result = state.execute(env.getExecutor(), NodeJSDebuggerRunner.this);
-				return new V8DebugProcess(session, result, 9555);
-			}
-		});
-		return debugSession.getRunContentDescriptor();
+				@NotNull
+				@Override
+				public XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException
+				{
+					final ExecutionResult result = state.execute(env.getExecutor(), NodeJSDebuggerRunner.this);
+					return new V8DebugProcess(session, result, availableSocketPort);
+				}
+			});
+			return debugSession.getRunContentDescriptor();
+		}
+		catch(IOException e)
+		{
+			throw new ExecutionException(e);
+		}
 	}
 
 	@Override

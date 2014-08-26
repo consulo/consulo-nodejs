@@ -17,6 +17,7 @@
 package org.mustbe.consulo.nodejs.run.debug;
 
 import java.net.InetSocketAddress;
+import java.util.Collection;
 
 import org.chromium.sdk.Breakpoint;
 import org.chromium.sdk.BrowserFactory;
@@ -31,10 +32,13 @@ import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.ui.ExecutionConsole;
 import com.intellij.execution.ui.RunnerLayoutUi;
+import com.intellij.icons.AllIcons;
 import com.intellij.lang.javascript.JavaScriptFileType;
 import com.intellij.lang.javascript.JavaScriptIcons;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -43,8 +47,10 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerBundle;
+import com.intellij.xdebugger.XDebuggerManager;
 import com.intellij.xdebugger.XSourcePosition;
 import com.intellij.xdebugger.breakpoints.XBreakpointHandler;
+import com.intellij.xdebugger.breakpoints.XBreakpointManager;
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import com.intellij.xdebugger.evaluation.XDebuggerEditorsProvider;
@@ -57,10 +63,14 @@ import com.intellij.xdebugger.ui.XDebugTabLayouter;
  */
 public class V8DebugProcess extends XDebugProcess
 {
+	private static final Key<Breakpoint> V8_BREAKPOINT = Key.create("v8.breakpoint");
+
 	private final ExecutionResult myResult;
 	private final StandaloneVm myVm;
 	private DebugContext myCurrentDebugContext;
 	private JavaScriptListPanel<Script> myScriptListPanel;
+
+	private final XBreakpointManager myXBreakpointManager;
 
 	public V8DebugProcess(@NotNull XDebugSession session, ExecutionResult result, int port) throws ExecutionException
 	{
@@ -75,6 +85,7 @@ public class V8DebugProcess extends XDebugProcess
 			}
 		};
 		myResult = result;
+		myXBreakpointManager = XDebuggerManager.getInstance(getSession().getProject()).getBreakpointManager();
 		getSession().setPauseActionSupported(true);
 		myVm = BrowserFactory.getInstance().createStandalone(new InetSocketAddress("localhost", port), null);
 		try
@@ -129,16 +140,39 @@ public class V8DebugProcess extends XDebugProcess
 	}
 
 	@Override
+	public boolean checkCanInitBreakpoints()
+	{
+		return false;
+	}
+
+	@NotNull
+	@Override
 	public XBreakpointHandler<?>[] getBreakpointHandlers()
 	{
 		return new XBreakpointHandler[]{
 				new XBreakpointHandler<XLineBreakpoint<XBreakpointProperties>>(JavaScriptLineBreakpointType.class)
 				{
 					@Override
-					public void registerBreakpoint(@NotNull XLineBreakpoint xBreakpoint)
+					public void registerBreakpoint(@NotNull final XLineBreakpoint xBreakpoint)
 					{
 						String presentableFilePath = xBreakpoint.getPresentableFilePath();
-						myVm.setBreakpoint(new Breakpoint.Target.ScriptName(presentableFilePath), xBreakpoint.getLine(), 0, true, null, null, null);
+						int line = xBreakpoint.getLine();
+						myVm.setBreakpoint(new Breakpoint.Target.ScriptName(presentableFilePath), line, 0, true, null,
+								new JavascriptVm.BreakpointCallback()
+						{
+							@Override
+							public void success(Breakpoint breakpoint)
+							{
+								xBreakpoint.putUserData(V8_BREAKPOINT, breakpoint);
+								myXBreakpointManager.updateBreakpointPresentation(xBreakpoint, AllIcons.Debugger.Db_verified_breakpoint, null);
+							}
+
+							@Override
+							public void failure(String s)
+							{
+								myXBreakpointManager.updateBreakpointPresentation(xBreakpoint, AllIcons.Debugger.Db_invalid_breakpoint, s);
+							}
+						}, null);
 					}
 
 					@Override
@@ -192,6 +226,21 @@ public class V8DebugProcess extends XDebugProcess
 	public void stop()
 	{
 		myVm.detach();
+		ApplicationManager.getApplication().runReadAction(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Collection<? extends XLineBreakpoint<XBreakpointProperties>> breakpoints = myXBreakpointManager.getBreakpoints(JavaScriptLineBreakpointType
+						.class);
+				for(XLineBreakpoint<XBreakpointProperties> breakpoint : breakpoints)
+				{
+					breakpoint.putUserData(V8_BREAKPOINT, null);
+
+					myXBreakpointManager.updateBreakpointPresentation(breakpoint, null, null);
+				}
+			}
+		});
 	}
 
 	@Override
