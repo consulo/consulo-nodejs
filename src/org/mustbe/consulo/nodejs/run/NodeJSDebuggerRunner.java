@@ -60,8 +60,7 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 			NodeJSRunState nodeJSRunState = (NodeJSRunState) state;
 			nodeJSRunState.addArgument("--debug-brk=" + availableSocketPort);
 
-			final XDebugSession debugSession = XDebuggerManager.getInstance(project).startSession(this, env, contentToReuse,
-					new XDebugProcessStarter()
+			final XDebugSession debugSession = XDebuggerManager.getInstance(project).startSession(env, new XDebugProcessStarter()
 			{
 				@NotNull
 				@Override

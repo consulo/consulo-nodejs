@@ -57,13 +57,6 @@ public class NodeJSBundleType extends SdkType
 		super("NODEJS");
 	}
 
-	@Nullable
-	@Override
-	public String suggestHomePath()
-	{
-		return null;
-	}
-
 	@Override
 	public boolean isValidSdkHome(String s)
 	{
