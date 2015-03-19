@@ -27,6 +27,4 @@ import com.intellij.openapi.util.IconLoader;
 public interface NodeJSIcons
 {
 	Icon NodeJS = IconLoader.findIcon("/icons/nodejs.png");
-
-	Icon NodeJSFile = IconLoader.findIcon("/icons/nodejsFile.png");
 }

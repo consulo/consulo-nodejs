@@ -16,13 +16,6 @@
           <orderEntry type="module-extension-sdk" extension-id="java" />
           <orderEntry type="sourceFolder" />
           <orderEntry type="module-library">
-            <library name="consulo:JavaScript Support">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/javascript/lib/javascript.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
             <library name="consulo:XML">
               <binaries>
                 <root url="jar://$MODULE_DIR$/dep/xml/lib/jsr173_1.0_api.jar!/" />
@@ -53,9 +46,21 @@
               </binaries>
             </library>
           </orderEntry>
+          <orderEntry type="module-library">
+            <library name="consulo:JavaScript Support">
+              <binaries>
+                <root url="jar://$MODULE_DIR$/dep/javascript/lib/debugger-impl.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/javascript/lib/gwt-impl.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/javascript/lib/javascript.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/javascript/lib/json-impl.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/javascript/lib/json_simple-1.1.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/javascript/lib/lib.org.chromium.sdk.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/javascript/lib/lib.org.chromium.sdk.wipbackend.protocol_1_0.jar!/" />
+              </binaries>
+            </library>
+          </orderEntry>
         </module-layer>
       </module>
     </modules>
   </component>
 </project>
-

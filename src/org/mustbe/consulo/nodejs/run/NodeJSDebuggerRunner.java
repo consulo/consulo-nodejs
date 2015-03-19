@@ -19,7 +19,7 @@ package org.mustbe.consulo.nodejs.run;
 import java.io.IOException;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.nodejs.run.debug.V8DebugProcess;
+import org.mustbe.consulo.javascript.run.debug.V8DebugProcess;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.configurations.RunProfile;
