@@ -29,7 +29,6 @@
 								 immutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension"
 								 mutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
 		<programRunner implementation="org.mustbe.consulo.nodejs.run.NodeJSDebuggerRunner" />
-		<xdebugger.breakpointType implementation="org.mustbe.consulo.nodejs.run.debug.JavaScriptLineBreakpointType" />
 		<configurationType implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationType" />
 	</extensions>
 </idea-plugin>
