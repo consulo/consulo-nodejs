@@ -29,7 +29,6 @@ import com.intellij.execution.runners.DefaultProgramRunner;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.util.net.NetUtils;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugProcessStarter;
@@ -50,8 +49,7 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 	}
 
 	@Override
-	protected RunContentDescriptor doExecute(final Project project, final RunProfileState state, final RunContentDescriptor contentToReuse,
-			final ExecutionEnvironment env) throws ExecutionException
+	protected RunContentDescriptor doExecute(final RunProfileState state, final ExecutionEnvironment env) throws ExecutionException
 	{
 		FileDocumentManager.getInstance().saveAllDocuments();
 		try
@@ -60,7 +58,7 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 			NodeJSRunState nodeJSRunState = (NodeJSRunState) state;
 			nodeJSRunState.addArgument("--debug-brk=" + availableSocketPort);
 
-			final XDebugSession debugSession = XDebuggerManager.getInstance(project).startSession(env, new XDebugProcessStarter()
+			final XDebugSession debugSession = XDebuggerManager.getInstance(env.getProject()).startSession(env, new XDebugProcessStarter()
 			{
 				@NotNull
 				@Override
