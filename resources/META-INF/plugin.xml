@@ -30,5 +30,6 @@
 								 mutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
 		<programRunner implementation="org.mustbe.consulo.nodejs.run.NodeJSDebuggerRunner" />
 		<configurationType implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationType" />
+		<runConfigurationProducer implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationProducer"/>
 	</extensions>
 </idea-plugin>

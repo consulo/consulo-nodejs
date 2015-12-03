@@ -18,6 +18,7 @@ package org.mustbe.consulo.nodejs.run;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,8 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import lombok.val;
 
 /**
@@ -62,8 +65,8 @@ public class NodeJSConfiguration extends ModuleBasedConfiguration<RunConfigurati
 	@Override
 	public Collection<Module> getValidModules()
 	{
-		val list = new ArrayList<Module>();
-		for(val module : ModuleManager.getInstance(getProject()).getModules())
+		List<Module> list = new ArrayList<Module>();
+		for(Module module : ModuleManager.getInstance(getProject()).getModules())
 		{
 			if(ModuleUtilCore.getExtension(module, NodeJSModuleExtension.class) != null)
 			{
@@ -112,6 +115,31 @@ public class NodeJSConfiguration extends ModuleBasedConfiguration<RunConfigurati
 		super.readExternal(element);
 		readModule(element);
 		myScriptName =  element.getAttributeValue("script-file");
+	}
+
+	@Nullable
+	public VirtualFile getScriptFile()
+	{
+		if(StringUtil.isEmpty(myScriptName))
+		{
+			return null;
+		}
+		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(myScriptName);
+		if(fileByPath != null)
+		{
+			return fileByPath;
+		}
+		Module module = getConfigurationModule().getModule();
+		if(module == null)
+		{
+			return null;
+		}
+		String moduleDirPath = module.getModuleDirPath();
+		if(moduleDirPath == null)
+		{
+			return null;
+		}
+		return LocalFileSystem.getInstance().findFileByPath(moduleDirPath + "/" + myScriptName);
 	}
 
 	public String getScriptName()

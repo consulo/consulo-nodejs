@@ -31,6 +31,7 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 
 /**
  * @author VISTALL
@@ -67,7 +68,11 @@ public class NodeJSConfigurationEditor extends SettingsEditor<NodeJSConfiguratio
 				else
 				{
 					String moduleDirPath = selectedItem.getModuleDirPath();
-					String relativePath = FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(text), '/');
+					String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(text), '/');
+					if(StringUtil.isEmpty(relativePath))
+					{
+						relativePath = text;
+					}
 					jTextField.setText(relativePath);
 				}
 			}

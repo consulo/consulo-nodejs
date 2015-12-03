@@ -16,6 +16,7 @@
 
 package org.mustbe.consulo.nodejs.run;
 
+import org.consulo.lombok.annotations.LazyInstance;
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import org.mustbe.consulo.nodejs.NodeJSIcons;
@@ -32,6 +33,13 @@ import com.intellij.openapi.project.Project;
  */
 public class NodeJSConfigurationType extends ConfigurationTypeBase
 {
+	@NotNull
+	@LazyInstance
+	public static NodeJSConfigurationType getInstance()
+	{
+		return CONFIGURATION_TYPE_EP.findExtension(NodeJSConfigurationType.class);
+	}
+
 	public NodeJSConfigurationType()
 	{
 		super("NodeJSConfigurationType", "NodeJS", "", NodeJSIcons.NodeJS);
