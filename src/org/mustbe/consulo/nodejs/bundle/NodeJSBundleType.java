@@ -17,7 +17,6 @@
 package org.mustbe.consulo.nodejs.bundle;
 
 import java.io.File;
-import java.util.Arrays;
 
 import javax.swing.Icon;
 
@@ -25,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.nodejs.NodeJSIcons;
 import com.intellij.execution.ExecutionException;
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -69,13 +69,18 @@ public class NodeJSBundleType extends SdkType
 	{
 		try
 		{
-			ProcessOutput processOutput = ExecUtil.execAndGetOutput(Arrays.asList(getExePath(s), "-v"), s);
+			GeneralCommandLine commandLine = new GeneralCommandLine();
+			commandLine.withExePath(getExePath(s));
+			commandLine.withWorkDirectory(s);
+			commandLine.addParameter("-v");
+
+			ProcessOutput processOutput = ExecUtil.execAndGetOutput(commandLine);
 			String stdout = processOutput.getStdout();
 			if(StringUtil.startsWith(stdout, "v"))
 			{
 				stdout = stdout.substring(1, stdout.length());
 			}
-			return stdout;
+			return stdout.trim();
 		}
 		catch(ExecutionException e)
 		{
@@ -84,9 +89,9 @@ public class NodeJSBundleType extends SdkType
 	}
 
 	@Override
-	public String suggestSdkName(String s, String s2)
+	public String suggestSdkName(String s, String sdkHome)
 	{
-		return "nodejs";
+		return "nodejs " + getVersionString(sdkHome);
 	}
 
 	@NotNull
