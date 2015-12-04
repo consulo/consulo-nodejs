@@ -77,7 +77,7 @@ public class NodeJSConfigurationProducer extends RunConfigurationProducer<NodeJS
 			String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(path), '/');
 
 			configuration.setName(executableFile.getName());
-			configuration.setScriptName(ObjectUtil.notNull(relativePath, path));
+			configuration.setScriptFilePath(ObjectUtil.notNull(relativePath, path));
 			return true;
 		}
 		return false;

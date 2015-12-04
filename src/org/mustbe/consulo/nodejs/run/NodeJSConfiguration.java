@@ -42,7 +42,6 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import lombok.val;
 
 /**
  * @author VISTALL
@@ -50,12 +49,7 @@ import lombok.val;
  */
 public class NodeJSConfiguration extends ModuleBasedConfiguration<RunConfigurationModule>
 {
-	private String myScriptName;
-
-	public NodeJSConfiguration(RunConfigurationModule configurationModule, ConfigurationFactory factory)
-	{
-		super(configurationModule, factory);
-	}
+	private String myScriptFilePath;
 
 	public NodeJSConfiguration(String name, RunConfigurationModule configurationModule, ConfigurationFactory factory)
 	{
@@ -87,7 +81,7 @@ public class NodeJSConfiguration extends ModuleBasedConfiguration<RunConfigurati
 	@Override
 	public RunProfileState getState(@NotNull Executor executor, @NotNull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
-		val module = getConfigurationModule().getModule();
+		Module module = getConfigurationModule().getModule();
 		if(module == null)
 		{
 			throw new ExecutionException("No module");
@@ -98,7 +92,7 @@ public class NodeJSConfiguration extends ModuleBasedConfiguration<RunConfigurati
 			throw new ExecutionException("NodeJS bundle is not set");
 		}
 
-		return new NodeJSRunState(module, myScriptName, sdk);
+		return new NodeJSRunState(module, myScriptFilePath, sdk);
 	}
 
 	@Override
@@ -106,7 +100,7 @@ public class NodeJSConfiguration extends ModuleBasedConfiguration<RunConfigurati
 	{
 		super.writeExternal(element);
 		writeModule(element);
-		element.setAttribute("script-file", StringUtil.notNullize(myScriptName));
+		element.setAttribute("script-file", StringUtil.notNullize(myScriptFilePath));
 	}
 
 	@Override
@@ -114,17 +108,17 @@ public class NodeJSConfiguration extends ModuleBasedConfiguration<RunConfigurati
 	{
 		super.readExternal(element);
 		readModule(element);
-		myScriptName =  element.getAttributeValue("script-file");
+		myScriptFilePath =  element.getAttributeValue("script-file");
 	}
 
 	@Nullable
 	public VirtualFile getScriptFile()
 	{
-		if(StringUtil.isEmpty(myScriptName))
+		if(StringUtil.isEmpty(myScriptFilePath))
 		{
 			return null;
 		}
-		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(myScriptName);
+		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(myScriptFilePath);
 		if(fileByPath != null)
 		{
 			return fileByPath;
@@ -139,16 +133,16 @@ public class NodeJSConfiguration extends ModuleBasedConfiguration<RunConfigurati
 		{
 			return null;
 		}
-		return LocalFileSystem.getInstance().findFileByPath(moduleDirPath + "/" + myScriptName);
+		return LocalFileSystem.getInstance().findFileByPath(moduleDirPath + "/" + myScriptFilePath);
 	}
 
-	public String getScriptName()
+	public String getScriptFilePath()
 	{
-		return myScriptName;
+		return myScriptFilePath;
 	}
 
-	public void setScriptName(String scriptName)
+	public void setScriptFilePath(String scriptFilePath)
 	{
-		myScriptName = scriptName;
+		myScriptFilePath = scriptFilePath;
 	}
 }

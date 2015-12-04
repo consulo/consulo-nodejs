@@ -65,7 +65,7 @@ public class NodeJSRunState implements RunProfileState
 	{
 		GeneralCommandLine generalCommandLine = new GeneralCommandLine();
 		generalCommandLine.setWorkDirectory(myModule.getModuleDirPath());
-		generalCommandLine.setExePath(NodeJSBundleType.getExePath(mySdk));
+		generalCommandLine.setExePath(NodeJSBundleType.getExePath(mySdk).getPath());
 		generalCommandLine.addParameters(myAdditionalArguments);
 		generalCommandLine.addParameter(myScriptName);
 

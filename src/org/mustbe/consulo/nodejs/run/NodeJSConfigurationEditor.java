@@ -82,14 +82,14 @@ public class NodeJSConfigurationEditor extends SettingsEditor<NodeJSConfiguratio
 	@Override
 	protected void resetEditorFrom(NodeJSConfiguration nodeJSConfiguration)
 	{
-		myScriptTextField.setText(nodeJSConfiguration.getScriptName());
+		myScriptTextField.setText(nodeJSConfiguration.getScriptFilePath());
 		myModuleBox.setSelectedItem(nodeJSConfiguration.getConfigurationModule().getModule());
 	}
 
 	@Override
 	protected void applyEditorTo(NodeJSConfiguration nodeJSConfiguration) throws ConfigurationException
 	{
-		nodeJSConfiguration.setScriptName(myScriptTextField.getText());
+		nodeJSConfiguration.setScriptFilePath(myScriptTextField.getText());
 		nodeJSConfiguration.getConfigurationModule().setModule((Module) myModuleBox.getSelectedItem());
 	}
 
