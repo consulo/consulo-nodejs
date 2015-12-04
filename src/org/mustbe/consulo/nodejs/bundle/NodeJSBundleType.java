@@ -17,6 +17,10 @@
 package org.mustbe.consulo.nodejs.bundle;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.Icon;
 
@@ -31,6 +35,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.util.SystemProperties;
 
 /**
  * @author VISTALL
@@ -39,7 +44,7 @@ import com.intellij.openapi.util.text.StringUtil;
 public class NodeJSBundleType extends SdkType
 {
 	@NotNull
-	public static String getExePath(@NotNull Sdk sdk)
+	public static File getExePath(@NotNull Sdk sdk)
 	{
 		String homePath = sdk.getHomePath();
 		assert homePath != null;
@@ -47,9 +52,16 @@ public class NodeJSBundleType extends SdkType
 	}
 
 	@NotNull
-	public static String getExePath(@NotNull String home)
+	public static File getExePath(@NotNull String home)
 	{
-		return home + "/" + (SystemInfo.isWindows ? "node.exe" : "node");
+		String executable = SystemInfo.isWindows ? "node.exe" : "node";
+
+		File firstTry = new File(home, "bin/" + executable);
+		if(firstTry.exists())
+		{
+			return firstTry;
+		}
+		return new File(home, executable);
 	}
 
 	public NodeJSBundleType()
@@ -57,10 +69,44 @@ public class NodeJSBundleType extends SdkType
 		super("NODEJS");
 	}
 
+	@NotNull
 	@Override
-	public boolean isValidSdkHome(String s)
+	public Collection<String> suggestHomePaths()
 	{
-		return new File(getExePath(s)).exists();
+		if(SystemInfo.isWindows)
+		{
+			return Collections.emptyList();
+		}
+		else
+		{
+			List<String> paths = new ArrayList<String>();
+			String userHome = SystemProperties.getUserHome();
+
+			File nvmHome = new File(userHome, ".nvm/versions/node");
+			if(nvmHome.exists())
+			{
+				for(File file : nvmHome.listFiles())
+				{
+					if(file.isDirectory())
+					{
+						paths.add(file.getPath());
+					}
+				}
+			}
+			return paths;
+		}
+	}
+
+	@Override
+	public boolean canCreatePredefinedSdks()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean isValidSdkHome(String sdkHome)
+	{
+		return getExePath(sdkHome).exists();
 	}
 
 	@Nullable
@@ -70,7 +116,7 @@ public class NodeJSBundleType extends SdkType
 		try
 		{
 			GeneralCommandLine commandLine = new GeneralCommandLine();
-			commandLine.withExePath(getExePath(s));
+			commandLine.setExePath(getExePath(s).getPath());
 			commandLine.withWorkDirectory(s);
 			commandLine.addParameter("-v");
 
@@ -84,7 +130,7 @@ public class NodeJSBundleType extends SdkType
 		}
 		catch(ExecutionException e)
 		{
-			return "unknown";
+			return null;
 		}
 	}
 
