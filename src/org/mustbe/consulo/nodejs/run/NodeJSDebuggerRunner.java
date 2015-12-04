@@ -25,10 +25,18 @@ import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.executors.DefaultDebugExecutor;
+import com.intellij.execution.process.ProcessAdapter;
+import com.intellij.execution.process.ProcessEvent;
+import com.intellij.execution.process.ProcessOutputTypes;
 import com.intellij.execution.runners.DefaultProgramRunner;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.Ref;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.util.ExceptionUtil;
 import com.intellij.util.net.NetUtils;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugProcessStarter;
@@ -55,17 +63,51 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 		try
 		{
 			final int availableSocketPort = NetUtils.findAvailableSocketPort();
-			NodeJSRunState nodeJSRunState = (NodeJSRunState) state;
+			final NodeJSRunState nodeJSRunState = (NodeJSRunState) state;
 			nodeJSRunState.addArgument("--debug-brk=" + availableSocketPort);
+
+			final Ref<V8DebugProcess> vm = Ref.create(null);
 
 			final XDebugSession debugSession = XDebuggerManager.getInstance(env.getProject()).startSession(env, new XDebugProcessStarter()
 			{
 				@NotNull
 				@Override
-				public XDebugProcess start(@NotNull XDebugSession session) throws ExecutionException
+				public XDebugProcess start(@NotNull final XDebugSession session) throws ExecutionException
 				{
+					nodeJSRunState.addProcessListener(new ProcessAdapter()
+					{
+						@Override
+						public void onTextAvailable(ProcessEvent event, Key outputType)
+						{
+							if(outputType == ProcessOutputTypes.STDERR)
+							{
+								V8DebugProcess debugProcess = vm.get();
+								if(debugProcess == null)
+								{
+									return;
+								}
+
+								if(StringUtil.startsWith(event.getText(), "Debugger listening on port"))
+								{
+									try
+									{
+										debugProcess.attach();
+										vm.set(null);
+									}
+									catch(Exception e)
+									{
+										session.getConsoleView().print(ExceptionUtil.getThrowableText(e), ConsoleViewContentType.ERROR_OUTPUT);
+									}
+								}
+							}
+						}
+					});
+
 					final ExecutionResult result = state.execute(env.getExecutor(), NodeJSDebuggerRunner.this);
-					return new V8DebugProcess(session, result, availableSocketPort);
+					final V8DebugProcess debugProcess = new V8DebugProcess(session, result, availableSocketPort);
+					vm.set(debugProcess);
+
+					return debugProcess;
 				}
 			});
 			return debugSession.getRunContentDescriptor();

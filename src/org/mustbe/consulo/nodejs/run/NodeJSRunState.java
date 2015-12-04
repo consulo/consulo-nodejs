@@ -18,6 +18,10 @@ package org.mustbe.consulo.nodejs.run;
 
 import java.util.List;
 
+import com.intellij.execution.process.ProcessAdapter;
+import com.intellij.execution.process.ProcessEvent;
+import com.intellij.execution.process.ProcessListener;
+import com.intellij.openapi.util.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
@@ -46,12 +50,18 @@ public class NodeJSRunState implements RunProfileState
 	private final String myScriptName;
 	private final Sdk mySdk;
 	private final List<String> myAdditionalArguments = new SmartList<String>();
+	private final List<ProcessListener> myProcessListeners = new SmartList<ProcessListener>();
 
 	public NodeJSRunState(Module module, String scriptName, Sdk sdk)
 	{
 		myModule = module;
 		myScriptName = scriptName;
 		mySdk = sdk;
+	}
+
+	public void addProcessListener(ProcessListener processListener)
+	{
+		myProcessListeners.add(processListener);
 	}
 
 	public void addArgument(String argument)
@@ -72,6 +82,10 @@ public class NodeJSRunState implements RunProfileState
 		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myModule.getProject());
 		ConsoleView console = builder.getConsole();
 		OSProcessHandler processHandler = new OSProcessHandler(generalCommandLine);
+		for(ProcessListener processListener : myProcessListeners)
+		{
+			processHandler.addProcessListener(processListener);
+		}
 		console.attachToProcess(processHandler);
 		return new DefaultExecutionResult(console, processHandler);
 	}
