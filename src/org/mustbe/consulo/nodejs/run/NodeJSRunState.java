@@ -18,10 +18,6 @@ package org.mustbe.consulo.nodejs.run;
 
 import java.util.List;
 
-import com.intellij.execution.process.ProcessAdapter;
-import com.intellij.execution.process.ProcessEvent;
-import com.intellij.execution.process.ProcessListener;
-import com.intellij.openapi.util.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
@@ -34,10 +30,12 @@ import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.process.OSProcessHandler;
+import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.SmartList;
 
 /**
@@ -47,16 +45,17 @@ import com.intellij.util.SmartList;
 public class NodeJSRunState implements RunProfileState
 {
 	private final Module myModule;
-	private final String myScriptName;
 	private final Sdk mySdk;
-	private final List<String> myAdditionalArguments = new SmartList<String>();
+	private final NodeJSConfiguration myConfiguration;
+	private final List<String> myVmArguments = new SmartList<String>();
+	private final List<String> myArguments = new SmartList<String>();
 	private final List<ProcessListener> myProcessListeners = new SmartList<ProcessListener>();
 
-	public NodeJSRunState(Module module, String scriptName, Sdk sdk)
+	public NodeJSRunState(@NotNull Module module, @NotNull Sdk sdk, NodeJSConfiguration configuration)
 	{
 		myModule = module;
-		myScriptName = scriptName;
 		mySdk = sdk;
+		myConfiguration = configuration;
 	}
 
 	public void addProcessListener(ProcessListener processListener)
@@ -66,7 +65,12 @@ public class NodeJSRunState implements RunProfileState
 
 	public void addArgument(String argument)
 	{
-		myAdditionalArguments.add(argument);
+		myArguments.add(argument);
+	}
+
+	public void addVmArgument(String argument)
+	{
+		myVmArguments.add(argument);
 	}
 
 	@Nullable
@@ -74,12 +78,38 @@ public class NodeJSRunState implements RunProfileState
 	public ExecutionResult execute(Executor executor, @NotNull ProgramRunner programRunner) throws ExecutionException
 	{
 		GeneralCommandLine generalCommandLine = new GeneralCommandLine();
-		generalCommandLine.setWorkDirectory(myModule.getModuleDirPath());
-		generalCommandLine.setExePath(NodeJSBundleType.getExePath(mySdk).getPath());
-		generalCommandLine.addParameters(myAdditionalArguments);
-		generalCommandLine.addParameter(myScriptName);
 
-		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myModule.getProject());
+		String workingDirectory = myConfiguration.getWorkingDirectory();
+		if(!StringUtil.isEmpty(workingDirectory))
+		{
+			generalCommandLine.withWorkDirectory(myConfiguration.getWorkingDirectory());
+		}
+		else
+		{
+			generalCommandLine.withWorkDirectory(myModule.getModuleDirPath());
+		}
+
+		generalCommandLine.setExePath(NodeJSBundleType.getExePath(mySdk).getPath());
+
+		String vmParameters = myConfiguration.getVmParameters();
+		if(!StringUtil.isEmpty(vmParameters))
+		{
+			generalCommandLine.addParameters(StringUtil.splitHonorQuotes(vmParameters, ' '));
+		}
+
+		generalCommandLine.addParameters(myVmArguments);
+		generalCommandLine.addParameter(myConfiguration.getScriptFilePath());
+		generalCommandLine.addParameters(myArguments);
+		generalCommandLine.withPassParentEnvironment(myConfiguration.isPassParentEnvs());
+		generalCommandLine.withEnvironment(myConfiguration.getEnvs());
+
+		String programParameters = myConfiguration.getProgramParameters();
+		if(!StringUtil.isEmpty(programParameters))
+		{
+			generalCommandLine.addParameters(StringUtil.splitHonorQuotes(programParameters, ' '));
+		}
+
+		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myConfiguration.getProject());
 		ConsoleView console = builder.getConsole();
 		OSProcessHandler processHandler = new OSProcessHandler(generalCommandLine);
 		for(ProcessListener processListener : myProcessListeners)

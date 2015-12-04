@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.swing.Icon;
 
+import org.consulo.lombok.annotations.LazyInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.nodejs.NodeJSIcons;
@@ -43,6 +44,13 @@ import com.intellij.util.SystemProperties;
  */
 public class NodeJSBundleType extends SdkType
 {
+	@NotNull
+	@LazyInstance
+	public static NodeJSBundleType getInstance()
+	{
+		return EP_NAME.findExtension(NodeJSBundleType.class);
+	}
+
 	@NotNull
 	public static File getExePath(@NotNull Sdk sdk)
 	{

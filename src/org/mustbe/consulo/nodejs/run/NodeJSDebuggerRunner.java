@@ -57,14 +57,14 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 	}
 
 	@Override
-	protected RunContentDescriptor doExecute(final RunProfileState state, final ExecutionEnvironment env) throws ExecutionException
+	protected RunContentDescriptor doExecute(@NotNull final RunProfileState state, @NotNull final ExecutionEnvironment env) throws ExecutionException
 	{
 		FileDocumentManager.getInstance().saveAllDocuments();
 		try
 		{
 			final int availableSocketPort = NetUtils.findAvailableSocketPort();
 			final NodeJSRunState nodeJSRunState = (NodeJSRunState) state;
-			nodeJSRunState.addArgument("--debug-brk=" + availableSocketPort);
+			nodeJSRunState.addVmArgument("--debug-brk=" + availableSocketPort);
 
 			final Ref<V8DebugProcess> vm = Ref.create(null);
 
