@@ -41,9 +41,19 @@ public interface PackagesRootElement extends JomElement
 	@JomPropertyGetter
 	String getDescription();
 
+	@JomPropertyGetter
+	Set<String> getContributors();
+
+	@JomPropertyGetter
+	Set<String> getFiles();
+
 	@NotNull
 	@JomPropertyGetter
 	Map<String, Boolean> getConfig();
+
+	@NotNull
+	@JomPropertyGetter
+	Map<String, String> getEngines();
 
 	@NotNull
 	@JomPropertyGetter
@@ -53,9 +63,8 @@ public interface PackagesRootElement extends JomElement
 	@JomPropertyGetter
 	Map<String, String> getScripts();
 
-	@NotNull
 	@JomPropertyGetter
-	Map<String, String> getRepository();
+	String getRepository();
 
 	@NotNull
 	@JomPropertyGetter
