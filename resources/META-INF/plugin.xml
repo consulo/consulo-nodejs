@@ -28,12 +28,14 @@
 								 icon="/icons/nodejs.png"
 								 immutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension"
 								 mutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
-		<programRunner implementation="org.mustbe.consulo.nodejs.run.NodeJSDebuggerRunner" />
-		<configurationType implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationType" />
+		<programRunner implementation="org.mustbe.consulo.nodejs.run.NodeJSDebuggerRunner"/>
+		<configurationType implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationType"/>
 		<runConfigurationProducer implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationProducer"/>
+
+		<editorNotificationProvider implementation="org.mustbe.consulo.nodejs.packages.PackageEditorNotificationProvider"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="org.mustbe.consulo.javascript">
-		<jomFileDescriptor implementation="org.mustbe.consulo.nodejs.packages.jom.PackagesFileDescriptor" />
+		<jomFileDescriptor implementation="org.mustbe.consulo.nodejs.packages.jom.PackagesFileDescriptor"/>
 	</extensions>
 </idea-plugin>
