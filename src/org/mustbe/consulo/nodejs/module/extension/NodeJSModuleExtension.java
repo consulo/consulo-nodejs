@@ -17,9 +17,14 @@
 package org.mustbe.consulo.nodejs.module.extension;
 
 import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
+import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
+import org.mustbe.consulo.RequiredReadAction;
+import org.mustbe.consulo.javascript.lang.JavaScriptLanguage;
+import org.mustbe.consulo.javascript.lang.StandardJavaScriptVersions;
 import org.mustbe.consulo.javascript.module.extension.JavaScriptModuleExtension;
 import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
+import com.intellij.lang.LanguageVersion;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.ModuleRootLayer;
 
@@ -30,9 +35,29 @@ import com.intellij.openapi.roots.ModuleRootLayer;
 public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModuleExtension> implements
 		JavaScriptModuleExtension<NodeJSModuleExtension>
 {
+	protected LanguageVersion<JavaScriptLanguage> myLanguageVersion = StandardJavaScriptVersions.getDefaultVersion();
+
 	public NodeJSModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
 	{
 		super(id, rootModel);
+	}
+
+	@RequiredReadAction
+	@Override
+	protected void loadStateImpl(@NotNull Element element)
+	{
+		super.loadStateImpl(element);
+		myLanguageVersion = StandardJavaScriptVersions.findVersionById(element.getAttributeValue("language-version"));
+	}
+
+	@Override
+	protected void getStateImpl(@NotNull Element element)
+	{
+		super.getStateImpl(element);
+		if(myLanguageVersion != StandardJavaScriptVersions.getDefaultVersion())
+		{
+			element.setAttribute("language-version", myLanguageVersion.getName());
+		}
 	}
 
 	@NotNull
@@ -40,5 +65,19 @@ public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModu
 	public Class<? extends SdkType> getSdkTypeClass()
 	{
 		return NodeJSBundleType.class;
+	}
+
+	@NotNull
+	@Override
+	public LanguageVersion<JavaScriptLanguage> getLanguageVersion()
+	{
+		return myLanguageVersion;
+	}
+
+	@Override
+	public void commit(@NotNull NodeJSModuleExtension mutableModuleExtension)
+	{
+		super.commit(mutableModuleExtension);
+		myLanguageVersion = mutableModuleExtension.getLanguageVersion();
 	}
 }

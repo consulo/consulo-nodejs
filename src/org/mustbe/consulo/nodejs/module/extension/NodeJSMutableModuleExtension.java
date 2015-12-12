@@ -17,23 +17,22 @@
 package org.mustbe.consulo.nodejs.module.extension;
 
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
-import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
-import org.consulo.module.extension.ui.ModuleExtensionSdkBoxBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredDispatchThread;
+import org.mustbe.consulo.javascript.lang.JavaScriptLanguage;
+import org.mustbe.consulo.javascript.module.extension.JavaScriptMutableModuleExtension;
+import com.intellij.lang.LanguageVersion;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootLayer;
-import com.intellij.openapi.ui.VerticalFlowLayout;
 
 /**
  * @author VISTALL
  * @since 14.03.14
  */
-public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implements MutableModuleExtensionWithSdk<NodeJSModuleExtension>
+public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implements JavaScriptMutableModuleExtension<NodeJSModuleExtension>
 {
 	public NodeJSMutableModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
 	{
@@ -52,9 +51,7 @@ public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implemen
 	@RequiredDispatchThread
 	public JComponent createConfigurablePanel(@Nullable Runnable runnable)
 	{
-		JPanel panel = new JPanel(new VerticalFlowLayout(true, false));
-		panel.add(ModuleExtensionSdkBoxBuilder.createAndDefine(this, runnable).build());
-		return panel;
+		return new NodeJSModuleExtensionPanel(this, runnable);
 	}
 
 	@Override
@@ -66,6 +63,12 @@ public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implemen
 	@Override
 	public boolean isModified(@NotNull NodeJSModuleExtension nodeJSModuleExtension)
 	{
-		return isModifiedImpl(nodeJSModuleExtension);
+		return isModifiedImpl(nodeJSModuleExtension) || myLanguageVersion != nodeJSModuleExtension.getLanguageVersion();
+	}
+
+	@Override
+	public void setLanguageVersion(@NotNull LanguageVersion<JavaScriptLanguage> languageVersion)
+	{
+		myLanguageVersion = languageVersion;
 	}
 }
