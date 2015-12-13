@@ -34,6 +34,8 @@ import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkType;
+import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.types.BinariesOrderRootType;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.SystemProperties;
@@ -140,6 +142,12 @@ public class NodeJSBundleType extends SdkType
 		{
 			return null;
 		}
+	}
+
+	@Override
+	public boolean isRootTypeApplicable(OrderRootType type)
+	{
+		return type == BinariesOrderRootType.getInstance();
 	}
 
 	@Override
