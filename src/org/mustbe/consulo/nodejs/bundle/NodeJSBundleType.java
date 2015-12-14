@@ -32,12 +32,18 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;
+import com.intellij.ide.plugins.PluginManager;
+import com.intellij.lang.javascript.JavaScriptFileType;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.types.BinariesOrderRootType;
+import com.intellij.openapi.roots.types.SourcesOrderRootType;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.SystemProperties;
 
 /**
@@ -105,6 +111,27 @@ public class NodeJSBundleType extends SdkType
 			}
 			return paths;
 		}
+	}
+
+	@Override
+	public void setupSdkPaths(Sdk sdk)
+	{
+		SdkModificator modificator = sdk.getSdkModificator();
+
+		VirtualFile stubsDirectory = LocalFileSystem.getInstance().findFileByIoFile(new File(PluginManager.getPluginPath(NodeJSBundleType.class), "stubs"));
+		if(stubsDirectory != null)
+		{
+			for(VirtualFile file : stubsDirectory.getChildren())
+			{
+				if(file.getFileType() == JavaScriptFileType.INSTANCE)
+				{
+					modificator.addRoot(file, BinariesOrderRootType.getInstance());
+					modificator.addRoot(file, SourcesOrderRootType.getInstance());
+				}
+			}
+		}
+
+		modificator.commitChanges();
 	}
 
 	@Override
