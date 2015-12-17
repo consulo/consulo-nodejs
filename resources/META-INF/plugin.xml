@@ -16,9 +16,10 @@
 
 <idea-plugin>
 	<id>org.mustbe.consulo.nodejs</id>
-	<name>NodeJS</name>
+	<name>Node.js</name>
 	<version>SNAPSHOT</version>
 	<vendor>Must-Be.org</vendor>
+	<category>Web Frameworks</category>
 	<depends>org.mustbe.consulo.javascript</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
@@ -33,6 +34,8 @@
 		<runConfigurationProducer implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationProducer"/>
 
 		<editorNotificationProvider implementation="org.mustbe.consulo.nodejs.packages.PackageEditorNotificationProvider"/>
+
+		<newModuleBuilder implementation="org.mustbe.consulo.nodejs.newProjectOrModule.NodeJSNewModuleBuilder" />
 	</extensions>
 
 	<extensions defaultExtensionNs="org.mustbe.consulo.javascript">
