@@ -35,6 +35,8 @@
 
 		<editorNotificationProvider implementation="org.mustbe.consulo.nodejs.packages.PackageEditorNotificationProvider"/>
 
+		<fileTypeDetector implementation="org.mustbe.consulo.nodejs.lang.NodeJSFileTypeDetector" />
+
 		<newModuleBuilder implementation="org.mustbe.consulo.nodejs.newProjectOrModule.NodeJSNewModuleBuilder" />
 	</extensions>
 
