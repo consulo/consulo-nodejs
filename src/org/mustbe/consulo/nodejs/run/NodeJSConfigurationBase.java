@@ -97,11 +97,14 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 			}
 		}
 
-		return createRunState(module, targetSdk);
+		return createRunState(module, targetSdk, executor, executionEnvironment);
 	}
 
 	@NotNull
-	protected abstract NodeJSRunState createRunState(@NotNull Module module, @NotNull Sdk targetSdk) throws ExecutionException;
+	protected abstract NodeJSRunState createRunState(@NotNull Module module,
+			@NotNull Sdk targetSdk,
+			@NotNull Executor executor,
+			@NotNull ExecutionEnvironment executionEnvironment) throws ExecutionException;
 
 	@Override
 	public void writeExternal(Element element) throws WriteExternalException

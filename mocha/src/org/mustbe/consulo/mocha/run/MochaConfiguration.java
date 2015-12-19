@@ -27,9 +27,16 @@ import org.mustbe.consulo.nodejs.packages.call.NpmRunUtil;
 import org.mustbe.consulo.nodejs.run.NodeJSConfigurationBase;
 import org.mustbe.consulo.nodejs.run.NodeJSRunState;
 import com.intellij.execution.ExecutionException;
+import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
+import com.intellij.execution.process.OSProcessHandler;
+import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.execution.testframework.TestConsoleProperties;
+import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil;
+import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties;
+import com.intellij.execution.ui.ConsoleView;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -73,7 +80,10 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 
 	@NotNull
 	@Override
-	protected NodeJSRunState createRunState(@NotNull Module module, @NotNull Sdk targetSdk) throws ExecutionException
+	protected NodeJSRunState createRunState(@NotNull Module module,
+			@NotNull Sdk targetSdk,
+			@NotNull final Executor executor,
+			@NotNull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		VirtualFile mocha = NpmRunUtil.findNpmModule(module, "mocha");
 		if(mocha == null)
@@ -81,20 +91,32 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 			throw new ExecutionException("'mocha' module is not installed");
 		}
 
-		NodeJSRunState state = new NodeJSRunState(module, targetSdk, this);
+		NodeJSRunState state = new NodeJSRunState(module, targetSdk, this)
+		{
+			@NotNull
+			@Override
+			public ConsoleView createConsole(OSProcessHandler processHandler)
+			{
+				TestConsoleProperties testConsoleProperties = new SMTRunnerConsoleProperties(MochaConfiguration.this, "Mocha", executor);
+
+				testConsoleProperties.setIfUndefined(TestConsoleProperties.HIDE_PASSED_TESTS, false);
+
+				return SMTestRunnerConnectionUtil.createConsole("Mocha", testConsoleProperties);
+			}
+		};
 		state.addArgument(mocha.getPath() + "/bin/_mocha");
 
 		File pluginPath = PluginManager.getPluginPath(MochaConfiguration.class);
 
 		File mochaReporter = new File(pluginPath, "mocha-intellij");
-		if(mochaReporter.exists())
+		/*if(mochaReporter.exists())
 		{
 			state.addArgument("--reporter");
 			state.addArgument(new File(mochaReporter, "lib/mochaIntellijReporter.js").getPath());
 
 			state.addArgument("--ui");
 			state.addArgument("bdd");
-		}
+		}  */
 		return state;
 	}
 }

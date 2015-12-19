@@ -24,9 +24,11 @@ import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.ExecutionException;
+import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
+import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -73,7 +75,7 @@ public class NodeJSConfiguration extends NodeJSConfigurationBase
 
 	@NotNull
 	@Override
-	protected NodeJSRunState createRunState(@NotNull Module module, @NotNull Sdk targetSdk) throws ExecutionException
+	protected NodeJSRunState createRunState(@NotNull Module module, @NotNull Sdk targetSdk, @NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		if(getScriptFile() == null)
 		{

@@ -108,14 +108,20 @@ public class NodeJSRunState implements RunProfileState
 			generalCommandLine.addParameters(StringUtil.splitHonorQuotes(programParameters, ' '));
 		}
 
-		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myConfiguration.getProject());
-		ConsoleView console = builder.getConsole();
 		OSProcessHandler processHandler = new OSProcessHandler(generalCommandLine);
 		for(ProcessListener processListener : myProcessListeners)
 		{
 			processHandler.addProcessListener(processListener);
 		}
+		ConsoleView console = createConsole(processHandler);
 		console.attachToProcess(processHandler);
 		return new DefaultExecutionResult(console, processHandler);
+	}
+
+	@NotNull
+	public ConsoleView createConsole(OSProcessHandler processHandler)
+	{
+		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myConfiguration.getProject());
+		return builder.getConsole();
 	}
 }
