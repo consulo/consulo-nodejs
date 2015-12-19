@@ -97,7 +97,8 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 			@Override
 			public ConsoleView createConsole(OSProcessHandler processHandler)
 			{
-				TestConsoleProperties testConsoleProperties = new SMTRunnerConsoleProperties(MochaConfiguration.this, "Mocha", executor);
+				SMTRunnerConsoleProperties testConsoleProperties = new SMTRunnerConsoleProperties(MochaConfiguration.this, "Mocha", executor);
+				testConsoleProperties.setIdBasedTestTree(true);
 
 				testConsoleProperties.setIfUndefined(TestConsoleProperties.HIDE_PASSED_TESTS, false);
 
