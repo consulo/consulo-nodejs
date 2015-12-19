@@ -46,12 +46,12 @@ public class NodeJSRunState implements RunProfileState
 {
 	private final Module myModule;
 	private final Sdk mySdk;
-	private final NodeJSConfiguration myConfiguration;
+	private final NodeJSConfigurationBase myConfiguration;
 	private final List<String> myVmArguments = new SmartList<String>();
 	private final List<String> myArguments = new SmartList<String>();
 	private final List<ProcessListener> myProcessListeners = new SmartList<ProcessListener>();
 
-	public NodeJSRunState(@NotNull Module module, @NotNull Sdk sdk, NodeJSConfiguration configuration)
+	public NodeJSRunState(@NotNull Module module, @NotNull Sdk sdk, NodeJSConfigurationBase configuration)
 	{
 		myModule = module;
 		mySdk = sdk;
@@ -98,7 +98,6 @@ public class NodeJSRunState implements RunProfileState
 		}
 
 		generalCommandLine.addParameters(myVmArguments);
-		generalCommandLine.addParameter(myConfiguration.getScriptFilePath());
 		generalCommandLine.addParameters(myArguments);
 		generalCommandLine.withPassParentEnvironment(myConfiguration.isPassParentEnvs());
 		generalCommandLine.withEnvironment(myConfiguration.getEnvs());

@@ -11,6 +11,15 @@
         </element>
         <element id="dir-copy" path="$PROJECT_DIR$/dist" />
       </element>
+      <element id="directory" name="mocha">
+        <element id="directory" name="lib">
+          <element id="zip-archive" name="mocha.jar">
+            <element id="module-production-resource-output" name="mocha" />
+            <element id="module-output" name="mocha" />
+          </element>
+        </element>
+        <element id="dir-copy" path="$PROJECT_DIR$/mocha/dist" />
+      </element>
     </root>
   </artifact>
 </component>

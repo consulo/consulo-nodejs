@@ -19,6 +19,7 @@ package org.mustbe.consulo.nodejs.run;
 import java.io.IOException;
 
 import org.jetbrains.annotations.NotNull;
+import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.javascript.run.debug.V8DebugProcess;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -57,6 +58,7 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 	}
 
 	@Override
+	@RequiredDispatchThread
 	protected RunContentDescriptor doExecute(@NotNull final RunProfileState state, @NotNull final ExecutionEnvironment env) throws ExecutionException
 	{
 		FileDocumentManager.getInstance().saveAllDocuments();
@@ -121,6 +123,6 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 	@Override
 	public boolean canRun(@NotNull String s, @NotNull RunProfile runProfile)
 	{
-		return s.equals(DefaultDebugExecutor.EXECUTOR_ID) && runProfile instanceof NodeJSConfiguration;
+		return s.equals(DefaultDebugExecutor.EXECUTOR_ID) && runProfile instanceof NodeJSConfigurationBase;
 	}
 }

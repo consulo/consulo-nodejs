@@ -16,52 +16,31 @@
 
 package org.mustbe.consulo.nodejs.run;
 
-import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
 import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
-import com.intellij.application.options.ModuleListCellRenderer;
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
-import com.intellij.execution.ui.CommonProgramParametersPanel;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.SdkComboBox;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
-import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.util.Conditions;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.CollectionComboBoxModel;
-import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.util.ui.JBUI;
 
 /**
  * @author VISTALL
  * @since 04.12.2015
  */
-public class NodeJSConfigurationPanel extends CommonProgramParametersPanel
+public class NodeJSConfigurationPanel extends NodeJSConfigurationPanelBase
 {
-	private LabeledComponent<RawCommandLineEditor> myVmParametersComponent;
 	private TextFieldWithBrowseButton myScriptTextField;
-	private ComboBox myModuleBox;
-	private JCheckBox myUseAlternativeBundleCheckBox;
-	private SdkComboBox myAlternativeBundleComboBox;
-
-	private final Project myProject;
 
 	public NodeJSConfigurationPanel(Project project)
 	{
-		myProject = project;
+		super(project);
 	}
 
 	@Override
@@ -98,27 +77,6 @@ public class NodeJSConfigurationPanel extends CommonProgramParametersPanel
 			}
 		});
 
-		myModuleBox = new ComboBox();
-		myModuleBox.setRenderer(new ModuleListCellRenderer());
-
-		myVmParametersComponent = LabeledComponent.create(new RawCommandLineEditor(), "VM arguments");
-		myVmParametersComponent.setLabelLocation(BorderLayout.WEST);
-		copyDialogCaption(myVmParametersComponent);
-
-		myUseAlternativeBundleCheckBox = new JCheckBox("Use alternative bundle: ");
-		ProjectSdksModel projectSdksModel = new ProjectSdksModel();
-		projectSdksModel.reset();
-
-		myAlternativeBundleComboBox = new SdkComboBox(projectSdksModel, Conditions.<SdkTypeId>is(NodeJSBundleType.getInstance()), true);
-		myAlternativeBundleComboBox.setEnabled(false);
-		myUseAlternativeBundleCheckBox.addItemListener(new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(ItemEvent e)
-			{
-				myAlternativeBundleComboBox.setEnabled(myUseAlternativeBundleCheckBox.isSelected());
-			}
-		});
 		super.initComponents();
 	}
 
@@ -127,7 +85,7 @@ public class NodeJSConfigurationPanel extends CommonProgramParametersPanel
 	{
 		add(LabeledComponent.left(myScriptTextField, "Script"));
 		add(myVmParametersComponent);
-		super.addComponents();
+		addComponentsInternal();
 		add(LabeledComponent.left(myModuleBox, "Module"));
 		add(JBUI.Panels.simplePanel().addToLeft(myUseAlternativeBundleCheckBox).addToCenter(myAlternativeBundleComboBox));
 	}
@@ -140,10 +98,6 @@ public class NodeJSConfigurationPanel extends CommonProgramParametersPanel
 		NodeJSConfiguration nodeJSConfiguration = (NodeJSConfiguration) configuration;
 
 		nodeJSConfiguration.setScriptFilePath(myScriptTextField.getText());
-		nodeJSConfiguration.setVmParameters(myVmParametersComponent.getComponent().getText());
-		nodeJSConfiguration.getConfigurationModule().setModule((Module) myModuleBox.getSelectedItem());
-		nodeJSConfiguration.setUseAlternativeBundle(myUseAlternativeBundleCheckBox.isSelected());
-		nodeJSConfiguration.setAlternativeBundleName(StringUtil.nullize(myAlternativeBundleComboBox.getSelectedSdkName()));
 	}
 
 	@Override
@@ -153,11 +107,6 @@ public class NodeJSConfigurationPanel extends CommonProgramParametersPanel
 		super.reset(configuration);
 		NodeJSConfiguration nodeJSConfiguration = (NodeJSConfiguration) configuration;
 
-		myVmParametersComponent.getComponent().setText(((NodeJSConfiguration) configuration).getVmParameters());
-		myModuleBox.setModel(new CollectionComboBoxModel(nodeJSConfiguration.getValidModules()));
-		myModuleBox.setSelectedItem(nodeJSConfiguration.getConfigurationModule().getModule());
 		myScriptTextField.setText(nodeJSConfiguration.getScriptFilePath());
-		myUseAlternativeBundleCheckBox.setSelected(nodeJSConfiguration.isUseAlternativeBundle());
-		myAlternativeBundleComboBox.setSelectedSdk(nodeJSConfiguration.getAlternativeBundleName());
 	}
 }
