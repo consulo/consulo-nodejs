@@ -9,9 +9,7 @@
             <element id="module-output" name="consulo-nodejs" />
           </element>
         </element>
-        <element id="directory" name="stubs">
-          <element id="dir-copy" path="$PROJECT_DIR$/dist" />
-        </element>
+        <element id="dir-copy" path="$PROJECT_DIR$/dist" />
       </element>
     </root>
   </artifact>
