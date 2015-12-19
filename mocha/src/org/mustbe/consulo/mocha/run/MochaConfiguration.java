@@ -16,6 +16,7 @@
 
 package org.mustbe.consulo.mocha.run;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -81,6 +83,18 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 
 		NodeJSRunState state = new NodeJSRunState(module, targetSdk, this);
 		state.addArgument(mocha.getPath() + "/bin/_mocha");
+
+		File pluginPath = PluginManager.getPluginPath(MochaConfiguration.class);
+
+		File mochaReporter = new File(pluginPath, "mocha-intellij");
+		if(mochaReporter.exists())
+		{
+			state.addArgument("--reporter");
+			state.addArgument(new File(mochaReporter, "lib/mochaIntellijReporter.js").getPath());
+
+			state.addArgument("--ui");
+			state.addArgument("bdd");
+		}
 		return state;
 	}
 }
