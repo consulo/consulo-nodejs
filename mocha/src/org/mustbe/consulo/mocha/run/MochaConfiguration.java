@@ -22,8 +22,10 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.mocha.module.extension.MochaModuleExtension;
+import org.mustbe.consulo.nodejs.packages.call.NpmRunUtil;
 import org.mustbe.consulo.nodejs.run.NodeJSConfigurationBase;
 import org.mustbe.consulo.nodejs.run.NodeJSRunState;
+import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
@@ -32,6 +34,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.vfs.VirtualFile;
 
 /**
  * @author VISTALL
@@ -68,8 +71,16 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 
 	@NotNull
 	@Override
-	protected NodeJSRunState createRunState(@NotNull Module module, @NotNull Sdk targetSdk)
+	protected NodeJSRunState createRunState(@NotNull Module module, @NotNull Sdk targetSdk) throws ExecutionException
 	{
-		return new NodeJSRunState(module, targetSdk, this);
+		VirtualFile mocha = NpmRunUtil.findNpmModule(module, "mocha");
+		if(mocha == null)
+		{
+			throw new ExecutionException("'mocha' module is not installed");
+		}
+
+		NodeJSRunState state = new NodeJSRunState(module, targetSdk, this);
+		state.addArgument(mocha.getPath() + "/bin/_mocha");
+		return state;
 	}
 }

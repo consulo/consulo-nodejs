@@ -19,13 +19,16 @@ package org.mustbe.consulo.nodejs.packages.call;
 import java.io.File;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredDispatchThread;
+import org.mustbe.consulo.nodejs.NodeJSConstants;
 import org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunContentExecutor;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessTerminatedListener;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -40,6 +43,38 @@ import com.intellij.openapi.vfs.VirtualFile;
 public class NpmRunUtil
 {
 	public static final String UPDATE = "update";
+
+	@Nullable
+	public static VirtualFile findNpmModule(@NotNull Module module, @NotNull String moduleName)
+	{
+		VirtualFile moduleDir = module.getModuleDir();
+		if(moduleDir != null)
+		{
+			VirtualFile npmModuleDir = moduleDir.findFileByRelativePath(NodeJSConstants.NODE_MODULES + "/" + moduleName);
+			if(npmModuleDir != null)
+			{
+				return npmModuleDir;
+			}
+		}
+
+		Sdk sdk = ModuleUtilCore.getSdk(module, NodeJSModuleExtension.class);
+		if(sdk == null)
+		{
+			return null;
+		}
+
+		VirtualFile homeDirectory = sdk.getHomeDirectory();
+		if(homeDirectory == null)
+		{
+			return null;
+		}
+		VirtualFile moduleByBinDirectory = homeDirectory.findChild("bin/" + NodeJSConstants.NODE_MODULES + "/" + moduleName);
+		if(moduleByBinDirectory != null)
+		{
+			return moduleByBinDirectory;
+		}
+		return homeDirectory.findFileByRelativePath(NodeJSConstants.NODE_MODULES + "/" + moduleName);
+	}
 
 	@NotNull
 	public static File getNpmExecutable(@NotNull String home)
