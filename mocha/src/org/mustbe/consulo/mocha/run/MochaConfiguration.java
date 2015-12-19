@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.mocha.module.extension.MochaModuleExtension;
+import org.mustbe.consulo.nodejs.NodeJSConstants;
 import org.mustbe.consulo.nodejs.packages.call.NpmRunUtil;
 import org.mustbe.consulo.nodejs.run.NodeJSConfigurationBase;
 import org.mustbe.consulo.nodejs.run.NodeJSRunState;
@@ -43,6 +45,8 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 
 /**
@@ -51,6 +55,16 @@ import com.intellij.openapi.vfs.VirtualFile;
  */
 public class MochaConfiguration extends NodeJSConfigurationBase
 {
+	public static enum TargetType
+	{
+		DIRECTORY,
+		FILE
+	}
+
+	private TargetType myTargetType = TargetType.DIRECTORY;
+	private String myFilePath;
+	private String myDirectoryPath;
+
 	public MochaConfiguration(String name, RunConfigurationModule configurationModule, ConfigurationFactory factory)
 	{
 		super(name, configurationModule, factory);
@@ -85,10 +99,16 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 			@NotNull final Executor executor,
 			@NotNull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
-		VirtualFile mocha = NpmRunUtil.findNpmModule(module, "mocha");
+		VirtualFile mocha = NpmRunUtil.findNpmModule(module, NodeJSConstants.MOCHA);
 		if(mocha == null)
 		{
 			throw new ExecutionException("'mocha' module is not installed");
+		}
+
+		VirtualFile fileOrDirectory = getFileOrDirectory();
+		if(fileOrDirectory == null)
+		{
+			throw new ExecutionException((myTargetType == TargetType.DIRECTORY ? "Directory" : "File") + " is not set");
 		}
 
 		NodeJSRunState state = new NodeJSRunState(module, targetSdk, this)
@@ -118,6 +138,81 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 			state.addArgument("--ui");
 			state.addArgument("bdd");
 		}
+
+		switch(myTargetType)
+		{
+			case DIRECTORY:
+				state.addArgument("--recursive");
+				state.addArgument(getDirectoryPath());
+				break;
+			case FILE:
+				state.addArgument(getFilePath());
+				break;
+		}
 		return state;
+	}
+
+	@Nullable
+	public String getPath()
+	{
+		return myTargetType == TargetType.FILE ? myFilePath : myDirectoryPath;
+	}
+
+	@Nullable
+	public VirtualFile getFileOrDirectory()
+	{
+		String path = getPath();
+
+		if(StringUtil.isEmpty(path))
+		{
+			return null;
+		}
+		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(path);
+		if(fileByPath != null)
+		{
+			return fileByPath;
+		}
+		Module module = getConfigurationModule().getModule();
+		if(module == null)
+		{
+			return null;
+		}
+		String moduleDirPath = module.getModuleDirPath();
+		if(moduleDirPath == null)
+		{
+			return null;
+		}
+		return LocalFileSystem.getInstance().findFileByPath(moduleDirPath + "/" + path);
+	}
+
+	@NotNull
+	public TargetType getTargetType()
+	{
+		return myTargetType;
+	}
+
+	public void setTargetType(TargetType targetType)
+	{
+		myTargetType = targetType;
+	}
+
+	public String getDirectoryPath()
+	{
+		return myDirectoryPath;
+	}
+
+	public void setDirectoryPath(String directoryPath)
+	{
+		myDirectoryPath = directoryPath;
+	}
+
+	public String getFilePath()
+	{
+		return myFilePath;
+	}
+
+	public void setFilePath(String filePath)
+	{
+		myFilePath = filePath;
 	}
 }

@@ -32,5 +32,7 @@
 		<contentFolderSupportPatcher implementation="org.mustbe.consulo.mocha.module.MochaContentFolderSupportPatcher"/>
 
 		<configurationType implementation="org.mustbe.consulo.mocha.run.MochaConfigurationType" />
+
+		<runConfigurationProducer implementation="org.mustbe.consulo.mocha.run.MochaConfigurationProducer" />
 	</extensions>
 </idea-plugin>
