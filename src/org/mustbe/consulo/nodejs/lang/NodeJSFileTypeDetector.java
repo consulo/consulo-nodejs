@@ -35,10 +35,6 @@ public class NodeJSFileTypeDetector implements FileTypeRegistry.FileTypeDetector
 	@Override
 	public FileType detect(@NotNull VirtualFile file, @NotNull ByteSequence byteSequence, @Nullable CharSequence charSequence)
 	{
-		if(file.getName().equals("www"))
-		{
-			System.out.println("test");
-		}
 		if(FileUtil.isHashBangLine(charSequence, "/usr/bin/env node"))
 		{
 			return JavaScriptFileType.INSTANCE;
