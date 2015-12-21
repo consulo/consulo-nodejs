@@ -21,14 +21,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
-import javax.swing.JTextField;
 
 import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
 import com.intellij.application.options.ModuleListCellRenderer;
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
 import com.intellij.execution.ui.CommonProgramParametersPanel;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.SdkTypeId;
@@ -36,10 +34,7 @@ import com.intellij.openapi.roots.ui.configuration.SdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.ui.TextComponentAccessor;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Conditions;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.RawCommandLineEditor;
@@ -51,7 +46,6 @@ import com.intellij.ui.RawCommandLineEditor;
 public abstract class NodeJSConfigurationPanelBase extends CommonProgramParametersPanel
 {
 	protected LabeledComponent<RawCommandLineEditor> myVmParametersComponent;
-	private TextFieldWithBrowseButton myScriptTextField;
 	protected ComboBox myModuleBox;
 	protected JCheckBox myUseAlternativeBundleCheckBox;
 	protected SdkComboBox myAlternativeBundleComboBox;
@@ -66,37 +60,6 @@ public abstract class NodeJSConfigurationPanelBase extends CommonProgramParamete
 	@Override
 	protected void initComponents()
 	{
-		myScriptTextField = new TextFieldWithBrowseButton();
-		myScriptTextField.addBrowseFolderListener("Select Script", "Select Script File For Execution", myProject, new FileChooserDescriptor(true, false, false, false, false, false),
-				new TextComponentAccessor<JTextField>()
-				{
-					@Override
-					public String getText(JTextField textField)
-					{
-						return textField.getText();
-					}
-
-					@Override
-					public void setText(JTextField textField, String text)
-					{
-						Module selectedItem = (Module) myModuleBox.getSelectedItem();
-						if(selectedItem == null)
-						{
-							textField.setText(text);
-						}
-						else
-						{
-							String moduleDirPath = selectedItem.getModuleDirPath();
-							String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(text), '/');
-							if(StringUtil.isEmpty(relativePath))
-							{
-								relativePath = text;
-							}
-							textField.setText(relativePath);
-						}
-					}
-				});
-
 		myModuleBox = new ComboBox();
 		myModuleBox.setRenderer(new ModuleListCellRenderer());
 
