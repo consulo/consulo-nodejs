@@ -14,6 +14,8 @@ import com.intellij.lang.javascript.psi.JSSourceElement;
  */
 public class MochaPsiElementUtil
 {
+	public static final String MOCHA = "mocha";
+
 	public static boolean containsTestsInFiles(JSFile file)
 	{
 		JSSourceElement[] statements = file.getStatements();

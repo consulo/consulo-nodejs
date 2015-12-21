@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.mocha.module.extension.MochaModuleExtension;
+import org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension;
 import org.mustbe.consulo.roots.ContentFolderSupportPatcher;
 import org.mustbe.consulo.roots.ContentFolderTypeProvider;
 import org.mustbe.consulo.roots.impl.TestContentFolderTypeProvider;
@@ -34,8 +35,7 @@ public class MochaContentFolderSupportPatcher implements ContentFolderSupportPat
 	@Override
 	public void patch(@NotNull ModifiableRootModel model, @NotNull Set<ContentFolderTypeProvider> set)
 	{
-		MochaModuleExtension extension = model.getExtension(MochaModuleExtension.class);
-		if(extension != null)
+		if(model.getExtension(MochaModuleExtension.class) != null && model.getExtension(NodeJSModuleExtension.class) != null)
 		{
 			set.add(TestContentFolderTypeProvider.getInstance());
 		}

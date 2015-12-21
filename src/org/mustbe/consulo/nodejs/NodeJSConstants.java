@@ -23,5 +23,4 @@ package org.mustbe.consulo.nodejs;
 public interface NodeJSConstants
 {
 	String NODE_MODULES = "node_modules";
-	String MOCHA = "mocha";
 }

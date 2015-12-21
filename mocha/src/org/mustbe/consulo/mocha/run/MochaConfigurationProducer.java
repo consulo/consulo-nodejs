@@ -1,8 +1,8 @@
 package org.mustbe.consulo.mocha.run;
 
 import org.mustbe.consulo.RequiredReadAction;
+import org.mustbe.consulo.mocha.module.extension.MochaModuleExtension;
 import org.mustbe.consulo.mocha.psi.MochaPsiElementUtil;
-import org.mustbe.consulo.nodejs.NodeJSConstants;
 import org.mustbe.consulo.nodejs.packages.call.NpmRunUtil;
 import org.mustbe.consulo.nodejs.run.NodeJSConfiguration;
 import org.mustbe.consulo.nodejs.run.NodeJSConfigurationProducer;
@@ -35,7 +35,10 @@ public class MochaConfigurationProducer extends RunConfigurationProducer<MochaCo
 		public boolean value(JSFile file)
 		{
 			Module module = ModuleUtilCore.findModuleForPsiElement(file);
-			return module != null && NpmRunUtil.findNpmModule(module, NodeJSConstants.MOCHA) != null && MochaPsiElementUtil.containsTestsInFiles(file);
+			return module != null &&
+					ModuleUtilCore.getExtension(module, MochaModuleExtension.class) != null &&
+					NpmRunUtil.findNpmModule(module,  MochaPsiElementUtil.MOCHA) != null &&
+					MochaPsiElementUtil.containsTestsInFiles(file);
 		}
 	};
 

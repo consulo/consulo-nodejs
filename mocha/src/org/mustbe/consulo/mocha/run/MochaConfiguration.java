@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.mocha.module.extension.MochaModuleExtension;
-import org.mustbe.consulo.nodejs.NodeJSConstants;
+import org.mustbe.consulo.mocha.psi.MochaPsiElementUtil;
 import org.mustbe.consulo.nodejs.packages.call.NpmRunUtil;
 import org.mustbe.consulo.nodejs.run.NodeJSConfigurationBase;
 import org.mustbe.consulo.nodejs.run.NodeJSRunState;
@@ -99,7 +99,7 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 			@NotNull final Executor executor,
 			@NotNull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
-		VirtualFile mocha = NpmRunUtil.findNpmModule(module, NodeJSConstants.MOCHA);
+		VirtualFile mocha = NpmRunUtil.findNpmModule(module, MochaPsiElementUtil.MOCHA);
 		if(mocha == null)
 		{
 			throw new ExecutionException("'mocha' module is not installed");
