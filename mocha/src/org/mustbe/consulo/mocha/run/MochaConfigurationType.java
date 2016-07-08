@@ -16,7 +16,6 @@
 
 package org.mustbe.consulo.mocha.run;
 
-import org.consulo.lombok.annotations.LazyInstance;
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.mocha.MochaIcons;
 import org.mustbe.consulo.mocha.module.extension.MochaModuleExtension;
@@ -26,6 +25,7 @@ import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
 import com.intellij.openapi.project.Project;
+import consulo.lombok.annotations.Lazy;
 
 /**
  * @author VISTALL
@@ -34,7 +34,7 @@ import com.intellij.openapi.project.Project;
 public class MochaConfigurationType extends ConfigurationTypeBase
 {
 	@NotNull
-	@LazyInstance
+	@Lazy
 	public static MochaConfigurationType getInstance()
 	{
 		return CONFIGURATION_TYPE_EP.findExtension(MochaConfigurationType.class);

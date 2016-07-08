@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.swing.Icon;
 
-import org.consulo.lombok.annotations.LazyInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.nodejs.NodeJSIcons;
@@ -45,6 +44,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.SystemProperties;
+import consulo.lombok.annotations.Lazy;
 
 /**
  * @author VISTALL
@@ -53,7 +53,7 @@ import com.intellij.util.SystemProperties;
 public class NodeJSBundleType extends SdkType
 {
 	@NotNull
-	@LazyInstance
+	@Lazy
 	public static NodeJSBundleType getInstance()
 	{
 		return EP_NAME.findExtension(NodeJSBundleType.class);
