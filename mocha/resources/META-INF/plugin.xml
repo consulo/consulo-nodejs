@@ -15,7 +15,7 @@
   -->
 
 <idea-plugin>
-	<id>.consulo.mocha</id>
+	<id>consulo.mocha</id>
 	<name>Mocha</name>
 	<version>SNAPSHOT</version>
 	<vendor>Must-Be.org</vendor>
