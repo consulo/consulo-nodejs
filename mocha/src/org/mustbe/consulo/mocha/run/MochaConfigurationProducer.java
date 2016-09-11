@@ -1,6 +1,5 @@
 package org.mustbe.consulo.mocha.run;
 
-import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.mocha.module.extension.MochaModuleExtension;
 import org.mustbe.consulo.mocha.psi.MochaPsiElementUtil;
 import org.mustbe.consulo.nodejs.packages.call.NpmRunUtil;
@@ -21,6 +20,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ObjectUtil;
+import consulo.annotations.RequiredReadAction;
 
 /**
  * @author VISTALL

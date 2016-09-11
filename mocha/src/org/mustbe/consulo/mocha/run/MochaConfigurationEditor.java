@@ -19,10 +19,10 @@ package org.mustbe.consulo.mocha.run;
 import javax.swing.JComponent;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.RequiredDispatchThread;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
+import consulo.annotations.RequiredDispatchThread;
 
 /**
  * @author VISTALL

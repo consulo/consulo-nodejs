@@ -20,7 +20,7 @@
 	<version>SNAPSHOT</version>
 	<vendor>Must-Be.org</vendor>
 	<category>Test Frameworks</category>
-	<depends>org.mustbe.consulo.nodejs</depends>
+	<depends>consulo.nodejs</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<moduleExtensionProvider key="mocha"

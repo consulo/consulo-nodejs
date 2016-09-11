@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.mocha.module.extension.MochaModuleExtension;
 import org.mustbe.consulo.mocha.psi.MochaPsiElementUtil;
 import org.mustbe.consulo.nodejs.packages.call.NpmRunUtil;
@@ -48,6 +47,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import consulo.annotations.RequiredReadAction;
 
 /**
  * @author VISTALL

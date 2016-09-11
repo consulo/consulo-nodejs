@@ -20,7 +20,6 @@ import java.io.File;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.nodejs.NodeJSConstants;
 import org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.ExecutionException;
@@ -35,6 +34,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
+import consulo.annotations.RequiredDispatchThread;
 
 /**
  * @author VISTALL

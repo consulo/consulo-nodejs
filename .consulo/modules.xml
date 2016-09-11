@@ -4,8 +4,8 @@
     <modules>
       <module name="consulo-nodejs" dirurl="file://$PROJECT_DIR$" current-layer="Default">
         <module-layer name="Default">
-          <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" custom-plugin-dir-url="file://$MODULE_DIR$/dep" />
-          <extension id="java" sdk-module-name="" sdk-name="1.6" language-level-module-name="" language-level-name="JDK_1_6" special-dir-location="SOURCE_DIR" />
+          <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo SNAPSHOT" />
+          <extension id="java" sdk-module-name="" sdk-name="1.8" language-level-module-name="" language-level-name="JDK_1_8" special-dir-location="SOURCE_DIR" />
           <extension id="lombok" />
           <content url="file://$MODULE_DIR$">
             <content-folder type="EXCLUDED" url="file://$MODULE_DIR$/.consulo/sandbox" />
@@ -15,56 +15,13 @@
           <orderEntry type="module-extension-sdk" extension-id="consulo-plugin" />
           <orderEntry type="module-extension-sdk" extension-id="java" />
           <orderEntry type="sourceFolder" />
-          <orderEntry type="module-library">
-            <library name="consulo:XML">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/xml/lib/jsr173_1.0_api.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/xml/lib/resolver.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/xml/lib/xerces.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/xml/lib/xml.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library>
-              <binaries>
-                <root url="jar://$MODULE_DIR$/lib/json_simple-1.1.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library>
-              <binaries>
-                <root url="jar://$MODULE_DIR$/lib/lib.org.chromium.sdk.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library>
-              <binaries>
-                <root url="jar://$MODULE_DIR$/lib/lib.org.chromium.sdk.wipbackend.protocol_1_0.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library name="consulo:JavaScript Support">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/javascript/lib/debugger-impl.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/javascript/lib/gwt-impl.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/javascript/lib/javascript.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/javascript/lib/json-impl.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/javascript/lib/json_simple-1.1.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/javascript/lib/lib.org.chromium.sdk.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/javascript/lib/lib.org.chromium.sdk.wipbackend.protocol_1_0.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
+          <orderEntry type="library" exploded="" name="consulo-plugin: consulo.javascript" level="project" />
         </module-layer>
       </module>
       <module name="mocha" dirurl="file://$PROJECT_DIR$/mocha" current-layer="Default">
         <module-layer name="Default">
-          <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" custom-plugin-dir-url="file://$MODULE_DIR$/../dep" />
-          <extension id="java" sdk-module-name="" sdk-name="1.6" language-level-module-name="" language-level-name="JDK_1_6" special-dir-location="SOURCE_DIR" />
+          <extension id="consulo-plugin" sdk-module-name="consulo-nodejs" sdk-name="" />
+          <extension id="java" sdk-module-name="consulo-nodejs" sdk-name="" language-level-module-name="consulo-nodejs" language-level-name="" special-dir-location="SOURCE_DIR" />
           <content url="file://$MODULE_DIR$">
             <content-folder type="PRODUCTION_RESOURCE" url="file://$MODULE_DIR$/resources" />
             <content-folder type="PRODUCTION" url="file://$MODULE_DIR$/src" />
@@ -73,17 +30,6 @@
           <orderEntry type="module-extension-sdk" extension-id="java" />
           <orderEntry type="sourceFolder" />
           <orderEntry type="module" module-name="consulo-nodejs" />
-          <orderEntry type="module-library">
-            <library name="consulo:JavaScript">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/../dep/javascript/lib/debugger-impl.jar!/" />
-                <root url="jar://$MODULE_DIR$/../dep/javascript/lib/javascript.jar!/" />
-                <root url="jar://$MODULE_DIR$/../dep/javascript/lib/json-impl.jar!/" />
-                <root url="jar://$MODULE_DIR$/../dep/javascript/lib/json_simple-1.1.jar!/" />
-                <root url="jar://$MODULE_DIR$/../dep/javascript/lib/lib.org.chromium.sdk.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
         </module-layer>
       </module>
     </modules>

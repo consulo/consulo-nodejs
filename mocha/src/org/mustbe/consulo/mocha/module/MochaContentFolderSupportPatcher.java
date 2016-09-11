@@ -21,10 +21,10 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.mocha.module.extension.MochaModuleExtension;
 import org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension;
-import org.mustbe.consulo.roots.ContentFolderSupportPatcher;
-import org.mustbe.consulo.roots.ContentFolderTypeProvider;
-import org.mustbe.consulo.roots.impl.TestContentFolderTypeProvider;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import consulo.roots.ContentFolderSupportPatcher;
+import consulo.roots.ContentFolderTypeProvider;
+import consulo.roots.impl.TestContentFolderTypeProvider;
 
 /**
  * @author VISTALL

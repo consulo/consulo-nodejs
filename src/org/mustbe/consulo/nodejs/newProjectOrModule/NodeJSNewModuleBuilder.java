@@ -17,15 +17,15 @@
 package org.mustbe.consulo.nodejs.newProjectOrModule;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.ide.impl.NewModuleBuilder;
-import org.mustbe.consulo.ide.impl.NewModuleContext;
-import org.mustbe.consulo.ide.impl.UnzipNewModuleBuilderProcessor;
 import org.mustbe.consulo.nodejs.NodeJSIcons;
 import org.mustbe.consulo.nodejs.module.extension.NodeJSMutableModuleExtension;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import consulo.ide.impl.NewModuleBuilder;
+import consulo.ide.impl.NewModuleContext;
+import consulo.ide.impl.UnzipNewModuleBuilderProcessor;
 
 /**
  * @author VISTALL

@@ -19,14 +19,14 @@ package org.mustbe.consulo.nodejs.packages.jom;
 import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.json.jom.JomFileDescriptor;
 import org.mustbe.consulo.nodejs.NodeJSIcons;
 import org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import consulo.annotations.RequiredReadAction;
+import consulo.json.jom.JomFileDescriptor;
 
 /**
  * @author VISTALL

@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.json.jom.JomElement;
-import org.mustbe.consulo.json.jom.JomPropertyGetter;
+import consulo.json.jom.JomElement;
+import consulo.json.jom.JomPropertyGetter;
 
 /**
  * @author VISTALL

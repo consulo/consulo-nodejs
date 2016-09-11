@@ -27,7 +27,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import org.jdesktop.swingx.HorizontalLayout;
-import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.nodejs.run.NodeJSConfigurationPanelBase;
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -40,6 +39,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.JBUI;
+import consulo.annotations.RequiredDispatchThread;
 
 /**
  * @author VISTALL

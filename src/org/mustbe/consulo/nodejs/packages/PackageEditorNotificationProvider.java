@@ -18,13 +18,6 @@ package org.mustbe.consulo.nodejs.packages;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.editor.notifications.EditorNotificationProvider;
-import org.mustbe.consulo.json.JsonFileType;
-import org.mustbe.consulo.json.jom.JomElement;
-import org.mustbe.consulo.json.jom.JomFileElement;
-import org.mustbe.consulo.json.jom.JomManager;
 import org.mustbe.consulo.nodejs.packages.call.NpmRunUtil;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
@@ -33,6 +26,13 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.EditorNotificationPanel;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.annotations.RequiredReadAction;
+import consulo.editor.notifications.EditorNotificationProvider;
+import consulo.json.JsonFileType;
+import consulo.json.jom.JomElement;
+import consulo.json.jom.JomFileElement;
+import consulo.json.jom.JomManager;
 
 /**
  * @author VISTALL

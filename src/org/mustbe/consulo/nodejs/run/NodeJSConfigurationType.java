@@ -17,7 +17,6 @@
 package org.mustbe.consulo.nodejs.run;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import org.mustbe.consulo.nodejs.NodeJSIcons;
 import org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -26,6 +25,7 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
 import com.intellij.openapi.project.Project;
 import consulo.lombok.annotations.Lazy;
+import consulo.module.extension.ModuleExtensionHelper;
 
 /**
  * @author VISTALL

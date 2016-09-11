@@ -19,8 +19,6 @@ package org.mustbe.consulo.nodejs.run;
 import java.io.IOException;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.javascript.run.debug.V8DebugProcess;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.configurations.RunProfile;
@@ -43,6 +41,8 @@ import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugProcessStarter;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerManager;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.javascript.run.debug.V8DebugProcess;
 
 /**
  * @author VISTALL

@@ -18,15 +18,15 @@ package org.mustbe.consulo.nodejs.module.extension;
 
 import javax.swing.JComponent;
 
-import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.javascript.lang.JavaScriptLanguage;
-import org.mustbe.consulo.javascript.module.extension.JavaScriptMutableModuleExtension;
-import com.intellij.lang.LanguageVersion;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ModuleRootLayer;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.javascript.lang.JavaScriptLanguage;
+import consulo.javascript.module.extension.JavaScriptMutableModuleExtension;
+import consulo.lang.LanguageVersion;
+import consulo.module.extension.MutableModuleInheritableNamedPointer;
+import consulo.roots.ModuleRootLayer;
 
 /**
  * @author VISTALL

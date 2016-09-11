@@ -23,17 +23,17 @@ import java.util.List;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
-import org.consulo.module.extension.ui.ModuleExtensionSdkBoxBuilder;
-import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.javascript.lang.BaseJavaScriptLanguageVersion;
-import org.mustbe.consulo.javascript.lang.JavaScriptLanguage;
-import org.mustbe.consulo.javascript.lang.StandardJavaScriptVersions;
-import com.intellij.lang.LanguageVersion;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.ColoredListCellRenderer;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.extension.ui.ModuleExtensionSdkBoxBuilder;
+import consulo.javascript.lang.BaseJavaScriptLanguageVersion;
+import consulo.javascript.lang.JavaScriptLanguage;
+import consulo.javascript.lang.StandardJavaScriptVersions;
+import consulo.lang.LanguageVersion;
 
 /**
  * @author VISTALL
@@ -59,7 +59,7 @@ public class NodeJSModuleExtensionPanel extends JPanel
 				if(e.getStateChange() == ItemEvent.SELECTED)
 				{
 					//noinspection unchecked
-					extension.setLanguageVersion((LanguageVersion <JavaScriptLanguage>) e.getItem());
+					extension.setLanguageVersion((LanguageVersion<JavaScriptLanguage>) e.getItem());
 				}
 			}
 		});

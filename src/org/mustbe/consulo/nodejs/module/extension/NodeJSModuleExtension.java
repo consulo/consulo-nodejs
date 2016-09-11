@@ -16,24 +16,23 @@
 
 package org.mustbe.consulo.nodejs.module.extension;
 
-import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.javascript.lang.JavaScriptLanguage;
-import org.mustbe.consulo.javascript.lang.StandardJavaScriptVersions;
-import org.mustbe.consulo.javascript.module.extension.JavaScriptModuleExtension;
 import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
-import com.intellij.lang.LanguageVersion;
 import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.roots.ModuleRootLayer;
+import consulo.annotations.RequiredReadAction;
+import consulo.extension.impl.ModuleExtensionWithSdkImpl;
+import consulo.javascript.lang.JavaScriptLanguage;
+import consulo.javascript.lang.StandardJavaScriptVersions;
+import consulo.javascript.module.extension.JavaScriptModuleExtension;
+import consulo.lang.LanguageVersion;
+import consulo.roots.ModuleRootLayer;
 
 /**
  * @author VISTALL
  * @since 14.03.14
  */
-public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModuleExtension> implements
-		JavaScriptModuleExtension<NodeJSModuleExtension>
+public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModuleExtension> implements JavaScriptModuleExtension<NodeJSModuleExtension>
 {
 	protected LanguageVersion<JavaScriptLanguage> myLanguageVersion = StandardJavaScriptVersions.getDefaultVersion();
 

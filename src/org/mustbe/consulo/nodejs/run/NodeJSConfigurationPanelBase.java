@@ -22,7 +22,6 @@ import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
 
-import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.nodejs.bundle.NodeJSBundleType;
 import com.intellij.application.options.ModuleListCellRenderer;
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
@@ -30,7 +29,6 @@ import com.intellij.execution.ui.CommonProgramParametersPanel;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.SdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
@@ -38,6 +36,8 @@ import com.intellij.openapi.util.Conditions;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.RawCommandLineEditor;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.roots.ui.configuration.SdkComboBox;
 
 /**
  * @author VISTALL
