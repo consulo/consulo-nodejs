@@ -23,24 +23,24 @@
 	<depends>consulo.javascript</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<sdkType implementation="org.mustbe.consulo.nodejs.bundle.NodeJSBundleType"/>
+		<sdkType implementation="consulo.nodejs.bundle.NodeJSBundleType"/>
 		<moduleExtensionProvider name="NodeJS"
 								 key="nodejs"
 								 icon="/icons/nodejs.png"
-								 immutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSModuleExtension"
-								 mutableClass="org.mustbe.consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
-		<programRunner implementation="org.mustbe.consulo.nodejs.run.NodeJSDebuggerRunner"/>
-		<configurationType implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationType"/>
-		<runConfigurationProducer implementation="org.mustbe.consulo.nodejs.run.NodeJSConfigurationProducer"/>
+								 immutableClass="consulo.nodejs.module.extension.NodeJSModuleExtension"
+								 mutableClass="consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
+		<programRunner implementation="consulo.nodejs.run.NodeJSDebuggerRunner"/>
+		<configurationType implementation="consulo.nodejs.run.NodeJSConfigurationType"/>
+		<runConfigurationProducer implementation="consulo.nodejs.run.NodeJSConfigurationProducer"/>
 
-		<editorNotificationProvider implementation="org.mustbe.consulo.nodejs.packages.PackageEditorNotificationProvider"/>
+		<editorNotificationProvider implementation="consulo.nodejs.packages.PackageEditorNotificationProvider"/>
 
-		<fileTypeDetector implementation="org.mustbe.consulo.nodejs.lang.NodeJSFileTypeDetector" />
+		<fileTypeDetector implementation="consulo.nodejs.lang.NodeJSFileTypeDetector" />
 
-		<newModuleBuilder implementation="org.mustbe.consulo.nodejs.newProjectOrModule.NodeJSNewModuleBuilder" />
+		<newModuleBuilder implementation="consulo.nodejs.newProjectOrModule.NodeJSNewModuleBuilder" />
 	</extensions>
 
 	<extensions defaultExtensionNs="consulo.javascript">
-		<jomFileDescriptor implementation="org.mustbe.consulo.nodejs.packages.jom.PackagesFileDescriptor"/>
+		<jomFileDescriptor implementation="consulo.nodejs.packages.jom.PackagesFileDescriptor"/>
 	</extensions>
 </idea-plugin>

@@ -15,7 +15,7 @@
   -->
 
 <idea-plugin>
-	<id>org.mustbe.consulo.mocha</id>
+	<id>.consulo.mocha</id>
 	<name>Mocha</name>
 	<version>SNAPSHOT</version>
 	<vendor>Must-Be.org</vendor>
@@ -27,12 +27,12 @@
 								 parentKey="nodejs"
 								 icon="/icons/mocha.png"
 								 name="Mocha"
-								 immutableClass="org.mustbe.consulo.mocha.module.extension.MochaModuleExtension"
-								 mutableClass="org.mustbe.consulo.mocha.module.extension.MochaMutableModuleExtension"/>
-		<contentFolderSupportPatcher implementation="org.mustbe.consulo.mocha.module.MochaContentFolderSupportPatcher"/>
+								 immutableClass="consulo.mocha.module.extension.MochaModuleExtension"
+								 mutableClass="consulo.mocha.module.extension.MochaMutableModuleExtension"/>
+		<contentFolderSupportPatcher implementation="consulo.mocha.module.MochaContentFolderSupportPatcher"/>
 
-		<configurationType implementation="org.mustbe.consulo.mocha.run.MochaConfigurationType" />
+		<configurationType implementation="consulo.mocha.run.MochaConfigurationType" />
 
-		<runConfigurationProducer implementation="org.mustbe.consulo.mocha.run.MochaConfigurationProducer" />
+		<runConfigurationProducer implementation="consulo.mocha.run.MochaConfigurationProducer" />
 	</extensions>
 </idea-plugin>
