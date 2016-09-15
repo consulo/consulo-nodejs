@@ -17,15 +17,14 @@
 package consulo.nodejs.newProjectOrModule;
 
 import org.jetbrains.annotations.NotNull;
-import consulo.nodejs.NodeJSIcons;
-import consulo.nodejs.module.extension.NodeJSMutableModuleExtension;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
-import consulo.ide.impl.NewModuleBuilder;
-import consulo.ide.impl.NewModuleContext;
 import consulo.ide.impl.UnzipNewModuleBuilderProcessor;
+import consulo.ide.newProject.NewModuleBuilder;
+import consulo.ide.newProject.NewModuleContext;
+import consulo.nodejs.module.extension.NodeJSMutableModuleExtension;
 
 /**
  * @author VISTALL
@@ -36,13 +35,9 @@ public class NodeJSNewModuleBuilder implements NewModuleBuilder
 	@Override
 	public void setupContext(@NotNull NewModuleContext context)
 	{
-		context.addItem("#NodeJS", "Node.js", NodeJSIcons.NodeJS);
-		context.addItem("#NodeJSHelloWorld", "Hello World", AllIcons.RunConfigurations.Application);
+		NewModuleContext.Group group = context.createGroup("nodejs", "Node.js");
 
-		context.setupItem(new String[]{
-				"#NodeJS",
-				"#NodeJSHelloWorld"
-		}, new UnzipNewModuleBuilderProcessor<NodeJSNewModuleBuilderPanel>("/moduleTemplates/#NodeJSHelloWorld.zip")
+		group.add("Console Application", AllIcons.RunConfigurations.Application, new UnzipNewModuleBuilderProcessor<NodeJSNewModuleBuilderPanel>("/moduleTemplates/#NodeJSHelloWorld.zip")
 		{
 			@NotNull
 			@Override
@@ -52,8 +47,7 @@ public class NodeJSNewModuleBuilder implements NewModuleBuilder
 			}
 
 			@Override
-			public void setupModule(
-					@NotNull NodeJSNewModuleBuilderPanel panel, @NotNull ContentEntry contentEntry, @NotNull ModifiableRootModel modifiableRootModel)
+			public void setupModule(@NotNull NodeJSNewModuleBuilderPanel panel, @NotNull ContentEntry contentEntry, @NotNull ModifiableRootModel modifiableRootModel)
 			{
 				unzip(modifiableRootModel);
 
