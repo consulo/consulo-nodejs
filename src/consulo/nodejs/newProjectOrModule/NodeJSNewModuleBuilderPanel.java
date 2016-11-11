@@ -22,13 +22,12 @@ import javax.swing.JPanel;
 
 import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkTable;
-import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.projectRoots.impl.SdkListCellRenderer;
-import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.openapi.util.Conditions;
 import consulo.nodejs.bundle.NodeJSBundleType;
+import consulo.roots.ui.configuration.SdkComboBox;
 
 /**
  * @author VISTALL
@@ -36,24 +35,16 @@ import consulo.nodejs.bundle.NodeJSBundleType;
  */
 public class NodeJSNewModuleBuilderPanel extends JPanel
 {
-	private ComboBox myComboBox;
+	private SdkComboBox myComboBox;
 
 	public NodeJSNewModuleBuilderPanel()
 	{
 		super(new VerticalFlowLayout());
 
-		SdkTable sdkTable = SdkTable.getInstance();
-		myComboBox = new ComboBox();
-		myComboBox.setRenderer(new SdkListCellRenderer("<none>"));
+		ProjectSdksModel model = new ProjectSdksModel();
+		model.reset();
 
-		for(Sdk o : sdkTable.getAllSdks())
-		{
-			SdkTypeId sdkType = o.getSdkType();
-			if(sdkType == NodeJSBundleType.getInstance())
-			{
-				myComboBox.addItem(o);
-			}
-		}
+		myComboBox = new SdkComboBox(model, Conditions.equalTo(NodeJSBundleType.getInstance()), false);
 
 		add(LabeledComponent.create(myComboBox, "Bundle").setLabelLocation(BorderLayout.WEST));
 	}
@@ -61,6 +52,6 @@ public class NodeJSNewModuleBuilderPanel extends JPanel
 	@Nullable
 	public Sdk getSdk()
 	{
-		return (Sdk) myComboBox.getSelectedItem();
+		return (Sdk) myComboBox.getSelectedSdk();
 	}
 }
