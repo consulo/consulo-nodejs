@@ -20,11 +20,10 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.projectRoots.SdkType;
 import consulo.annotations.RequiredReadAction;
-import consulo.extension.impl.ModuleExtensionWithSdkImpl;
-import consulo.javascript.lang.JavaScriptLanguage;
 import consulo.javascript.lang.StandardJavaScriptVersions;
 import consulo.javascript.module.extension.JavaScriptModuleExtension;
 import consulo.lang.LanguageVersion;
+import consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
 import consulo.nodejs.bundle.NodeJSBundleType;
 import consulo.roots.ModuleRootLayer;
 
@@ -34,7 +33,7 @@ import consulo.roots.ModuleRootLayer;
  */
 public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModuleExtension> implements JavaScriptModuleExtension<NodeJSModuleExtension>
 {
-	protected LanguageVersion<JavaScriptLanguage> myLanguageVersion = StandardJavaScriptVersions.getDefaultVersion();
+	protected LanguageVersion myLanguageVersion = StandardJavaScriptVersions.getDefaultVersion();
 
 	public NodeJSModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
 	{
@@ -68,7 +67,7 @@ public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModu
 
 	@NotNull
 	@Override
-	public LanguageVersion<JavaScriptLanguage> getLanguageVersion()
+	public LanguageVersion getLanguageVersion()
 	{
 		return myLanguageVersion;
 	}

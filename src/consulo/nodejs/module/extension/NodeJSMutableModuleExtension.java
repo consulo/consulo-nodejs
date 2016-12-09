@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.projectRoots.Sdk;
 import consulo.annotations.RequiredDispatchThread;
-import consulo.javascript.lang.JavaScriptLanguage;
 import consulo.javascript.module.extension.JavaScriptMutableModuleExtension;
 import consulo.lang.LanguageVersion;
 import consulo.module.extension.MutableModuleInheritableNamedPointer;
@@ -67,7 +66,7 @@ public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implemen
 	}
 
 	@Override
-	public void setLanguageVersion(@NotNull LanguageVersion<JavaScriptLanguage> languageVersion)
+	public void setLanguageVersion(@NotNull LanguageVersion languageVersion)
 	{
 		myLanguageVersion = languageVersion;
 	}

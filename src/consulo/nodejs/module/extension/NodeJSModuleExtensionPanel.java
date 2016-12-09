@@ -31,7 +31,6 @@ import com.intellij.ui.ColoredListCellRenderer;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.extension.ui.ModuleExtensionSdkBoxBuilder;
 import consulo.javascript.lang.BaseJavaScriptLanguageVersion;
-import consulo.javascript.lang.JavaScriptLanguage;
 import consulo.javascript.lang.StandardJavaScriptVersions;
 import consulo.lang.LanguageVersion;
 
@@ -59,7 +58,7 @@ public class NodeJSModuleExtensionPanel extends JPanel
 				if(e.getStateChange() == ItemEvent.SELECTED)
 				{
 					//noinspection unchecked
-					extension.setLanguageVersion((LanguageVersion<JavaScriptLanguage>) e.getItem());
+					extension.setLanguageVersion((LanguageVersion) e.getItem());
 				}
 			}
 		});
