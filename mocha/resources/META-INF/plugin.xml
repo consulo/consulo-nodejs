@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2013-2015 must-be.org
+  - Copyright 2013-2017 consulo.io
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 	<id>consulo.mocha</id>
 	<name>Mocha</name>
 	<version>SNAPSHOT</version>
-	<vendor>Must-Be.org</vendor>
+	<vendor>consulo.io</vendor>
 	<category>Test Frameworks</category>
 	<depends>consulo.nodejs</depends>
 
