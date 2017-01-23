@@ -17,14 +17,13 @@
 package consulo.mocha.run;
 
 import org.jetbrains.annotations.NotNull;
-import consulo.mocha.MochaIcons;
-import consulo.mocha.module.extension.MochaModuleExtension;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
 import com.intellij.openapi.project.Project;
-import consulo.lombok.annotations.Lazy;
+import consulo.mocha.MochaIcons;
+import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.module.extension.ModuleExtensionHelper;
 
 /**
@@ -34,7 +33,6 @@ import consulo.module.extension.ModuleExtensionHelper;
 public class MochaConfigurationType extends ConfigurationTypeBase
 {
 	@NotNull
-	@Lazy
 	public static MochaConfigurationType getInstance()
 	{
 		return CONFIGURATION_TYPE_EP.findExtension(MochaConfigurationType.class);

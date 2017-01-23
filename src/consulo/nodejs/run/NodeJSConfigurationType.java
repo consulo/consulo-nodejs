@@ -17,15 +17,14 @@
 package consulo.nodejs.run;
 
 import org.jetbrains.annotations.NotNull;
-import consulo.nodejs.NodeJSIcons;
-import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
 import com.intellij.openapi.project.Project;
-import consulo.lombok.annotations.Lazy;
 import consulo.module.extension.ModuleExtensionHelper;
+import consulo.nodejs.NodeJSIcons;
+import consulo.nodejs.module.extension.NodeJSModuleExtension;
 
 /**
  * @author VISTALL
@@ -34,7 +33,6 @@ import consulo.module.extension.ModuleExtensionHelper;
 public class NodeJSConfigurationType extends ConfigurationTypeBase
 {
 	@NotNull
-	@Lazy
 	public static NodeJSConfigurationType getInstance()
 	{
 		return CONFIGURATION_TYPE_EP.findExtension(NodeJSConfigurationType.class);

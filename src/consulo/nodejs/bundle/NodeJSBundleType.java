@@ -41,7 +41,6 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.SystemProperties;
-import consulo.lombok.annotations.Lazy;
 import consulo.nodejs.NodeJSIcons;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.roots.types.SourcesOrderRootType;
@@ -53,7 +52,6 @@ import consulo.roots.types.SourcesOrderRootType;
 public class NodeJSBundleType extends SdkType
 {
 	@NotNull
-	@Lazy
 	public static NodeJSBundleType getInstance()
 	{
 		return EP_NAME.findExtension(NodeJSBundleType.class);
