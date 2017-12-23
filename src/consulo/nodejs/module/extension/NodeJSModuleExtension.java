@@ -33,7 +33,7 @@ import consulo.roots.ModuleRootLayer;
  */
 public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModuleExtension> implements JavaScriptModuleExtension<NodeJSModuleExtension>
 {
-	protected LanguageVersion myLanguageVersion = StandardJavaScriptVersions.getDefaultVersion();
+	protected LanguageVersion myLanguageVersion = StandardJavaScriptVersions.getInstance().getDefaultVersion();
 
 	public NodeJSModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
 	{
@@ -45,14 +45,14 @@ public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModu
 	protected void loadStateImpl(@NotNull Element element)
 	{
 		super.loadStateImpl(element);
-		myLanguageVersion = StandardJavaScriptVersions.findVersionById(element.getAttributeValue("language-version"));
+		myLanguageVersion = StandardJavaScriptVersions.getInstance().findVersionById(element.getAttributeValue("language-version"));
 	}
 
 	@Override
 	protected void getStateImpl(@NotNull Element element)
 	{
 		super.getStateImpl(element);
-		if(myLanguageVersion != StandardJavaScriptVersions.getDefaultVersion())
+		if(myLanguageVersion != StandardJavaScriptVersions.getInstance().getDefaultVersion())
 		{
 			element.setAttribute("language-version", myLanguageVersion.getName());
 		}

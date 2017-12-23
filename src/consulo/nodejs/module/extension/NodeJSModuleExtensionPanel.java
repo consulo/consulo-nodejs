@@ -31,6 +31,7 @@ import com.intellij.ui.ColoredListCellRenderer;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.extension.ui.ModuleExtensionSdkBoxBuilder;
 import consulo.javascript.lang.BaseJavaScriptLanguageVersion;
+import consulo.javascript.lang.JavaScriptLanguageVersion;
 import consulo.javascript.lang.StandardJavaScriptVersions;
 import consulo.lang.LanguageVersion;
 
@@ -47,7 +48,7 @@ public class NodeJSModuleExtensionPanel extends JPanel
 
 		add(ModuleExtensionSdkBoxBuilder.createAndDefine(extension, runnable).build());
 
-		List<BaseJavaScriptLanguageVersion> validLanguageVersions = StandardJavaScriptVersions.getValidLanguageVersions();
+		List<JavaScriptLanguageVersion> validLanguageVersions = StandardJavaScriptVersions.getInstance().getValidLanguageVersions();
 
 		ComboBox languageVersionComboBox = new ComboBox(new CollectionComboBoxModel(validLanguageVersions, extension.getLanguageVersion()));
 		languageVersionComboBox.addItemListener(new ItemListener()
