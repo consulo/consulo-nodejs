@@ -83,10 +83,10 @@ public class NodeJSConfigurationPanel extends NodeJSConfigurationPanelBase
 	@Override
 	protected void addComponents()
 	{
-		add(LabeledComponent.left(myScriptTextField, "Script"));
+		add(LabeledComponent.create(myScriptTextField, "Script"));
 		add(myVmParametersComponent);
 		addComponentsInternal();
-		add(LabeledComponent.left(myModuleBox, "Module"));
+		add(LabeledComponent.create(myModuleBox, "Module"));
 		add(JBUI.Panels.simplePanel().addToLeft(myUseAlternativeBundleCheckBox).addToCenter(myAlternativeBundleComboBox));
 	}
 

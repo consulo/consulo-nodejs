@@ -129,7 +129,7 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 
 		File pluginPath = PluginManager.getPluginPath(MochaConfiguration.class);
 
-		File mochaReporter = new File(pluginPath, "mocha-intellij");
+		File mochaReporter = new File(pluginPath, "mocha-consulo");
 		if(mochaReporter.exists())
 		{
 			state.addArgument("--reporter");

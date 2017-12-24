@@ -16,11 +16,6 @@
 
 package consulo.mocha.run;
 
-import consulo.mocha.module.extension.MochaModuleExtension;
-import consulo.mocha.psi.MochaPsiElementUtil;
-import consulo.nodejs.packages.call.NpmRunUtil;
-import consulo.nodejs.run.NodeJSConfiguration;
-import consulo.nodejs.run.NodeJSConfigurationProducer;
 import com.intellij.execution.actions.ConfigurationContext;
 import com.intellij.execution.actions.ConfigurationFromContext;
 import com.intellij.execution.actions.RunConfigurationProducer;
@@ -37,6 +32,11 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ObjectUtil;
 import consulo.annotations.RequiredReadAction;
+import consulo.mocha.module.extension.MochaModuleExtension;
+import consulo.mocha.psi.MochaPsiElementUtil;
+import consulo.nodejs.packages.call.NpmRunUtil;
+import consulo.nodejs.run.NodeJSConfiguration;
+import consulo.nodejs.run.NodeJSConfigurationProducerUtil;
 
 /**
  * @author VISTALL
@@ -66,7 +66,7 @@ public class MochaConfigurationProducer extends RunConfigurationProducer<MochaCo
 	@Override
 	protected boolean setupConfigurationFromContext(MochaConfiguration configuration, ConfigurationContext context, Ref<PsiElement> sourceElement)
 	{
-		VirtualFile executableFile = NodeJSConfigurationProducer.findExecutableFile(context, ourFileCondition);
+		VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, ourFileCondition);
 		if(executableFile != null)
 		{
 			Module module = context.getModule();
@@ -87,7 +87,7 @@ public class MochaConfigurationProducer extends RunConfigurationProducer<MochaCo
 	@Override
 	public boolean isConfigurationFromContext(MochaConfiguration configuration, ConfigurationContext context)
 	{
-		VirtualFile executableFile = NodeJSConfigurationProducer.findExecutableFile(context, ourFileCondition);
+		VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, ourFileCondition);
 		return configuration.getTargetType() == MochaConfiguration.TargetType.FILE && Comparing.equal(executableFile, configuration.getFileOrDirectory());
 	}
 

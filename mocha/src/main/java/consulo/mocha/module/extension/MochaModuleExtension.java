@@ -17,7 +17,7 @@
 package consulo.mocha.module.extension;
 
 import org.jetbrains.annotations.NotNull;
-import consulo.extension.impl.ModuleExtensionImpl;
+import consulo.module.extension.impl.ModuleExtensionImpl;
 import consulo.roots.ModuleRootLayer;
 
 /**

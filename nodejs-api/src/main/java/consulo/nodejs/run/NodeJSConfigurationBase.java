@@ -53,7 +53,7 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 	private boolean myUseAlternativeBundle;
 	private String myAlternativeBundleName;
 	private String myProgramParameters;
-	private Map<String, String> myEnvs = new HashMap<String, String>();
+	private Map<String, String> myEnvs = new HashMap<>();
 	private boolean myPassParentEnvs = true;
 
 	public NodeJSConfigurationBase(String name, RunConfigurationModule configurationModule, ConfigurationFactory factory)

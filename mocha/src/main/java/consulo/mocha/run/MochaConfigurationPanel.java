@@ -63,7 +63,7 @@ public class MochaConfigurationPanel extends NodeJSConfigurationPanelBase
 	{
 		add(myVmParametersComponent);
 		addComponentsInternal();
-		add(LabeledComponent.left(myModuleBox, "Module"));
+		add(LabeledComponent.create(myModuleBox, "Module"));
 		add(JBUI.Panels.simplePanel().addToLeft(myUseAlternativeBundleCheckBox).addToCenter(myAlternativeBundleComboBox));
 
 		ButtonGroup targetGroup = new ButtonGroup();
@@ -144,7 +144,7 @@ public class MochaConfigurationPanel extends NodeJSConfigurationPanelBase
 		{
 			myFileField = textField;
 		}
-		return LabeledComponent.left(textField, label);
+		return LabeledComponent.create(textField, label);
 	}
 
 	@RequiredDispatchThread

@@ -72,6 +72,6 @@ public class NodeJSModuleExtensionPanel extends JPanel
 			}
 		});
 
-		add(LabeledComponent.left(languageVersionComboBox, "Language Version"));
+		add(LabeledComponent.create(languageVersionComboBox, "Language Version"));
 	}
 }
