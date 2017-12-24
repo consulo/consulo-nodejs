@@ -1,0 +1,3 @@
+[submodule "mocha/src/main/dist/mocha-consulo"]
+	path = mocha/src/main/dist/mocha-consulo
+	url = https://github.com/consulo/mocha-consulo
