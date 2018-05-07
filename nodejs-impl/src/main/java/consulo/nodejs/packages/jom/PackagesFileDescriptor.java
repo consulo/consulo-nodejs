@@ -17,17 +17,16 @@
 package consulo.nodejs.packages.jom;
 
 import javax.annotation.Nonnull;
-import javax.swing.Icon;
 
-import consulo.awt.TargetAWT;
-import consulo.nodejs.NodeJSIcons;
-import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import consulo.annotations.RequiredReadAction;
 import consulo.json.jom.JomFileDescriptor;
+import consulo.nodejs.NodeJSIcons;
+import consulo.nodejs.module.extension.NodeJSModuleExtension;
+import consulo.ui.image.Image;
 
 /**
  * @author VISTALL
@@ -44,9 +43,9 @@ public class PackagesFileDescriptor extends JomFileDescriptor<PackagesRootElemen
 
 	@Nonnull
 	@Override
-	public Icon getIcon()
+	public Image getIcon()
 	{
-		return TargetAWT.to(NodeJSIcons.Npm);
+		return NodeJSIcons.Npm;
 	}
 
 	@Override
