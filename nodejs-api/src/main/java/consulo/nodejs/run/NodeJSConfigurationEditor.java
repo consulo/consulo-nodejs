@@ -16,9 +16,9 @@
 
 package consulo.nodejs.run;
 
+import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 
-import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
@@ -52,7 +52,7 @@ public class NodeJSConfigurationEditor extends SettingsEditor<NodeJSConfiguratio
 		myConfigurationPanel.applyTo(nodeJSConfiguration);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	protected JComponent createEditor()
 	{

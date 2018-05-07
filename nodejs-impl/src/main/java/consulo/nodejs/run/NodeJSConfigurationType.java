@@ -16,7 +16,7 @@
 
 package consulo.nodejs.run;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -32,7 +32,7 @@ import consulo.nodejs.module.extension.NodeJSModuleExtension;
  */
 public class NodeJSConfigurationType extends ConfigurationTypeBase
 {
-	@NotNull
+	@Nonnull
 	public static NodeJSConfigurationType getInstance()
 	{
 		return CONFIGURATION_TYPE_EP.findExtension(NodeJSConfigurationType.class);
@@ -51,7 +51,7 @@ public class NodeJSConfigurationType extends ConfigurationTypeBase
 			}
 
 			@Override
-			public boolean isApplicable(@NotNull Project project)
+			public boolean isApplicable(@Nonnull Project project)
 			{
 				return ModuleExtensionHelper.getInstance(project).hasModuleExtension(NodeJSModuleExtension.class);
 			}

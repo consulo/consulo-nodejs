@@ -18,8 +18,9 @@ package consulo.nodejs.packages.call;
 
 import java.io.File;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import consulo.nodejs.NodeJSConstants;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.ExecutionException;
@@ -45,7 +46,7 @@ public class NpmRunUtil
 	public static final String UPDATE = "update";
 
 	@Nullable
-	public static VirtualFile findNpmModule(@NotNull Module module, @NotNull String moduleName)
+	public static VirtualFile findNpmModule(@Nonnull Module module, @Nonnull String moduleName)
 	{
 		VirtualFile moduleDir = module.getModuleDir();
 		if(moduleDir != null)
@@ -76,8 +77,8 @@ public class NpmRunUtil
 		return homeDirectory.findFileByRelativePath(NodeJSConstants.NODE_MODULES + "/" + moduleName);
 	}
 
-	@NotNull
-	public static File getNpmExecutable(@NotNull String home)
+	@Nonnull
+	public static File getNpmExecutable(@Nonnull String home)
 	{
 		String executable = SystemInfo.isWindows ? "npm.cmd" : "npm";
 
@@ -90,7 +91,7 @@ public class NpmRunUtil
 	}
 
 	@RequiredDispatchThread
-	public static void run(@NotNull Project project, VirtualFile packageFile, @NotNull String action)
+	public static void run(@Nonnull Project project, VirtualFile packageFile, @Nonnull String action)
 	{
 		NodeJSModuleExtension extension = ModuleUtilCore.getExtension(project, packageFile, NodeJSModuleExtension.class);
 		if(extension == null)

@@ -20,9 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.jdom.Element;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
 import com.intellij.execution.ExecutionException;
@@ -66,7 +68,7 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 
 	@Nullable
 	@Override
-	public RunProfileState getState(@NotNull Executor executor, @NotNull final ExecutionEnvironment executionEnvironment) throws ExecutionException
+	public RunProfileState getState(@Nonnull Executor executor, @Nonnull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		Module module = getConfigurationModule().getModule();
 		if(module == null)
@@ -100,11 +102,11 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 		return createRunState(module, targetSdk, executor, executionEnvironment);
 	}
 
-	@NotNull
-	protected abstract NodeJSRunState createRunState(@NotNull Module module,
-			@NotNull Sdk targetSdk,
-			@NotNull Executor executor,
-			@NotNull ExecutionEnvironment executionEnvironment) throws ExecutionException;
+	@Nonnull
+	protected abstract NodeJSRunState createRunState(@Nonnull Module module,
+			@Nonnull Sdk targetSdk,
+			@Nonnull Executor executor,
+			@Nonnull ExecutionEnvironment executionEnvironment) throws ExecutionException;
 
 	@Override
 	public void writeExternal(Element element) throws WriteExternalException
@@ -159,12 +161,12 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 	}
 
 	@Override
-	public void setEnvs(@NotNull Map<String, String> envs)
+	public void setEnvs(@Nonnull Map<String, String> envs)
 	{
 		myEnvs = envs;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Map<String, String> getEnvs()
 	{

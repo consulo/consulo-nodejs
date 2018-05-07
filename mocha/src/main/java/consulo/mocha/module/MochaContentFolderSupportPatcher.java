@@ -18,7 +18,8 @@ package consulo.mocha.module;
 
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.roots.ModifiableRootModel;
 import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
@@ -34,7 +35,7 @@ import consulo.roots.impl.TestContentFolderTypeProvider;
 public class MochaContentFolderSupportPatcher implements ContentFolderSupportPatcher
 {
 	@Override
-	public void patch(@NotNull ModifiableRootModel model, @NotNull Set<ContentFolderTypeProvider> set)
+	public void patch(@Nonnull ModifiableRootModel model, @Nonnull Set<ContentFolderTypeProvider> set)
 	{
 		if(model.getExtension(MochaModuleExtension.class) != null && model.getExtension(NodeJSModuleExtension.class) != null)
 		{

@@ -17,7 +17,7 @@
 package consulo.nodejs.module.extension;
 
 import org.jdom.Element;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.openapi.projectRoots.SdkType;
 import consulo.annotations.RequiredReadAction;
 import consulo.javascript.lang.StandardJavaScriptVersions;
@@ -35,21 +35,21 @@ public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModu
 {
 	protected LanguageVersion myLanguageVersion = StandardJavaScriptVersions.getInstance().getDefaultVersion();
 
-	public NodeJSModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
+	public NodeJSModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer rootModel)
 	{
 		super(id, rootModel);
 	}
 
 	@RequiredReadAction
 	@Override
-	protected void loadStateImpl(@NotNull Element element)
+	protected void loadStateImpl(@Nonnull Element element)
 	{
 		super.loadStateImpl(element);
 		myLanguageVersion = StandardJavaScriptVersions.getInstance().findVersionById(element.getAttributeValue("language-version"));
 	}
 
 	@Override
-	protected void getStateImpl(@NotNull Element element)
+	protected void getStateImpl(@Nonnull Element element)
 	{
 		super.getStateImpl(element);
 		if(myLanguageVersion != StandardJavaScriptVersions.getInstance().getDefaultVersion())
@@ -58,14 +58,14 @@ public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModu
 		}
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Class<? extends SdkType> getSdkTypeClass()
 	{
 		return NodeJSBundleType.class;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public LanguageVersion getLanguageVersion()
 	{
@@ -73,7 +73,7 @@ public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModu
 	}
 
 	@Override
-	public void commit(@NotNull NodeJSModuleExtension mutableModuleExtension)
+	public void commit(@Nonnull NodeJSModuleExtension mutableModuleExtension)
 	{
 		super.commit(mutableModuleExtension);
 		myLanguageVersion = mutableModuleExtension.getLanguageVersion();

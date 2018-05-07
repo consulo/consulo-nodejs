@@ -16,7 +16,7 @@
 
 package consulo.mocha.module.extension;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import consulo.module.extension.impl.ModuleExtensionImpl;
 import consulo.roots.ModuleRootLayer;
 
@@ -26,7 +26,7 @@ import consulo.roots.ModuleRootLayer;
  */
 public class MochaModuleExtension extends ModuleExtensionImpl<MochaModuleExtension>
 {
-	public MochaModuleExtension(@NotNull String id, @NotNull ModuleRootLayer moduleRootLayer)
+	public MochaModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer moduleRootLayer)
 	{
 		super(id, moduleRootLayer);
 	}

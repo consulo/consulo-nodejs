@@ -18,8 +18,9 @@ package consulo.nodejs.run;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import consulo.nodejs.bundle.NodeJSBundleType;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
@@ -51,7 +52,7 @@ public class NodeJSRunState implements RunProfileState
 	private final List<String> myArguments = new SmartList<String>();
 	private final List<ProcessListener> myProcessListeners = new SmartList<ProcessListener>();
 
-	public NodeJSRunState(@NotNull Module module, @NotNull Sdk sdk, NodeJSConfigurationBase configuration)
+	public NodeJSRunState(@Nonnull Module module, @Nonnull Sdk sdk, NodeJSConfigurationBase configuration)
 	{
 		myModule = module;
 		mySdk = sdk;
@@ -75,7 +76,7 @@ public class NodeJSRunState implements RunProfileState
 
 	@Nullable
 	@Override
-	public ExecutionResult execute(Executor executor, @NotNull ProgramRunner programRunner) throws ExecutionException
+	public ExecutionResult execute(Executor executor, @Nonnull ProgramRunner programRunner) throws ExecutionException
 	{
 		GeneralCommandLine generalCommandLine = new GeneralCommandLine();
 
@@ -118,7 +119,7 @@ public class NodeJSRunState implements RunProfileState
 		return new DefaultExecutionResult(console, processHandler);
 	}
 
-	@NotNull
+	@Nonnull
 	public ConsoleView createConsole(OSProcessHandler processHandler)
 	{
 		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myConfiguration.getProject());

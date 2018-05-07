@@ -16,7 +16,8 @@
 
 package consulo.nodejs.newProjectOrModule;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ContentEntry;
@@ -33,13 +34,13 @@ import consulo.nodejs.module.extension.NodeJSMutableModuleExtension;
 public class NodeJSNewModuleBuilder implements NewModuleBuilder
 {
 	@Override
-	public void setupContext(@NotNull NewModuleContext context)
+	public void setupContext(@Nonnull NewModuleContext context)
 	{
 		NewModuleContext.Group group = context.createGroup("nodejs", "Node.js");
 
 		group.add("Console Application", AllIcons.RunConfigurations.Application, new UnzipNewModuleBuilderProcessor<NodeJSNewModuleBuilderPanel>("/moduleTemplates/#NodeJSHelloWorld.zip")
 		{
-			@NotNull
+			@Nonnull
 			@Override
 			public NodeJSNewModuleBuilderPanel createConfigurationPanel()
 			{
@@ -47,7 +48,7 @@ public class NodeJSNewModuleBuilder implements NewModuleBuilder
 			}
 
 			@Override
-			public void setupModule(@NotNull NodeJSNewModuleBuilderPanel panel, @NotNull ContentEntry contentEntry, @NotNull ModifiableRootModel modifiableRootModel)
+			public void setupModule(@Nonnull NodeJSNewModuleBuilderPanel panel, @Nonnull ContentEntry contentEntry, @Nonnull ModifiableRootModel modifiableRootModel)
 			{
 				unzip(modifiableRootModel);
 

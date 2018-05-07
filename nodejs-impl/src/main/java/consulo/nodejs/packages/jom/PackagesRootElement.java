@@ -19,7 +19,8 @@ package consulo.nodejs.packages.jom;
 import java.util.Map;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import consulo.json.jom.JomElement;
 import consulo.json.jom.JomPropertyGetter;
 
@@ -47,26 +48,26 @@ public interface PackagesRootElement extends JomElement
 	@JomPropertyGetter
 	Set<String> getFiles();
 
-	@NotNull
+	@Nonnull
 	@JomPropertyGetter
 	Map<String, Boolean> getConfig();
 
-	@NotNull
+	@Nonnull
 	@JomPropertyGetter
 	Map<String, String> getEngines();
 
-	@NotNull
+	@Nonnull
 	@JomPropertyGetter
 	Map<String, String> getDirectories();
 
-	@NotNull
+	@Nonnull
 	@JomPropertyGetter
 	Map<String, String> getScripts();
 
 	@JomPropertyGetter
 	String getRepository();
 
-	@NotNull
+	@Nonnull
 	@JomPropertyGetter
 	Set<String> getKeywords();
 
@@ -76,7 +77,7 @@ public interface PackagesRootElement extends JomElement
 	@JomPropertyGetter
 	String getLicense();
 
-	@NotNull
+	@Nonnull
 	@JomPropertyGetter
 	Map<String, String> getBugs();
 
@@ -89,15 +90,15 @@ public interface PackagesRootElement extends JomElement
 	@JomPropertyGetter
 	String getBin();
 
-	@NotNull
+	@Nonnull
 	@JomPropertyGetter
 	Map<String, String> getDependencies();
 
-	@NotNull
+	@Nonnull
 	@JomPropertyGetter
 	Set<String> getBundleDependencies();
 
-	@NotNull
+	@Nonnull
 	@JomPropertyGetter
 	Map<String, String> getDevDependencies();
 }

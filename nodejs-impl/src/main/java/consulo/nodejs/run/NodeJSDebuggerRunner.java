@@ -18,7 +18,8 @@ package consulo.nodejs.run;
 
 import java.io.IOException;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.configurations.RunProfile;
@@ -50,7 +51,7 @@ import consulo.javascript.run.debug.V8DebugProcess;
  */
 public class NodeJSDebuggerRunner extends DefaultProgramRunner
 {
-	@NotNull
+	@Nonnull
 	@Override
 	public String getRunnerId()
 	{
@@ -59,7 +60,7 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 
 	@Override
 	@RequiredDispatchThread
-	protected RunContentDescriptor doExecute(@NotNull final RunProfileState state, @NotNull final ExecutionEnvironment env) throws ExecutionException
+	protected RunContentDescriptor doExecute(@Nonnull final RunProfileState state, @Nonnull final ExecutionEnvironment env) throws ExecutionException
 	{
 		FileDocumentManager.getInstance().saveAllDocuments();
 		try
@@ -72,9 +73,9 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 
 			final XDebugSession debugSession = XDebuggerManager.getInstance(env.getProject()).startSession(env, new XDebugProcessStarter()
 			{
-				@NotNull
+				@Nonnull
 				@Override
-				public XDebugProcess start(@NotNull final XDebugSession session) throws ExecutionException
+				public XDebugProcess start(@Nonnull final XDebugSession session) throws ExecutionException
 				{
 					nodeJSRunState.addProcessListener(new ProcessAdapter()
 					{
@@ -121,7 +122,7 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 	}
 
 	@Override
-	public boolean canRun(@NotNull String s, @NotNull RunProfile runProfile)
+	public boolean canRun(@Nonnull String s, @Nonnull RunProfile runProfile)
 	{
 		return s.equals(DefaultDebugExecutor.EXECUTOR_ID) && runProfile instanceof NodeJSConfigurationBase;
 	}

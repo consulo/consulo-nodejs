@@ -16,8 +16,8 @@
 
 package consulo.nodejs.lang;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.lang.javascript.JavaScriptFileType;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeRegistry;
@@ -33,7 +33,7 @@ public class NodeJSFileTypeDetector implements FileTypeRegistry.FileTypeDetector
 {
 	@Nullable
 	@Override
-	public FileType detect(@NotNull VirtualFile file, @NotNull ByteSequence byteSequence, @Nullable CharSequence charSequence)
+	public FileType detect(@Nonnull VirtualFile file, @Nonnull ByteSequence byteSequence, @Nullable CharSequence charSequence)
 	{
 		if(FileUtil.isHashBangLine(charSequence, "/usr/bin/env node"))
 		{

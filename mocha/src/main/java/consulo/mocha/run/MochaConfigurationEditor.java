@@ -18,7 +18,7 @@ package consulo.mocha.run;
 
 import javax.swing.JComponent;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
@@ -52,7 +52,7 @@ public class MochaConfigurationEditor extends SettingsEditor<MochaConfiguration>
 		myConfigurationPanel.applyTo(mochaConfiguration);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	protected JComponent createEditor()
 	{

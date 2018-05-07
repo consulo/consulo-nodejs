@@ -16,10 +16,10 @@
 
 package consulo.mocha.module.extension;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.module.extension.MutableModuleExtension;
 import consulo.roots.ModuleRootLayer;
@@ -30,7 +30,7 @@ import consulo.roots.ModuleRootLayer;
  */
 public class MochaMutableModuleExtension extends MochaModuleExtension implements MutableModuleExtension<MochaModuleExtension>
 {
-	public MochaMutableModuleExtension(@NotNull String id, @NotNull ModuleRootLayer moduleRootLayer)
+	public MochaMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer moduleRootLayer)
 	{
 		super(id, moduleRootLayer);
 	}
@@ -38,7 +38,7 @@ public class MochaMutableModuleExtension extends MochaModuleExtension implements
 	@RequiredDispatchThread
 	@Nullable
 	@Override
-	public JComponent createConfigurablePanel(@NotNull Runnable updateOnCheck)
+	public JComponent createConfigurablePanel(@Nonnull Runnable updateOnCheck)
 	{
 		return null;
 	}
@@ -50,7 +50,7 @@ public class MochaMutableModuleExtension extends MochaModuleExtension implements
 	}
 
 	@Override
-	public boolean isModified(@NotNull MochaModuleExtension originalExtension)
+	public boolean isModified(@Nonnull MochaModuleExtension originalExtension)
 	{
 		return myIsEnabled != originalExtension.isEnabled();
 	}

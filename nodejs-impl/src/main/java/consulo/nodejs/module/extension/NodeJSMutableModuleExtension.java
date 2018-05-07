@@ -18,8 +18,8 @@ package consulo.nodejs.module.extension;
 
 import javax.swing.JComponent;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.openapi.projectRoots.Sdk;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.javascript.module.extension.JavaScriptMutableModuleExtension;
@@ -33,12 +33,12 @@ import consulo.roots.ModuleRootLayer;
  */
 public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implements JavaScriptMutableModuleExtension<NodeJSModuleExtension>
 {
-	public NodeJSMutableModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
+	public NodeJSMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer rootModel)
 	{
 		super(id, rootModel);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public MutableModuleInheritableNamedPointer<Sdk> getInheritableSdk()
 	{
@@ -60,13 +60,13 @@ public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implemen
 	}
 
 	@Override
-	public boolean isModified(@NotNull NodeJSModuleExtension nodeJSModuleExtension)
+	public boolean isModified(@Nonnull NodeJSModuleExtension nodeJSModuleExtension)
 	{
 		return isModifiedImpl(nodeJSModuleExtension) || myLanguageVersion != nodeJSModuleExtension.getLanguageVersion();
 	}
 
 	@Override
-	public void setLanguageVersion(@NotNull LanguageVersion languageVersion)
+	public void setLanguageVersion(@Nonnull LanguageVersion languageVersion)
 	{
 		myLanguageVersion = languageVersion;
 	}

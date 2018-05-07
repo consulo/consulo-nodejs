@@ -22,10 +22,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessOutput;
@@ -51,22 +51,22 @@ import consulo.roots.types.SourcesOrderRootType;
  */
 public class NodeJSBundleType extends SdkType
 {
-	@NotNull
+	@Nonnull
 	public static NodeJSBundleType getInstance()
 	{
 		return EP_NAME.findExtension(NodeJSBundleType.class);
 	}
 
-	@NotNull
-	public static File getExePath(@NotNull Sdk sdk)
+	@Nonnull
+	public static File getExePath(@Nonnull Sdk sdk)
 	{
 		String homePath = sdk.getHomePath();
 		assert homePath != null;
 		return getExePath(homePath);
 	}
 
-	@NotNull
-	public static File getExePath(@NotNull String home)
+	@Nonnull
+	public static File getExePath(@Nonnull String home)
 	{
 		String executable = SystemInfo.isWindows ? "node.exe" : "node";
 
@@ -83,7 +83,7 @@ public class NodeJSBundleType extends SdkType
 		super("NODEJS");
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Collection<String> suggestHomePaths()
 	{
@@ -181,7 +181,7 @@ public class NodeJSBundleType extends SdkType
 		return "nodejs " + getVersionString(sdkHome);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public String getPresentableName()
 	{

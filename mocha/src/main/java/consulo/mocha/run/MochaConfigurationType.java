@@ -16,7 +16,8 @@
 
 package consulo.mocha.run;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -32,7 +33,7 @@ import consulo.module.extension.ModuleExtensionHelper;
  */
 public class MochaConfigurationType extends ConfigurationTypeBase
 {
-	@NotNull
+	@Nonnull
 	public static MochaConfigurationType getInstance()
 	{
 		return CONFIGURATION_TYPE_EP.findExtension(MochaConfigurationType.class);
@@ -51,7 +52,7 @@ public class MochaConfigurationType extends ConfigurationTypeBase
 			}
 
 			@Override
-			public boolean isApplicable(@NotNull Project project)
+			public boolean isApplicable(@Nonnull Project project)
 			{
 				return ModuleExtensionHelper.getInstance(project).hasModuleExtension(MochaModuleExtension.class);
 			}

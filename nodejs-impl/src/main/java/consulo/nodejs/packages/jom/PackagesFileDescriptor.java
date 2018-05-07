@@ -16,9 +16,9 @@
 
 package consulo.nodejs.packages.jom;
 
+import javax.annotation.Nonnull;
 import javax.swing.Icon;
 
-import org.jetbrains.annotations.NotNull;
 import consulo.nodejs.NodeJSIcons;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -41,7 +41,7 @@ public class PackagesFileDescriptor extends JomFileDescriptor<PackagesRootElemen
 		super(PackagesRootElement.class);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Icon getIcon()
 	{
@@ -50,7 +50,7 @@ public class PackagesFileDescriptor extends JomFileDescriptor<PackagesRootElemen
 
 	@Override
 	@RequiredReadAction
-	public boolean isMyFile(@NotNull PsiFile psiFile)
+	public boolean isMyFile(@Nonnull PsiFile psiFile)
 	{
 		if(!Comparing.equal(PACKAGES_JSON, psiFile.getName()))
 		{

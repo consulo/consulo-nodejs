@@ -19,8 +19,9 @@ package consulo.nodejs.run;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -66,16 +67,16 @@ public class NodeJSConfiguration extends NodeJSConfigurationBase
 		return list;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
 	{
 		return new NodeJSConfigurationEditor(getProject());
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	protected NodeJSRunState createRunState(@NotNull Module module, @NotNull Sdk targetSdk, @NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment) throws ExecutionException
+	protected NodeJSRunState createRunState(@Nonnull Module module, @Nonnull Sdk targetSdk, @Nonnull Executor executor, @Nonnull ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		if(getScriptFile() == null)
 		{

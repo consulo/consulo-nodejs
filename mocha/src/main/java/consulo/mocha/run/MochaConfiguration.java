@@ -20,8 +20,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.mocha.psi.MochaPsiElementUtil;
 import consulo.nodejs.packages.call.NpmRunUtil;
@@ -85,19 +85,19 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 		return list;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
 	{
 		return new MochaConfigurationEditor(getProject());
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	protected NodeJSRunState createRunState(@NotNull Module module,
-			@NotNull Sdk targetSdk,
-			@NotNull final Executor executor,
-			@NotNull final ExecutionEnvironment executionEnvironment) throws ExecutionException
+	protected NodeJSRunState createRunState(@Nonnull Module module,
+			@Nonnull Sdk targetSdk,
+			@Nonnull final Executor executor,
+			@Nonnull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		VirtualFile mocha = NpmRunUtil.findNpmModule(module, MochaPsiElementUtil.MOCHA);
 		if(mocha == null)
@@ -113,7 +113,7 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 
 		NodeJSRunState state = new NodeJSRunState(module, targetSdk, this)
 		{
-			@NotNull
+			@Nonnull
 			@Override
 			public ConsoleView createConsole(OSProcessHandler processHandler)
 			{
@@ -185,7 +185,7 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 		return LocalFileSystem.getInstance().findFileByPath(moduleDirPath + "/" + path);
 	}
 
-	@NotNull
+	@Nonnull
 	public TargetType getTargetType()
 	{
 		return myTargetType;

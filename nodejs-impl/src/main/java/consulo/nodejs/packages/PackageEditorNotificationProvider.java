@@ -16,8 +16,8 @@
 
 package consulo.nodejs.packages;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import consulo.nodejs.packages.call.NpmRunUtil;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
@@ -49,7 +49,7 @@ public class PackageEditorNotificationProvider implements EditorNotificationProv
 		myProject = project;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Key<EditorNotificationPanel> getKey()
 	{
@@ -59,7 +59,7 @@ public class PackageEditorNotificationProvider implements EditorNotificationProv
 	@RequiredReadAction
 	@Nullable
 	@Override
-	public EditorNotificationPanel createNotificationPanel(@NotNull final VirtualFile file, @NotNull FileEditor fileEditor)
+	public EditorNotificationPanel createNotificationPanel(@Nonnull final VirtualFile file, @Nonnull FileEditor fileEditor)
 	{
 		if(file.getFileType() != JsonFileType.INSTANCE)
 		{
