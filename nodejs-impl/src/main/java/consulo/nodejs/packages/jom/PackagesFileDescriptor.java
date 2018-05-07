@@ -19,6 +19,7 @@ package consulo.nodejs.packages.jom;
 import javax.annotation.Nonnull;
 import javax.swing.Icon;
 
+import consulo.awt.TargetAWT;
 import consulo.nodejs.NodeJSIcons;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -45,7 +46,7 @@ public class PackagesFileDescriptor extends JomFileDescriptor<PackagesRootElemen
 	@Override
 	public Icon getIcon()
 	{
-		return NodeJSIcons.Npm;
+		return TargetAWT.to(NodeJSIcons.Npm);
 	}
 
 	@Override

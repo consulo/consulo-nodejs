@@ -16,12 +16,11 @@
 
 package consulo.mocha;
 
-import javax.swing.Icon;
-
 import com.intellij.openapi.util.IconLoader;
+import consulo.ui.image.Image;
 
 // Generated Consulo DevKit plugin 
 public interface MochaIcons
 {
-	Icon Mocha = IconLoader.getIcon("/icons/mocha.png");  // 16x16
+	Image Mocha = IconLoader.getIcon("/icons/mocha.png");  // 16x16
 }

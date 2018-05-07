@@ -112,7 +112,6 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 	public void writeExternal(Element element) throws WriteExternalException
 	{
 		super.writeExternal(element);
-		writeModule(element);
 		XmlSerializer.serializeInto(this, element, new SkipEmptySerializationFilter());
 	}
 
@@ -120,7 +119,6 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 	public void readExternal(Element element) throws InvalidDataException
 	{
 		super.readExternal(element);
-		readModule(element);
 		XmlSerializer.deserializeInto(this, element);
 	}
 

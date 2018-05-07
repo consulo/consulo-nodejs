@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.Icon;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
@@ -44,6 +43,7 @@ import com.intellij.util.SystemProperties;
 import consulo.nodejs.NodeJSIcons;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.roots.types.SourcesOrderRootType;
+import consulo.ui.image.Image;
 
 /**
  * @author VISTALL
@@ -190,7 +190,7 @@ public class NodeJSBundleType extends SdkType
 
 	@Nullable
 	@Override
-	public Icon getIcon()
+	public Image getIcon()
 	{
 		return NodeJSIcons.NodeJS;
 	}

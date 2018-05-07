@@ -16,9 +16,8 @@
 
 package consulo.nodejs;
 
-import javax.swing.Icon;
-
 import com.intellij.openapi.util.IconLoader;
+import consulo.ui.image.Image;
 
 /**
  * @author VISTALL
@@ -26,6 +25,7 @@ import com.intellij.openapi.util.IconLoader;
  */
 public interface NodeJSIcons
 {
-	Icon NodeJS = IconLoader.findIcon("/icons/nodejs.png");
-	Icon Npm = IconLoader.findIcon("/icons/npm.png");
+	Image NodeJS = IconLoader.findIcon("/icons/nodejs.png");
+
+	Image Npm = IconLoader.findIcon("/icons/npm.png");
 }
