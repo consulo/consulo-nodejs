@@ -26,8 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import org.jdesktop.swingx.HorizontalLayout;
-import consulo.nodejs.run.NodeJSConfigurationPanelBase;
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
@@ -40,6 +38,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.JBUI;
 import consulo.annotations.RequiredDispatchThread;
+import consulo.nodejs.run.NodeJSConfigurationPanelBase;
 
 /**
  * @author VISTALL
@@ -92,7 +91,7 @@ public class MochaConfigurationPanel extends NodeJSConfigurationPanelBase
 		targetGroup.add(myDirectoryButton);
 		targetGroup.add(myFileButton);
 
-		JPanel panel = new JPanel(new HorizontalLayout());
+		JPanel panel = new JPanel();
 		panel.add(new JBLabel("Test in:"));
 		panel.add(myDirectoryButton);
 		panel.add(myFileButton);
