@@ -16,16 +16,19 @@
 
 package consulo.nodejs.newProjectOrModule;
 
-import javax.annotation.Nonnull;
-
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import consulo.annotations.RequiredReadAction;
 import consulo.ide.impl.UnzipNewModuleBuilderProcessor;
 import consulo.ide.newProject.NewModuleBuilder;
 import consulo.ide.newProject.NewModuleContext;
 import consulo.nodejs.module.extension.NodeJSMutableModuleExtension;
+import consulo.ui.wizard.WizardStep;
+
+import javax.annotation.Nonnull;
+import java.util.function.Consumer;
 
 /**
  * @author VISTALL
@@ -38,17 +41,24 @@ public class NodeJSNewModuleBuilder implements NewModuleBuilder
 	{
 		NewModuleContext.Group group = context.createGroup("nodejs", "Node.js");
 
-		group.add("Console Application", AllIcons.RunConfigurations.Application, new UnzipNewModuleBuilderProcessor<NodeJSNewModuleBuilderPanel>("/moduleTemplates/#NodeJSHelloWorld.zip")
+		group.add("Console Application", AllIcons.RunConfigurations.Application, new UnzipNewModuleBuilderProcessor<NodeJSNewModuleContext>("/moduleTemplates/#NodeJSHelloWorld.zip")
 		{
 			@Nonnull
 			@Override
-			public NodeJSNewModuleBuilderPanel createConfigurationPanel()
+			public NodeJSNewModuleContext createContext(boolean isNewProject)
 			{
-				return new NodeJSNewModuleBuilderPanel();
+				return new NodeJSNewModuleContext(isNewProject);
 			}
 
 			@Override
-			public void setupModule(@Nonnull NodeJSNewModuleBuilderPanel panel, @Nonnull ContentEntry contentEntry, @Nonnull ModifiableRootModel modifiableRootModel)
+			public void buildSteps(@Nonnull Consumer<WizardStep<NodeJSNewModuleContext>> consumer, @Nonnull NodeJSNewModuleContext context)
+			{
+				consumer.accept(new NodeJSNewModuleSetupStep(context));
+			}
+
+			@RequiredReadAction
+			@Override
+			public void process(@Nonnull NodeJSNewModuleContext context, @Nonnull ContentEntry contentEntry, @Nonnull ModifiableRootModel modifiableRootModel)
 			{
 				unzip(modifiableRootModel);
 
@@ -57,7 +67,7 @@ public class NodeJSNewModuleBuilder implements NewModuleBuilder
 
 				nodeJSModuleExtension.setEnabled(true);
 
-				Sdk sdk = panel.getSdk();
+				Sdk sdk = context.getSdk();
 				if(sdk != null)
 				{
 					nodeJSModuleExtension.getInheritableSdk().set(null, sdk);

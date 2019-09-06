@@ -16,42 +16,38 @@
 
 package consulo.nodejs.newProjectOrModule;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JPanel;
-
-import javax.annotation.Nullable;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
+import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.Conditions;
+import consulo.ide.newProject.ui.ProjectOrModuleNameStep;
 import consulo.nodejs.bundle.NodeJSBundleType;
 import consulo.roots.ui.configuration.SdkComboBox;
+
+import javax.annotation.Nonnull;
+import java.awt.*;
 
 /**
  * @author VISTALL
  * @since 17.12.2015
  */
-public class NodeJSNewModuleBuilderPanel extends JPanel
+public class NodeJSNewModuleSetupStep extends ProjectOrModuleNameStep<NodeJSNewModuleContext>
 {
 	private SdkComboBox myComboBox;
 
-	public NodeJSNewModuleBuilderPanel()
+	public NodeJSNewModuleSetupStep(@Nonnull NodeJSNewModuleContext context)
 	{
-		super(new VerticalFlowLayout());
+		super(context);
 
-		ProjectSdksModel model = new ProjectSdksModel();
-		model.reset();
+		myComboBox = new SdkComboBox(SdkTable.getInstance(), Conditions.equalTo(NodeJSBundleType.getInstance()), false);
 
-		myComboBox = new SdkComboBox(model, Conditions.equalTo(NodeJSBundleType.getInstance()), false);
-
-		add(LabeledComponent.create(myComboBox, "Bundle").setLabelLocation(BorderLayout.WEST));
+		myAdditionalContentPanel.add(LabeledComponent.create(myComboBox, "Bundle"), BorderLayout.NORTH);
 	}
 
-	@Nullable
-	public Sdk getSdk()
+	@Override
+	public void onStepLeave(@Nonnull NodeJSNewModuleContext context)
 	{
-		return (Sdk) myComboBox.getSelectedSdk();
+		super.onStepLeave(context);
+
+		context.setSdk(myComboBox.getSelectedSdk());
 	}
 }
