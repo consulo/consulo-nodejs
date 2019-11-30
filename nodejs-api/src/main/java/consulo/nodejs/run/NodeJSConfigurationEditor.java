@@ -16,13 +16,13 @@
 
 package consulo.nodejs.run;
 
-import javax.annotation.Nonnull;
-import javax.swing.JComponent;
-
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
+import javax.swing.*;
 
 /**
  * @author VISTALL
@@ -39,14 +39,14 @@ public class NodeJSConfigurationEditor extends SettingsEditor<NodeJSConfiguratio
 	}
 
 	@Override
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	protected void resetEditorFrom(NodeJSConfiguration nodeJSConfiguration)
 	{
 		myConfigurationPanel.reset(nodeJSConfiguration);
 	}
 
 	@Override
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	protected void applyEditorTo(NodeJSConfiguration nodeJSConfiguration) throws ConfigurationException
 	{
 		myConfigurationPanel.applyTo(nodeJSConfiguration);

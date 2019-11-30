@@ -16,8 +16,6 @@
 
 package consulo.nodejs.run;
 
-import javax.swing.JTextField;
-
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
@@ -28,7 +26,9 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ui.JBUI;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.annotation.access.RequiredReadAction;
+
+import javax.swing.*;
 
 /**
  * @author VISTALL
@@ -91,7 +91,7 @@ public class NodeJSConfigurationPanel extends NodeJSConfigurationPanelBase
 	}
 
 	@Override
-	@RequiredDispatchThread
+	@RequiredReadAction
 	public void applyTo(CommonProgramRunConfigurationParameters configuration)
 	{
 		super.applyTo(configuration);
@@ -101,7 +101,7 @@ public class NodeJSConfigurationPanel extends NodeJSConfigurationPanelBase
 	}
 
 	@Override
-	@RequiredDispatchThread
+	@RequiredReadAction
 	public void reset(CommonProgramRunConfigurationParameters configuration)
 	{
 		super.reset(configuration);

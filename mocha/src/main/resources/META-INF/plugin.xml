@@ -14,7 +14,7 @@
   - limitations under the License.
   -->
 
-<idea-plugin>
+<consulo-plugin>
 	<id>consulo.mocha</id>
 	<name>Mocha</name>
 	<version>SNAPSHOT</version>
@@ -35,4 +35,4 @@
 
 		<runConfigurationProducer implementation="consulo.mocha.run.MochaConfigurationProducer" />
 	</extensions>
-</idea-plugin>
+</consulo-plugin>

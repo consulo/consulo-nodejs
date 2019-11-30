@@ -16,17 +16,6 @@
 
 package consulo.mocha.run;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import consulo.mocha.module.extension.MochaModuleExtension;
-import consulo.mocha.psi.MochaPsiElementUtil;
-import consulo.nodejs.packages.call.NpmRunUtil;
-import consulo.nodejs.run.NodeJSConfigurationBase;
-import consulo.nodejs.run.NodeJSRunState;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -47,7 +36,18 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.mocha.module.extension.MochaModuleExtension;
+import consulo.mocha.psi.MochaPsiElementUtil;
+import consulo.nodejs.packages.call.NpmRunUtil;
+import consulo.nodejs.run.NodeJSConfigurationBase;
+import consulo.nodejs.run.NodeJSRunState;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author VISTALL

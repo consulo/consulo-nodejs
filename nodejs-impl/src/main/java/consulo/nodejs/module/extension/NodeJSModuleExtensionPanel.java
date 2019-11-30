@@ -16,24 +16,22 @@
 
 package consulo.nodejs.module.extension;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.List;
-
-import javax.swing.JList;
-import javax.swing.JPanel;
-
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.ColoredListCellRenderer;
-import consulo.annotations.RequiredDispatchThread;
 import consulo.extension.ui.ModuleExtensionSdkBoxBuilder;
 import consulo.javascript.lang.BaseJavaScriptLanguageVersion;
 import consulo.javascript.lang.JavaScriptLanguageVersion;
 import consulo.javascript.lang.StandardJavaScriptVersions;
 import consulo.lang.LanguageVersion;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.swing.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.List;
 
 /**
  * @author VISTALL
@@ -41,7 +39,7 @@ import consulo.lang.LanguageVersion;
  */
 public class NodeJSModuleExtensionPanel extends JPanel
 {
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	public NodeJSModuleExtensionPanel(final NodeJSMutableModuleExtension extension, Runnable runnable)
 	{
 		super(new VerticalFlowLayout(true, false));

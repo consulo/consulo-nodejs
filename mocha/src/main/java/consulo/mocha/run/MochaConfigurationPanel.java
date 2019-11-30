@@ -16,16 +16,6 @@
 
 package consulo.mocha.run;
 
-import java.awt.CardLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
@@ -37,8 +27,13 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.JBUI;
-import consulo.annotations.RequiredDispatchThread;
 import consulo.nodejs.run.NodeJSConfigurationPanelBase;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * @author VISTALL
@@ -146,7 +141,7 @@ public class MochaConfigurationPanel extends NodeJSConfigurationPanelBase
 		return LabeledComponent.create(textField, label);
 	}
 
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	@Override
 	public void reset(CommonProgramRunConfigurationParameters configuration)
 	{
@@ -168,7 +163,7 @@ public class MochaConfigurationPanel extends NodeJSConfigurationPanelBase
 		myFileField.setText(mochaConfiguration.getFilePath());
 	}
 
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	@Override
 	public void applyTo(CommonProgramRunConfigurationParameters configuration)
 	{

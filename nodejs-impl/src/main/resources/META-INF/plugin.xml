@@ -14,7 +14,7 @@
   - limitations under the License.
   -->
 
-<idea-plugin>
+<consulo-plugin>
 	<id>consulo.nodejs</id>
 	<name>Node.js</name>
 	<version>SNAPSHOT</version>
@@ -43,4 +43,4 @@
 	<extensions defaultExtensionNs="consulo.javascript">
 		<jomFileDescriptor implementation="consulo.nodejs.packages.jom.PackagesFileDescriptor"/>
 	</extensions>
-</idea-plugin>
+</consulo-plugin>

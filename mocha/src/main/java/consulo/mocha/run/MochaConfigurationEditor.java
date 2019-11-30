@@ -16,13 +16,13 @@
 
 package consulo.mocha.run;
 
-import javax.swing.JComponent;
-
-import javax.annotation.Nonnull;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
+import javax.swing.*;
 
 /**
  * @author VISTALL
@@ -39,14 +39,14 @@ public class MochaConfigurationEditor extends SettingsEditor<MochaConfiguration>
 	}
 
 	@Override
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	protected void resetEditorFrom(MochaConfiguration mochaConfiguration)
 	{
 		myConfigurationPanel.reset(mochaConfiguration);
 	}
 
 	@Override
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	protected void applyEditorTo(MochaConfiguration mochaConfiguration) throws ConfigurationException
 	{
 		myConfigurationPanel.applyTo(mochaConfiguration);

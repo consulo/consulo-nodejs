@@ -16,13 +16,6 @@
 
 package consulo.nodejs.packages.call;
 
-import java.io.File;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import consulo.nodejs.NodeJSConstants;
-import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunContentExecutor;
 import com.intellij.execution.configurations.GeneralCommandLine;
@@ -35,7 +28,13 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.nodejs.NodeJSConstants;
+import consulo.nodejs.module.extension.NodeJSModuleExtension;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
 
 /**
  * @author VISTALL
@@ -90,7 +89,7 @@ public class NpmRunUtil
 		return new File(home, executable);
 	}
 
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	public static void run(@Nonnull Project project, VirtualFile packageFile, @Nonnull String action)
 	{
 		NodeJSModuleExtension extension = ModuleUtilCore.getExtension(project, packageFile, NodeJSModuleExtension.class);

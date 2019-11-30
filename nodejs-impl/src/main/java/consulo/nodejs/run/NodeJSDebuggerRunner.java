@@ -16,10 +16,6 @@
 
 package consulo.nodejs.run;
 
-import java.io.IOException;
-
-import javax.annotation.Nonnull;
-
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.configurations.RunProfile;
@@ -42,8 +38,11 @@ import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugProcessStarter;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerManager;
-import consulo.annotations.RequiredDispatchThread;
 import consulo.javascript.run.debug.V8DebugProcess;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
 
 /**
  * @author VISTALL
@@ -59,7 +58,7 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 	}
 
 	@Override
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	protected RunContentDescriptor doExecute(@Nonnull final RunProfileState state, @Nonnull final ExecutionEnvironment env) throws ExecutionException
 	{
 		FileDocumentManager.getInstance().saveAllDocuments();

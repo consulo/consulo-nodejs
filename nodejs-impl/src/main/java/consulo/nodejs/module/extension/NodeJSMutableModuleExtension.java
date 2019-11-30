@@ -16,16 +16,16 @@
 
 package consulo.nodejs.module.extension;
 
-import javax.swing.JComponent;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.intellij.openapi.projectRoots.Sdk;
-import consulo.annotations.RequiredDispatchThread;
 import consulo.javascript.module.extension.JavaScriptMutableModuleExtension;
 import consulo.lang.LanguageVersion;
 import consulo.module.extension.MutableModuleInheritableNamedPointer;
 import consulo.roots.ModuleRootLayer;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
 
 /**
  * @author VISTALL
@@ -47,7 +47,7 @@ public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implemen
 
 	@Nullable
 	@Override
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	public JComponent createConfigurablePanel(@Nullable Runnable runnable)
 	{
 		return new NodeJSModuleExtensionPanel(this, runnable);

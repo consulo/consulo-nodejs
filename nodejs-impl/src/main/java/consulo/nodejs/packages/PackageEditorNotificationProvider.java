@@ -16,9 +16,6 @@
 
 package consulo.nodejs.packages;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import consulo.nodejs.packages.call.NpmRunUtil;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -26,13 +23,17 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.EditorNotificationPanel;
-import consulo.annotations.RequiredDispatchThread;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.editor.notifications.EditorNotificationProvider;
 import consulo.json.JsonFileType;
 import consulo.json.jom.JomElement;
 import consulo.json.jom.JomFileElement;
 import consulo.json.jom.JomManager;
+import consulo.nodejs.packages.call.NpmRunUtil;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
@@ -82,7 +83,7 @@ public class PackageEditorNotificationProvider implements EditorNotificationProv
 		panel.createActionLabel("'update'", new Runnable()
 		{
 			@Override
-			@RequiredDispatchThread
+			@RequiredUIAccess
 			public void run()
 			{
 				NpmRunUtil.run(myProject, file, NpmRunUtil.UPDATE);

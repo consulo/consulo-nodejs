@@ -16,13 +16,13 @@
 
 package consulo.mocha.module.extension;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.JComponent;
-
-import consulo.annotations.RequiredDispatchThread;
 import consulo.module.extension.MutableModuleExtension;
 import consulo.roots.ModuleRootLayer;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
 
 /**
  * @author VISTALL
@@ -35,7 +35,7 @@ public class MochaMutableModuleExtension extends MochaModuleExtension implements
 		super(id, moduleRootLayer);
 	}
 
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	@Nullable
 	@Override
 	public JComponent createConfigurablePanel(@Nonnull Runnable updateOnCheck)

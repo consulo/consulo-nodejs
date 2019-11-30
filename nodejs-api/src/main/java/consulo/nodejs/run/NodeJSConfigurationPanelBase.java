@@ -16,13 +16,6 @@
 
 package consulo.nodejs.run;
 
-import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.JCheckBox;
-
-import consulo.nodejs.bundle.NodeJSBundleType;
 import com.intellij.application.options.ModuleListCellRenderer;
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
 import com.intellij.execution.ui.CommonProgramParametersPanel;
@@ -36,8 +29,14 @@ import com.intellij.openapi.util.Conditions;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.RawCommandLineEditor;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.nodejs.bundle.NodeJSBundleType;
 import consulo.roots.ui.configuration.SdkComboBox;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * @author VISTALL
@@ -93,7 +92,7 @@ public abstract class NodeJSConfigurationPanelBase extends CommonProgramParamete
 	protected abstract void addComponents();
 
 	@Override
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	public void applyTo(CommonProgramRunConfigurationParameters configuration)
 	{
 		super.applyTo(configuration);
@@ -106,7 +105,7 @@ public abstract class NodeJSConfigurationPanelBase extends CommonProgramParamete
 	}
 
 	@Override
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	public void reset(CommonProgramRunConfigurationParameters configuration)
 	{
 		super.reset(configuration);

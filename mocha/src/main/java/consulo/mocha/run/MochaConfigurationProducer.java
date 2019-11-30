@@ -31,7 +31,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ObjectUtil;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.mocha.psi.MochaPsiElementUtil;
 import consulo.nodejs.packages.call.NpmRunUtil;
