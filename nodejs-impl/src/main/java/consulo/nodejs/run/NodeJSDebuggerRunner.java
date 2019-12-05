@@ -29,7 +29,6 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ExceptionUtil;
@@ -40,6 +39,7 @@ import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerManager;
 import consulo.javascript.run.debug.V8DebugProcess;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.util.dataholder.Key;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

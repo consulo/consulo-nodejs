@@ -18,7 +18,6 @@ package consulo.nodejs.packages;
 
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -41,20 +40,11 @@ import javax.annotation.Nullable;
  */
 public class PackageEditorNotificationProvider implements EditorNotificationProvider<EditorNotificationPanel>
 {
-	private static final Key<EditorNotificationPanel> ourKey = Key.create("PackageEditorNotificationProvider");
-
-	private Project myProject;
+	private final Project myProject;
 
 	public PackageEditorNotificationProvider(Project project)
 	{
 		myProject = project;
-	}
-
-	@Nonnull
-	@Override
-	public Key<EditorNotificationPanel> getKey()
-	{
-		return ourKey;
 	}
 
 	@RequiredReadAction
