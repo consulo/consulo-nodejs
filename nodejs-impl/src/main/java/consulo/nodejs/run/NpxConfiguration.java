@@ -14,6 +14,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class NpxConfiguration extends NodeJSConfigurationBase
 
 	@Nonnull
 	@Override
-	protected NodeJSRunState createRunState(@Nonnull Module module, @Nonnull Sdk targetSdk, @Nonnull Executor executor, @Nonnull ExecutionEnvironment executionEnvironment) throws ExecutionException
+	protected NodeJSRunState createRunState(@Nullable Module module, @Nonnull Sdk targetSdk, @Nonnull Executor executor, @Nonnull ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		NpxRunState npxRunState = new NpxRunState(module, targetSdk, this);
 		npxRunState.addVmArgument(myNpxCommand);

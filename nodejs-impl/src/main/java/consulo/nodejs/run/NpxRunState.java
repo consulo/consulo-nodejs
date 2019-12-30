@@ -6,6 +6,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import consulo.nodejs.bundle.NodeJSBundleType;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
@@ -13,7 +14,7 @@ import javax.annotation.Nonnull;
  */
 public class NpxRunState extends NodeJSRunState
 {
-	public NpxRunState(@Nonnull Module module, @Nonnull Sdk sdk, NodeJSConfigurationBase configuration)
+	public NpxRunState(@Nullable Module module, @Nonnull Sdk sdk, NodeJSConfigurationBase configuration)
 	{
 		super(module, sdk, configuration);
 	}

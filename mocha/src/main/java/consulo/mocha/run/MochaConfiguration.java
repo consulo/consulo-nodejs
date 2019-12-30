@@ -94,12 +94,12 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 
 	@Nonnull
 	@Override
-	protected NodeJSRunState createRunState(@Nonnull Module module,
+	protected NodeJSRunState createRunState(@Nullable Module module,
 			@Nonnull Sdk targetSdk,
 			@Nonnull final Executor executor,
 			@Nonnull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
-		VirtualFile mocha = NpmRunUtil.findNpmModule(module, MochaPsiElementUtil.MOCHA);
+		VirtualFile mocha = module == null ? null : NpmRunUtil.findNpmModule(module, MochaPsiElementUtil.MOCHA);
 		if(mocha == null)
 		{
 			throw new ExecutionException("'mocha' module is not installed");

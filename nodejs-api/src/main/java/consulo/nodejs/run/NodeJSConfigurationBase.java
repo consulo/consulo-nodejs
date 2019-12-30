@@ -16,16 +16,6 @@
 
 package consulo.nodejs.run;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-
-import org.jdom.Element;
-
-import javax.annotation.Nullable;
-import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -43,6 +33,14 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.xmlb.SkipEmptySerializationFilter;
 import com.intellij.util.xmlb.XmlSerializer;
+import consulo.nodejs.module.extension.NodeJSModuleExtension;
+import org.jdom.Element;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author VISTALL
@@ -72,7 +70,7 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 	public RunProfileState getState(@Nonnull Executor executor, @Nonnull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		Module module = getConfigurationModule().getModule();
-		if(module == null)
+		if(module == null && !myUseAlternativeBundle)
 		{
 			throw new ExecutionException("Module is not set for run configuration");
 		}
@@ -104,7 +102,7 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 	}
 
 	@Nonnull
-	protected abstract NodeJSRunState createRunState(@Nonnull Module module,
+	protected abstract NodeJSRunState createRunState(@Nullable Module module,
 			@Nonnull Sdk targetSdk,
 			@Nonnull Executor executor,
 			@Nonnull ExecutionEnvironment executionEnvironment) throws ExecutionException;

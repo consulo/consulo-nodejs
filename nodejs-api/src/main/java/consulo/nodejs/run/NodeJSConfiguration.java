@@ -75,7 +75,7 @@ public class NodeJSConfiguration extends NodeJSConfigurationBase
 
 	@Nonnull
 	@Override
-	protected NodeJSRunState createRunState(@Nonnull Module module, @Nonnull Sdk targetSdk, @Nonnull Executor executor, @Nonnull ExecutionEnvironment executionEnvironment) throws ExecutionException
+	protected NodeJSRunState createRunState(@Nullable Module module, @Nonnull Sdk targetSdk, @Nonnull Executor executor, @Nonnull ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		if(getScriptFile() == null)
 		{

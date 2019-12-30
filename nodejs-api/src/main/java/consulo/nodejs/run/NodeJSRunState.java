@@ -52,7 +52,7 @@ public class NodeJSRunState implements RunProfileState
 	private final List<String> myArguments = new SmartList<String>();
 	private final List<ProcessListener> myProcessListeners = new SmartList<ProcessListener>();
 
-	public NodeJSRunState(@Nonnull Module module, @Nonnull Sdk sdk, NodeJSConfigurationBase configuration)
+	public NodeJSRunState(@Nullable Module module, @Nonnull Sdk sdk, NodeJSConfigurationBase configuration)
 	{
 		myModule = module;
 		mySdk = sdk;
@@ -90,7 +90,7 @@ public class NodeJSRunState implements RunProfileState
 		{
 			generalCommandLine.withWorkDirectory(myConfiguration.getWorkingDirectory());
 		}
-		else
+		else if(myModule != null)
 		{
 			generalCommandLine.withWorkDirectory(myModule.getModuleDirPath());
 		}
