@@ -54,7 +54,7 @@ public class NodeJSBundleType extends SdkType
 	@Nonnull
 	public static NodeJSBundleType getInstance()
 	{
-		return EP_NAME.findExtension(NodeJSBundleType.class);
+		return EP_NAME.findExtensionOrFail(NodeJSBundleType.class);
 	}
 
 	@Nonnull
@@ -68,7 +68,13 @@ public class NodeJSBundleType extends SdkType
 	@Nonnull
 	public static File getExePath(@Nonnull String home)
 	{
-		String executable = SystemInfo.isWindows ? "node.exe" : "node";
+		return getExePath(home, "node.exe", "node");
+	}
+
+	@Nonnull
+	public static File getExePath(@Nonnull String home, @Nonnull String winName, String otherName)
+	{
+		String executable = SystemInfo.isWindows ? winName : otherName;
 
 		File firstTry = new File(home, "bin/" + executable);
 		if(firstTry.exists())

@@ -31,6 +31,7 @@
 								 mutableClass="consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
 		<programRunner implementation="consulo.nodejs.run.NodeJSDebuggerRunner"/>
 		<configurationType implementation="consulo.nodejs.run.NodeJSConfigurationType"/>
+		<configurationType implementation="consulo.nodejs.run.NpxConfigurationType"/>
 		<runConfigurationProducer implementation="consulo.nodejs.run.NodeJSConfigurationProducer"/>
 
 		<editorNotificationProvider implementation="consulo.nodejs.packages.PackageEditorNotificationProvider"/>

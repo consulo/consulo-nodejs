@@ -64,6 +64,7 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 	}
 
 	@Override
+	@Nonnull
 	public abstract List<Module> getValidModules();
 
 	@Nullable

@@ -16,12 +16,6 @@
 
 package consulo.nodejs.run;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import consulo.nodejs.bundle.NodeJSBundleType;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -30,6 +24,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
+import com.intellij.execution.process.KillableColoredProcessHandler;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.runners.ProgramRunner;
@@ -38,6 +33,11 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.SmartList;
+import consulo.nodejs.bundle.NodeJSBundleType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * @author VISTALL
@@ -74,6 +74,11 @@ public class NodeJSRunState implements RunProfileState
 		myVmArguments.add(argument);
 	}
 
+	protected void setupExePath(@Nonnull GeneralCommandLine commandLine, @Nonnull Sdk sdk)
+	{
+		commandLine.setExePath(NodeJSBundleType.getExePath(mySdk).getPath());
+	}
+
 	@Nullable
 	@Override
 	public ExecutionResult execute(Executor executor, @Nonnull ProgramRunner programRunner) throws ExecutionException
@@ -90,7 +95,7 @@ public class NodeJSRunState implements RunProfileState
 			generalCommandLine.withWorkDirectory(myModule.getModuleDirPath());
 		}
 
-		generalCommandLine.setExePath(NodeJSBundleType.getExePath(mySdk).getPath());
+		setupExePath(generalCommandLine, mySdk);
 
 		String vmParameters = myConfiguration.getVmParameters();
 		if(!StringUtil.isEmpty(vmParameters))
@@ -109,7 +114,7 @@ public class NodeJSRunState implements RunProfileState
 			generalCommandLine.addParameters(StringUtil.splitHonorQuotes(programParameters, ' '));
 		}
 
-		OSProcessHandler processHandler = new OSProcessHandler(generalCommandLine);
+		OSProcessHandler processHandler = new KillableColoredProcessHandler(generalCommandLine, true);
 		for(ProcessListener processListener : myProcessListeners)
 		{
 			processHandler.addProcessListener(processListener);
