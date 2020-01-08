@@ -24,7 +24,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.process.KillableColoredProcessHandler;
+import com.intellij.execution.process.ColoredProcessHandler;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.runners.ProgramRunner;
@@ -114,7 +114,7 @@ public class NodeJSRunState implements RunProfileState
 			generalCommandLine.addParameters(StringUtil.splitHonorQuotes(programParameters, ' '));
 		}
 
-		OSProcessHandler processHandler = new KillableColoredProcessHandler(generalCommandLine, true);
+		OSProcessHandler processHandler = new ColoredProcessHandler(generalCommandLine);
 		for(ProcessListener processListener : myProcessListeners)
 		{
 			processHandler.addProcessListener(processListener);
