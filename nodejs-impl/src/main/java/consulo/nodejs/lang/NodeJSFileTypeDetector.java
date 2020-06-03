@@ -18,6 +18,7 @@ package consulo.nodejs.lang;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import com.intellij.lang.javascript.JavaScriptFileType;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeRegistry;
