@@ -16,6 +16,9 @@
 
 package consulo.nodejs.module.extension;
 
+import javax.annotation.Nonnull;
+
+import org.jdom.Element;
 import com.intellij.openapi.projectRoots.SdkType;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.javascript.lang.StandardJavaScriptVersions;
@@ -24,9 +27,6 @@ import consulo.lang.LanguageVersion;
 import consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
 import consulo.nodejs.bundle.NodeJSBundleType;
 import consulo.roots.ModuleRootLayer;
-import org.jdom.Element;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
@@ -73,6 +73,7 @@ public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModu
 		return myLanguageVersion;
 	}
 
+	@RequiredReadAction
 	@Override
 	public void commit(@Nonnull NodeJSModuleExtension mutableModuleExtension)
 	{
