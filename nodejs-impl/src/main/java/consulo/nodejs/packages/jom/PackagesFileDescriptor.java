@@ -22,7 +22,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.json.jom.JomFileDescriptor;
-import consulo.nodejs.NodeJSIcons;
+import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.ui.image.Image;
 
@@ -45,7 +45,7 @@ public class PackagesFileDescriptor extends JomFileDescriptor<PackagesRootElemen
 	@Override
 	public Image getIcon()
 	{
-		return NodeJSIcons.Npm;
+		return NodeJSApiIconGroup.npm();
 	}
 
 	@Override

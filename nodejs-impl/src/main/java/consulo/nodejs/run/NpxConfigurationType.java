@@ -6,7 +6,7 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
 import com.intellij.openapi.project.Project;
 import consulo.module.extension.ModuleExtensionHelper;
-import consulo.nodejs.NodeJSIcons;
+import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 
 import javax.annotation.Nonnull;
@@ -19,7 +19,7 @@ public class NpxConfigurationType extends ConfigurationTypeBase
 {
 	public NpxConfigurationType()
 	{
-		super("NpxConfigurationType", "Npx", "", NodeJSIcons.Npm);
+		super("NpxConfigurationType", "Npx", "", NodeJSApiIconGroup.npm());
 
 		addFactory(new ConfigurationFactory(this)
 		{

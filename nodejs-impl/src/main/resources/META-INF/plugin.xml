@@ -26,7 +26,7 @@
 		<sdkType implementation="consulo.nodejs.bundle.NodeJSBundleType"/>
 		<moduleExtensionProvider name="NodeJS"
 								 key="nodejs"
-								 icon="/icons/nodejs.png"
+								 icon="consulo.nodejs.NodeJSApiIconGroup@nodejs"
 								 immutableClass="consulo.nodejs.module.extension.NodeJSModuleExtension"
 								 mutableClass="consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
 		<programRunner implementation="consulo.nodejs.run.NodeJSDebuggerRunner"/>

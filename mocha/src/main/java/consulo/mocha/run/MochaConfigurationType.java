@@ -23,7 +23,7 @@ import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationModule;
 import com.intellij.openapi.project.Project;
-import consulo.mocha.MochaIcons;
+import consulo.mocha.icon.MochaIconGroup;
 import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.module.extension.ModuleExtensionHelper;
 
@@ -41,7 +41,7 @@ public class MochaConfigurationType extends ConfigurationTypeBase
 
 	public MochaConfigurationType()
 	{
-		super("#MochaConfigurationType", "Mocha", "", MochaIcons.Mocha);
+		super("#MochaConfigurationType", "Mocha", "", MochaIconGroup.mocha());
 
 		addFactory(new ConfigurationFactory(this)
 		{
