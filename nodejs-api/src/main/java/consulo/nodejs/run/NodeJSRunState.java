@@ -130,4 +130,10 @@ public class NodeJSRunState implements RunProfileState
 		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myConfiguration.getProject());
 		return builder.getConsole();
 	}
+
+	@Nonnull
+	public Sdk getSdk()
+	{
+		return mySdk;
+	}
 }
