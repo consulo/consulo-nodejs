@@ -22,7 +22,7 @@ import com.intellij.execution.ui.CommonProgramParametersPanel;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.DefaultSdksModel;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.util.Conditions;
@@ -35,8 +35,6 @@ import consulo.ui.annotation.RequiredUIAccess;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * @author VISTALL
@@ -67,20 +65,15 @@ public abstract class NodeJSConfigurationPanelBase extends CommonProgramParamete
 		copyDialogCaption(myVmParametersComponent);
 
 		myUseAlternativeBundleCheckBox = new JCheckBox("Use alternative bundle: ");
-		ProjectSdksModel projectSdksModel = new ProjectSdksModel();
+		DefaultSdksModel projectSdksModel = new DefaultSdksModel();
 		projectSdksModel.reset();
 
 		myAlternativeBundleComboBox = new SdkComboBox(projectSdksModel, Conditions.<SdkTypeId>is(NodeJSBundleType.getInstance()), true);
 		myAlternativeBundleComboBox.setEnabled(false);
-		myUseAlternativeBundleCheckBox.addItemListener(new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(ItemEvent e)
-			{
-				myAlternativeBundleComboBox.setEnabled(myUseAlternativeBundleCheckBox.isSelected());
-			}
-		});
+		myUseAlternativeBundleCheckBox.addItemListener(e -> myAlternativeBundleComboBox.setEnabled(myUseAlternativeBundleCheckBox.isSelected()));
 		super.initComponents();
+
+		setPreferredSize(null);
 	}
 
 	protected void addComponentsInternal()
