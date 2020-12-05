@@ -19,7 +19,8 @@ package consulo.nodejs.packages.call;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunContentExecutor;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.OSProcessHandler;
+import com.intellij.execution.process.ProcessHandler;
+import com.intellij.execution.process.ProcessHandlerFactory;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -119,7 +120,7 @@ public class NpmRunUtil
 		final RunContentExecutor contentExecutor;
 		try
 		{
-			OSProcessHandler process = new OSProcessHandler(commandLine);
+			ProcessHandler process = ProcessHandlerFactory.getInstance().createProcessHandler(commandLine);
 			ProcessTerminatedListener.attach(process);
 			contentExecutor = new RunContentExecutor(project, process).withTitle("npm " + action).withActivateToolWindow(false);
 			contentExecutor.run();

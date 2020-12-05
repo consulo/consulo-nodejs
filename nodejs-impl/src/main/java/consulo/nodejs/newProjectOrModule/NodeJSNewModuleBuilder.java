@@ -25,6 +25,7 @@ import consulo.ide.impl.UnzipNewModuleBuilderProcessor;
 import consulo.ide.newProject.NewModuleBuilder;
 import consulo.ide.newProject.NewModuleContext;
 import consulo.nodejs.module.extension.NodeJSMutableModuleExtension;
+import consulo.nodejs.newProjectOrModule.ui.NodeJSNewModuleSetupStep;
 import consulo.ui.wizard.WizardStep;
 
 import javax.annotation.Nonnull;
@@ -53,7 +54,7 @@ public class NodeJSNewModuleBuilder implements NewModuleBuilder
 			@Override
 			public void buildSteps(@Nonnull Consumer<WizardStep<NodeJSNewModuleContext>> consumer, @Nonnull NodeJSNewModuleContext context)
 			{
-				consumer.accept(new NodeJSNewModuleSetupStep(context));
+				consumer.accept(new NodeJSNewModuleSetupStep<>(context));
 			}
 
 			@RequiredReadAction

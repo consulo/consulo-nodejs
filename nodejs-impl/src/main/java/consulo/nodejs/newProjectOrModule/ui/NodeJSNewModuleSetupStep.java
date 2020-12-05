@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package consulo.nodejs.newProjectOrModule;
+package consulo.nodejs.newProjectOrModule.ui;
 
 import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.util.Conditions;
 import consulo.ide.newProject.ui.ProjectOrModuleNameStep;
 import consulo.nodejs.bundle.NodeJSBundleType;
+import consulo.nodejs.newProjectOrModule.NodeJSNewModuleWizardContext;
 import consulo.roots.ui.configuration.SdkComboBox;
 
 import javax.annotation.Nonnull;
@@ -30,11 +31,11 @@ import java.awt.*;
  * @author VISTALL
  * @since 17.12.2015
  */
-public class NodeJSNewModuleSetupStep extends ProjectOrModuleNameStep<NodeJSNewModuleContext>
+public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> extends ProjectOrModuleNameStep<C>
 {
 	private SdkComboBox myComboBox;
 
-	public NodeJSNewModuleSetupStep(@Nonnull NodeJSNewModuleContext context)
+	public NodeJSNewModuleSetupStep(@Nonnull C context)
 	{
 		super(context);
 
@@ -44,7 +45,7 @@ public class NodeJSNewModuleSetupStep extends ProjectOrModuleNameStep<NodeJSNewM
 	}
 
 	@Override
-	public void onStepLeave(@Nonnull NodeJSNewModuleContext context)
+	public void onStepLeave(@Nonnull C context)
 	{
 		super.onStepLeave(context);
 

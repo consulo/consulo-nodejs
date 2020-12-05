@@ -36,9 +36,11 @@
 
 		<editorNotificationProvider implementation="consulo.nodejs.packages.PackageEditorNotificationProvider"/>
 
-		<fileTypeDetector implementation="consulo.nodejs.lang.NodeJSFileTypeDetector" />
+		<fileTypeDetector implementation="consulo.nodejs.lang.NodeJSFileTypeDetector"/>
 
-		<newModuleBuilder implementation="consulo.nodejs.newProjectOrModule.NodeJSNewModuleBuilder" />
+		<newModuleBuilder implementation="consulo.nodejs.newProjectOrModule.NodeJSNewModuleBuilder"/>
+
+		<moduleImportProvider implementation="consulo.nodejs.moduleImport.NodeJSModuleImportProvider"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="consulo.javascript">
