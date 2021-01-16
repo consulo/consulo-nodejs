@@ -17,31 +17,51 @@
 package consulo.nodejs.newProjectOrModule.ui;
 
 import com.intellij.openapi.projectRoots.SdkTable;
-import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.util.Conditions;
-import consulo.ide.newProject.ui.ProjectOrModuleNameStep;
+import consulo.bundle.ui.BundleBox;
+import consulo.bundle.ui.BundleBoxBuilder;
+import consulo.disposer.Disposable;
+import consulo.ide.newProject.ui.UnifiedProjectOrModuleNameStep;
+import consulo.localize.LocalizeValue;
 import consulo.nodejs.bundle.NodeJSBundleType;
 import consulo.nodejs.newProjectOrModule.NodeJSNewModuleWizardContext;
-import consulo.roots.ui.configuration.SdkComboBox;
+import consulo.ui.ComboBox;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.util.FormBuilder;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 
 /**
  * @author VISTALL
  * @since 17.12.2015
  */
-public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> extends ProjectOrModuleNameStep<C>
+public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> extends UnifiedProjectOrModuleNameStep<C>
 {
-	private SdkComboBox myComboBox;
+	private BundleBox myBundleBox;
+	private Disposable myUiDisposable;
 
 	public NodeJSNewModuleSetupStep(@Nonnull C context)
 	{
 		super(context);
+	}
 
-		myComboBox = new SdkComboBox(SdkTable.getInstance(), Conditions.equalTo(NodeJSBundleType.getInstance()), false);
+	@RequiredUIAccess
+	@Override
+	protected void extend(@Nonnull FormBuilder builder)
+	{
+		super.extend(builder);
 
-		myAdditionalContentPanel.add(LabeledComponent.create(myComboBox, "Bundle"), BorderLayout.NORTH);
+		myUiDisposable = Disposable.newDisposable();
+
+		BundleBoxBuilder boxBuilder = BundleBoxBuilder.create(myUiDisposable);
+		boxBuilder.withSdkTypeFilterByType(NodeJSBundleType.getInstance());
+
+		builder.addLabeled(LocalizeValue.localizeTODO("Bundle:"), (myBundleBox = boxBuilder.build()).getComponent());
+
+		ComboBox<BundleBox.BundleBoxItem> component = myBundleBox.getComponent();
+		if(component.getListModel().getSize() > 0)
+		{
+			component.setValueByIndex(0);
+		}
 	}
 
 	@Override
@@ -49,6 +69,22 @@ public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> ex
 	{
 		super.onStepLeave(context);
 
-		context.setSdk(myComboBox.getSelectedSdk());
+		String selectedBundleName = myBundleBox.getSelectedBundleName();
+		if(selectedBundleName != null)
+		{
+			context.setSdk(SdkTable.getInstance().findSdk(selectedBundleName));
+		}
+	}
+
+	@Override
+	public void disposeUIResources()
+	{
+		super.disposeUIResources();
+
+		if(myUiDisposable != null)
+		{
+			myUiDisposable.disposeWithTree();
+			myUiDisposable = null;
+		}
 	}
 }
