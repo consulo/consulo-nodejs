@@ -16,34 +16,32 @@
 
 package consulo.nodejs.bundle;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.lang.javascript.JavaScriptFileType;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.SystemProperties;
-import consulo.nodejs.NodeJSIcons;
+import consulo.container.plugin.PluginManager;
+import consulo.nodejs.icon.NodeJSApiIconGroup;
+import consulo.platform.Platform;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.roots.types.SourcesOrderRootType;
 import consulo.ui.image.Image;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author VISTALL
@@ -74,7 +72,7 @@ public class NodeJSBundleType extends SdkType
 	@Nonnull
 	public static File getExePath(@Nonnull String home, @Nonnull String winName, String otherName)
 	{
-		String executable = SystemInfo.isWindows ? winName : otherName;
+		String executable = Platform.current().os().isWindows() ? winName : otherName;
 
 		File firstTry = new File(home, "bin/" + executable);
 		if(firstTry.exists())
@@ -93,13 +91,13 @@ public class NodeJSBundleType extends SdkType
 	@Override
 	public Collection<String> suggestHomePaths()
 	{
-		if(SystemInfo.isWindows)
+		if(Platform.current().os().isWindows())
 		{
-			return Collections.emptyList();
+			return List.of();
 		}
 		else
 		{
-			List<String> paths = new ArrayList<String>();
+			List<String> paths = new ArrayList<>();
 			String userHome = SystemProperties.getUserHome();
 
 			File nvmHome = new File(userHome, ".nvm/versions/node");
@@ -198,6 +196,6 @@ public class NodeJSBundleType extends SdkType
 	@Override
 	public Image getIcon()
 	{
-		return NodeJSIcons.NodeJS;
+		return NodeJSApiIconGroup.nodejs();
 	}
 }

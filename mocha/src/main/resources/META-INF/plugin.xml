@@ -25,7 +25,7 @@
 	<extensions defaultExtensionNs="com.intellij">
 		<moduleExtensionProvider key="mocha"
 								 parentKey="nodejs"
-								 icon="/icons/mocha.png"
+								 icon="consulo.mocha.MochaIconGroup@mocha"
 								 name="Mocha"
 								 immutableClass="consulo.mocha.module.extension.MochaModuleExtension"
 								 mutableClass="consulo.mocha.module.extension.MochaMutableModuleExtension"/>
