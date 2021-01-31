@@ -36,7 +36,7 @@ public class NodeJSConfigurationType extends ConfigurationTypeBase
 	@Nonnull
 	public static NodeJSConfigurationType getInstance()
 	{
-		return CONFIGURATION_TYPE_EP.findExtensionOrFail(NodeJSConfigurationType.class);
+		return EP_NAME.findExtensionOrFail(NodeJSConfigurationType.class);
 	}
 
 	public NodeJSConfigurationType()

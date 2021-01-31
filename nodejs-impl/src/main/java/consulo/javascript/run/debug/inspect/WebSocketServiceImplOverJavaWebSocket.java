@@ -1,7 +1,8 @@
-package consulo.nodejs.run.vm;
+package consulo.javascript.run.debug.inspect;
 
 import com.github.kklisura.cdt.services.WebSocketService;
 import com.github.kklisura.cdt.services.exceptions.WebSocketServiceException;
+import consulo.logging.Logger;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -13,13 +14,15 @@ import java.util.function.Consumer;
  * @author VISTALL
  * @since 2020-06-17
  */
-public class WebSocketImpl implements WebSocketService
+class WebSocketServiceImplOverJavaWebSocket implements WebSocketService
 {
+	private static final Logger LOG = Logger.getInstance(WebSocketServiceImplOverJavaWebSocket.class);
+
 	private Consumer<String> messageConsumer;
 
 	private WebSocketClient webSocketClient;
 
-	public WebSocketImpl(String wsUrl)
+	public WebSocketServiceImplOverJavaWebSocket(String wsUrl)
 	{
 		try
 		{
@@ -39,7 +42,6 @@ public class WebSocketImpl implements WebSocketService
 			@Override
 			public void onOpen(ServerHandshake serverHandshake)
 			{
-				System.out.println(serverHandshake);
 			}
 
 			@Override
@@ -51,15 +53,22 @@ public class WebSocketImpl implements WebSocketService
 			@Override
 			public void onClose(int i, String s, boolean b)
 			{
-				System.out.println(s);
 			}
 
 			@Override
 			public void onError(Exception e)
 			{
-				e.printStackTrace();
+				LOG.warn(e);
 			}
 		};
+		try
+		{
+			webSocketClient.connectBlocking();
+		}
+		catch(InterruptedException e)
+		{
+			throw new WebSocketServiceException(e.getMessage(), e);
+		}
 	}
 
 	@Override
