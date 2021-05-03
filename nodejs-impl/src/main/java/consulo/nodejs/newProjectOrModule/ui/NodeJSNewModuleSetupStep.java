@@ -37,7 +37,6 @@ import javax.annotation.Nonnull;
 public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> extends UnifiedProjectOrModuleNameStep<C>
 {
 	private BundleBox myBundleBox;
-	private Disposable myUiDisposable;
 
 	public NodeJSNewModuleSetupStep(@Nonnull C context)
 	{
@@ -46,13 +45,11 @@ public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> ex
 
 	@RequiredUIAccess
 	@Override
-	protected void extend(@Nonnull FormBuilder builder)
+	protected void extend(@Nonnull FormBuilder builder, @Nonnull Disposable uiDisposable)
 	{
-		super.extend(builder);
+		super.extend(builder, uiDisposable);
 
-		myUiDisposable = Disposable.newDisposable();
-
-		BundleBoxBuilder boxBuilder = BundleBoxBuilder.create(myUiDisposable);
+		BundleBoxBuilder boxBuilder = BundleBoxBuilder.create(uiDisposable);
 		boxBuilder.withSdkTypeFilterByType(NodeJSBundleType.getInstance());
 
 		builder.addLabeled(LocalizeValue.localizeTODO("Bundle:"), (myBundleBox = boxBuilder.build()).getComponent());
@@ -73,18 +70,6 @@ public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> ex
 		if(selectedBundleName != null)
 		{
 			context.setSdk(SdkTable.getInstance().findSdk(selectedBundleName));
-		}
-	}
-
-	@Override
-	public void disposeUIResources()
-	{
-		super.disposeUIResources();
-
-		if(myUiDisposable != null)
-		{
-			myUiDisposable.disposeWithTree();
-			myUiDisposable = null;
 		}
 	}
 }
