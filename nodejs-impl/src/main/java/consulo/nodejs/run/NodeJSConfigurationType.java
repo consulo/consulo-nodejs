@@ -16,7 +16,6 @@
 
 package consulo.nodejs.run;
 
-import javax.annotation.Nonnull;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -25,6 +24,8 @@ import com.intellij.openapi.project.Project;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
@@ -35,7 +36,7 @@ public class NodeJSConfigurationType extends ConfigurationTypeBase
 	@Nonnull
 	public static NodeJSConfigurationType getInstance()
 	{
-		return CONFIGURATION_TYPE_EP.findExtensionOrFail(NodeJSConfigurationType.class);
+		return EP_NAME.findExtensionOrFail(NodeJSConfigurationType.class);
 	}
 
 	public NodeJSConfigurationType()

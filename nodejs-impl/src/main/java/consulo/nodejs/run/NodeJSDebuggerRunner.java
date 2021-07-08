@@ -29,17 +29,17 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ExceptionUtil;
 import com.intellij.util.net.NetUtils;
 import com.intellij.xdebugger.XDebugProcess;
-import com.intellij.xdebugger.XDebugProcessStarter;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerManager;
 import consulo.javascript.run.debug.V8DebugProcess;
+import consulo.javascript.run.debug.inspect.InspectDebugProcess;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.dataholder.Key;
+import consulo.util.lang.ref.SimpleReference;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -66,34 +66,44 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 		{
 			final int availableSocketPort = NetUtils.findAvailableSocketPort();
 			final NodeJSRunState nodeJSRunState = (NodeJSRunState) state;
-			nodeJSRunState.addVmArgument("--debug-brk=" + availableSocketPort);
 
-			final Ref<V8DebugProcess> vm = Ref.create(null);
+			String versionString = ((NodeJSRunState) state).getSdk().getVersionString();
 
-			final XDebugSession debugSession = XDebuggerManager.getInstance(env.getProject()).startSession(env, new XDebugProcessStarter()
+			boolean isInspectBrk = StringUtil.compareVersionNumbers(versionString, "7.0.0") > 0;
+			if(isInspectBrk)
 			{
-				@Nonnull
-				@Override
-				public XDebugProcess start(@Nonnull final XDebugSession session) throws ExecutionException
-				{
-					nodeJSRunState.addProcessListener(new ProcessAdapter()
-					{
-						@Override
-						public void onTextAvailable(ProcessEvent event, Key outputType)
-						{
-							if(outputType == ProcessOutputTypes.STDERR)
-							{
-								V8DebugProcess debugProcess = vm.get();
-								if(debugProcess == null)
-								{
-									return;
-								}
+				nodeJSRunState.addVmArgument("--inspect-brk=" + availableSocketPort);
+			}
+			else
+			{
+				nodeJSRunState.addVmArgument("--debug-brk=" + availableSocketPort);
+			}
 
-								if(StringUtil.startsWith(event.getText(), "Debugger listening on port"))
+			final SimpleReference<XDebugProcess> vm = SimpleReference.create(null);
+
+			final XDebugSession debugSession = XDebuggerManager.getInstance(env.getProject()).startSession(env, session ->
+			{
+				nodeJSRunState.addProcessListener(new ProcessAdapter()
+				{
+					@Override
+					public void onTextAvailable(ProcessEvent event, Key outputType)
+					{
+						if(outputType == ProcessOutputTypes.STDERR)
+						{
+							XDebugProcess debugProcess = vm.get();
+							if(debugProcess == null)
+							{
+								return;
+							}
+
+							String text = event.getText();
+							if(debugProcess instanceof V8DebugProcess)
+							{
+								if(StringUtil.startsWith(text, "Debugger listening on port"))
 								{
 									try
 									{
-										debugProcess.attach();
+										((V8DebugProcess) debugProcess).attach();
 										vm.set(null);
 									}
 									catch(Exception e)
@@ -102,16 +112,44 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner
 									}
 								}
 							}
+							else if(debugProcess instanceof InspectDebugProcess)
+							{
+								String prefix = "Debugger listening on ws://";
+								if(StringUtil.startsWith(text, prefix))
+								{
+									try
+									{
+										((InspectDebugProcess) debugProcess).attach();
+									}
+									catch(Exception e)
+									{
+										session.getConsoleView().print(ExceptionUtil.getThrowableText(e), ConsoleViewContentType.ERROR_OUTPUT);
+									}
+								}
+
+								if(StringUtil.startsWith(text, "Waiting for the debugger to disconnect"))
+								{
+									try
+									{
+										((InspectDebugProcess) debugProcess).disconnect();
+									}
+									catch(Exception e)
+									{
+										session.getConsoleView().print(ExceptionUtil.getThrowableText(e), ConsoleViewContentType.ERROR_OUTPUT);
+									}
+								}
+							}
 						}
-					});
+					}
+				});
 
-					final ExecutionResult result = state.execute(env.getExecutor(), NodeJSDebuggerRunner.this);
-					final V8DebugProcess debugProcess = new V8DebugProcess(session, result, availableSocketPort);
-					vm.set(debugProcess);
+				final ExecutionResult result = state.execute(env.getExecutor(), NodeJSDebuggerRunner.this);
+				final XDebugProcess debugProcess = isInspectBrk ? new InspectDebugProcess(session, result, availableSocketPort) : new V8DebugProcess(session, result, availableSocketPort);
+				vm.set(debugProcess);
 
-					return debugProcess;
-				}
+				return debugProcess;
 			});
+
 			return debugSession.getRunContentDescriptor();
 		}
 		catch(IOException e)
