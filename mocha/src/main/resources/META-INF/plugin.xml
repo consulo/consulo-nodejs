@@ -22,6 +22,10 @@
 	<category>Test Frameworks</category>
 	<depends>consulo.nodejs</depends>
 
+	<tags>
+		<tag>test.framework</tag>
+	</tags>
+
 	<extensions defaultExtensionNs="com.intellij">
 		<moduleExtensionProvider key="mocha"
 								 parentKey="nodejs"
