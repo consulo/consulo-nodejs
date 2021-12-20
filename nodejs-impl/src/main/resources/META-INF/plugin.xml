@@ -19,8 +19,12 @@
 	<name>Node.js</name>
 	<version>SNAPSHOT</version>
 	<vendor>consulo.io</vendor>
-	<category>Web Frameworks</category>
+	<category>Software Frameworks</category>
 	<depends>consulo.javascript</depends>
+
+	<tags>
+		<tag>software.framework</tag>
+	</tags>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<sdkType implementation="consulo.nodejs.bundle.NodeJSBundleType"/>
