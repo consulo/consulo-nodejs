@@ -14,7 +14,7 @@
   - limitations under the License.
   -->
 
-<consulo-plugin>
+<consulo-plugin url="https://github.com/consulo/consulo-nodejs">
 	<id>consulo.nodejs</id>
 	<name>Node.js</name>
 	<version>SNAPSHOT</version>
