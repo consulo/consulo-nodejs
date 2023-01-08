@@ -16,46 +16,44 @@
 
 package consulo.mocha.run;
 
-import com.intellij.execution.actions.ConfigurationContext;
-import com.intellij.execution.actions.ConfigurationFromContext;
-import com.intellij.execution.actions.RunConfigurationProducer;
-import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.lang.javascript.psi.JSFile;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.util.Comparing;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.util.Ref;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.ObjectUtil;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.execution.action.ConfigurationContext;
+import consulo.execution.action.ConfigurationFromContext;
+import consulo.execution.action.RunConfigurationProducer;
+import consulo.execution.configuration.RunConfiguration;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.util.ModuleUtilCore;
 import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.mocha.psi.MochaPsiElementUtil;
+import consulo.module.Module;
 import consulo.nodejs.packages.call.NpmRunUtil;
 import consulo.nodejs.run.NodeJSConfiguration;
 import consulo.nodejs.run.NodeJSConfigurationProducerUtil;
+import consulo.util.io.FileUtil;
+import consulo.util.lang.Comparing;
+import consulo.util.lang.ObjectUtil;
+import consulo.util.lang.ref.Ref;
+import consulo.virtualFileSystem.VirtualFile;
+
+import java.util.function.Predicate;
 
 /**
  * @author VISTALL
  * @since 19.12.2015
  */
+@ExtensionImpl
 public class MochaConfigurationProducer extends RunConfigurationProducer<MochaConfiguration>
 {
-	private static final Condition<JSFile> ourFileCondition = new Condition<JSFile>()
+	private static final Predicate<JSFile> ourFileCondition = file ->
 	{
-		@Override
-		@RequiredReadAction
-		public boolean value(JSFile file)
-		{
-			Module module = ModuleUtilCore.findModuleForPsiElement(file);
-			return module != null &&
-					ModuleUtilCore.getExtension(module, MochaModuleExtension.class) != null &&
-					NpmRunUtil.findNpmModule(module,  MochaPsiElementUtil.MOCHA) != null &&
-					MochaPsiElementUtil.containsTestsInFiles(file);
-		}
+		Module module = ModuleUtilCore.findModuleForPsiElement(file);
+		return module != null &&
+				ModuleUtilCore.getExtension(module, MochaModuleExtension.class) != null &&
+				NpmRunUtil.findNpmModule(module,  MochaPsiElementUtil.MOCHA) != null &&
+				MochaPsiElementUtil.containsTestsInFiles(file);
 	};
 
 	public MochaConfigurationProducer()
@@ -101,7 +99,7 @@ public class MochaConfigurationProducer extends RunConfigurationProducer<MochaCo
 			PsiFile containingFile = other.getSourceElement().getContainingFile();
 			if(containingFile instanceof JSFile)
 			{
-				return ourFileCondition.value((JSFile) containingFile);
+				return ourFileCondition.test((JSFile) containingFile);
 			}
 		}
 		return false;

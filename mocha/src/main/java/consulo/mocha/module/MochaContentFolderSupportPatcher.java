@@ -16,22 +16,22 @@
 
 package consulo.mocha.module;
 
-import java.util.Set;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.content.ContentFolderTypeProvider;
+import consulo.language.content.TestContentFolderTypeProvider;
+import consulo.mocha.module.extension.MochaModuleExtension;
+import consulo.module.content.layer.ContentFolderSupportPatcher;
+import consulo.module.content.layer.ModifiableRootModel;
+import consulo.nodejs.module.extension.NodeJSModuleExtension;
 
 import javax.annotation.Nonnull;
-
-import com.intellij.openapi.roots.ModifiableRootModel;
-import consulo.mocha.module.extension.MochaModuleExtension;
-import consulo.nodejs.module.extension.NodeJSModuleExtension;
-import consulo.roots.ContentFolderSupportPatcher;
-import consulo.roots.ContentFolderTypeProvider;
-import consulo.roots.impl.TestContentFolderTypeProvider;
-
+import java.util.Set;
 
 /**
  * @author VISTALL
  * @since 19.12.2015
  */
+@ExtensionImpl
 public class MochaContentFolderSupportPatcher implements ContentFolderSupportPatcher
 {
 	@Override

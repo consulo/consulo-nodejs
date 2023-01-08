@@ -16,19 +16,15 @@
 
 package consulo.mocha.run;
 
-import com.intellij.execution.CommonProgramRunConfigurationParameters;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.ui.TextComponentAccessor;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.util.ui.JBUI;
+import consulo.execution.CommonProgramRunConfigurationParameters;
+import consulo.fileChooser.FileChooserDescriptor;
+import consulo.module.Module;
 import consulo.nodejs.run.NodeJSConfigurationPanelBase;
+import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.awt.*;
+import consulo.util.io.FileUtil;
+import consulo.util.lang.StringUtil;
 
 import javax.swing.*;
 import java.awt.*;

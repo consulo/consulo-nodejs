@@ -25,29 +25,4 @@
 	<tags>
 		<tag>software.framework</tag>
 	</tags>
-
-	<extensions defaultExtensionNs="com.intellij">
-		<sdkType implementation="consulo.nodejs.bundle.NodeJSBundleType"/>
-		<moduleExtensionProvider name="NodeJS"
-								 key="nodejs"
-								 icon="consulo.nodejs.NodeJSApiIconGroup@nodejs"
-								 immutableClass="consulo.nodejs.module.extension.NodeJSModuleExtension"
-								 mutableClass="consulo.nodejs.module.extension.NodeJSMutableModuleExtension"/>
-		<programRunner implementation="consulo.nodejs.run.NodeJSDebuggerRunner"/>
-		<configurationType implementation="consulo.nodejs.run.NodeJSConfigurationType"/>
-		<configurationType implementation="consulo.nodejs.run.NpxConfigurationType"/>
-		<runConfigurationProducer implementation="consulo.nodejs.run.NodeJSConfigurationProducer"/>
-
-		<editorNotificationProvider implementation="consulo.nodejs.packages.PackageEditorNotificationProvider"/>
-
-		<fileTypeDetector implementation="consulo.nodejs.lang.NodeJSFileTypeDetector"/>
-
-		<newModuleBuilder implementation="consulo.nodejs.newProjectOrModule.NodeJSNewModuleBuilder"/>
-
-		<moduleImportProvider implementation="consulo.nodejs.moduleImport.NodeJSModuleImportProvider"/>
-	</extensions>
-
-	<extensions defaultExtensionNs="consulo.javascript">
-		<jomFileDescriptor implementation="consulo.nodejs.packages.jom.PackagesFileDescriptor"/>
-	</extensions>
 </consulo-plugin>

@@ -16,23 +16,23 @@
 
 package consulo.nodejs.module.extension;
 
-import javax.annotation.Nonnull;
-
-import org.jdom.Element;
-import com.intellij.openapi.projectRoots.SdkType;
 import consulo.annotation.access.RequiredReadAction;
-import consulo.javascript.lang.StandardJavaScriptVersions;
+import consulo.content.bundle.SdkType;
+import consulo.javascript.language.StandardJavaScriptVersions;
 import consulo.javascript.module.extension.JavaScriptModuleExtension;
-import consulo.lang.LanguageVersion;
-import consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
+import consulo.language.version.LanguageVersion;
+import consulo.module.content.layer.ModuleRootLayer;
+import consulo.module.content.layer.extension.ModuleExtensionWithSdkBase;
 import consulo.nodejs.bundle.NodeJSBundleType;
-import consulo.roots.ModuleRootLayer;
+import org.jdom.Element;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
  * @since 14.03.14
  */
-public class NodeJSModuleExtension extends ModuleExtensionWithSdkImpl<NodeJSModuleExtension> implements JavaScriptModuleExtension<NodeJSModuleExtension>
+public class NodeJSModuleExtension extends ModuleExtensionWithSdkBase<NodeJSModuleExtension> implements JavaScriptModuleExtension<NodeJSModuleExtension>
 {
 	protected LanguageVersion myLanguageVersion = StandardJavaScriptVersions.getInstance().getDefaultVersion();
 

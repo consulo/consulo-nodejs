@@ -1,17 +1,17 @@
 package consulo.nodejs.run;
 
-import javax.annotation.Nullable;
-
-import com.intellij.execution.actions.ConfigurationContext;
-import com.intellij.lang.javascript.JavaScriptFileType;
 import com.intellij.lang.javascript.psi.JSFile;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
+import consulo.execution.action.ConfigurationContext;
+import consulo.javascript.language.JavaScriptFileType;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.util.ModuleUtilCore;
+import consulo.module.Module;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
+import consulo.virtualFileSystem.VirtualFile;
+
+import javax.annotation.Nullable;
+import java.util.function.Predicate;
 
 /**
  * @author VISTALL
@@ -20,13 +20,13 @@ import consulo.nodejs.module.extension.NodeJSModuleExtension;
 public class NodeJSConfigurationProducerUtil
 {
 	@Nullable
-	public static VirtualFile findExecutableFile(ConfigurationContext configurationContext, @Nullable Condition<JSFile> condition)
+	public static VirtualFile findExecutableFile(ConfigurationContext configurationContext, @Nullable Predicate<JSFile> condition)
 	{
 		PsiElement psiLocation = configurationContext.getPsiLocation();
 		PsiFile psiFile = psiLocation == null ? null : psiLocation.getContainingFile();
 		if(psiFile instanceof JSFile && psiFile.getFileType() == JavaScriptFileType.INSTANCE)
 		{
-			if(condition != null && !condition.value((JSFile) psiFile))
+			if(condition != null && !condition.test((JSFile) psiFile))
 			{
 				return null;
 			}

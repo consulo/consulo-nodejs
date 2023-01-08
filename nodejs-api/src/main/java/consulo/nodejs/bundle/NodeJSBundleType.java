@@ -16,25 +16,25 @@
 
 package consulo.nodejs.bundle;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.ProcessOutput;
-import com.intellij.execution.util.ExecUtil;
-import com.intellij.lang.javascript.JavaScriptFileType;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkModificator;
-import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.SystemProperties;
+import consulo.annotation.component.ExtensionImpl;
 import consulo.container.plugin.PluginManager;
+import consulo.content.OrderRootType;
+import consulo.content.base.BinariesOrderRootType;
+import consulo.content.base.SourcesOrderRootType;
+import consulo.content.bundle.Sdk;
+import consulo.content.bundle.SdkModificator;
+import consulo.content.bundle.SdkType;
+import consulo.javascript.language.JavaScriptFileType;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.platform.Platform;
-import consulo.roots.types.BinariesOrderRootType;
-import consulo.roots.types.SourcesOrderRootType;
+import consulo.process.ExecutionException;
+import consulo.process.cmd.GeneralCommandLine;
+import consulo.process.local.CapturingProcessHandler;
+import consulo.process.local.ProcessOutput;
 import consulo.ui.image.Image;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.VirtualFile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,6 +47,7 @@ import java.util.List;
  * @author VISTALL
  * @since 14.03.14
  */
+@ExtensionImpl
 public class NodeJSBundleType extends SdkType
 {
 	@Nonnull
@@ -91,14 +92,16 @@ public class NodeJSBundleType extends SdkType
 	@Override
 	public Collection<String> suggestHomePaths()
 	{
-		if(Platform.current().os().isWindows())
+		List<String> paths = new ArrayList<>();
+		Platform platform = Platform.current();
+		if(platform.os().isWindows())
 		{
-			return List.of();
+			collectNodePathsAtWindows(paths, "ProgramFiles");
+			collectNodePathsAtWindows(paths, "ProgramFiles(x86)");
 		}
 		else
 		{
-			List<String> paths = new ArrayList<>();
-			String userHome = SystemProperties.getUserHome();
+			File userHome = platform.user().homePath().toFile();
 
 			File nvmHome = new File(userHome, ".nvm/versions/node");
 			if(nvmHome.exists())
@@ -111,7 +114,20 @@ public class NodeJSBundleType extends SdkType
 					}
 				}
 			}
-			return paths;
+		}
+		return paths;
+	}
+
+	private static void collectNodePathsAtWindows(List<String> list, String env)
+	{
+		String programFiles = Platform.current().os().getEnvironmentVariable(env);
+		if(programFiles != null)
+		{
+			File nodejsPath = new File(programFiles, "nodejs");
+			if(nodejsPath.exists())
+			{
+				list.add(nodejsPath.getPath());
+			}
 		}
 	}
 
@@ -159,7 +175,7 @@ public class NodeJSBundleType extends SdkType
 			commandLine.withWorkDirectory(s);
 			commandLine.addParameter("-v");
 
-			ProcessOutput processOutput = ExecUtil.execAndGetOutput(commandLine);
+			ProcessOutput processOutput = new CapturingProcessHandler(commandLine).runProcess();
 			String stdout = processOutput.getStdout();
 			if(StringUtil.startsWith(stdout, "v"))
 			{
@@ -176,7 +192,7 @@ public class NodeJSBundleType extends SdkType
 	@Override
 	public boolean isRootTypeApplicable(OrderRootType type)
 	{
-		return type == BinariesOrderRootType.getInstance();
+		return type == BinariesOrderRootType.getInstance() || type == SourcesOrderRootType.getInstance();
 	}
 
 	@Override

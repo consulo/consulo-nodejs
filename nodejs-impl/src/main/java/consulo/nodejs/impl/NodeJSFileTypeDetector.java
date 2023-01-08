@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package consulo.mocha.module.extension;
+package consulo.nodejs.impl;
 
-import consulo.module.content.layer.ModuleRootLayer;
-import consulo.module.content.layer.extension.ModuleExtensionBase;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.javascript.language.JavaScriptFileType;
+import consulo.localize.LocalizeValue;
+import consulo.virtualFileSystem.fileType.HashBangFileTypeDetector;
 
-import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 19.12.2015
+ * @since 18.12.2015
  */
-public class MochaModuleExtension extends ModuleExtensionBase<MochaModuleExtension>
+@ExtensionImpl
+public class NodeJSFileTypeDetector extends HashBangFileTypeDetector
 {
-	public MochaModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer moduleRootLayer)
+	public NodeJSFileTypeDetector()
 	{
-		super(id, moduleRootLayer);
+		super(JavaScriptFileType.INSTANCE, "/usr/bin/env node", LocalizeValue.of("Node.js"));
 	}
 }

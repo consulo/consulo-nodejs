@@ -14,49 +14,50 @@
  * limitations under the License.
  */
 
-package consulo.mocha.run;
+package consulo.nodejs.impl.run;
 
 import consulo.annotation.component.ExtensionImpl;
 import consulo.execution.configuration.ConfigurationFactory;
 import consulo.execution.configuration.ConfigurationTypeBase;
 import consulo.execution.configuration.RunConfiguration;
 import consulo.execution.configuration.RunConfigurationModule;
-import consulo.mocha.icon.MochaIconGroup;
-import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.module.extension.ModuleExtensionHelper;
+import consulo.nodejs.icon.NodeJSApiIconGroup;
+import consulo.nodejs.module.extension.NodeJSModuleExtension;
+import consulo.nodejs.run.NodeJSConfiguration;
 import consulo.project.Project;
 
 import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 19.12.2015
+ * @since 18.03.14
  */
 @ExtensionImpl
-public class MochaConfigurationType extends ConfigurationTypeBase
+public class NodeJSConfigurationType extends ConfigurationTypeBase
 {
 	@Nonnull
-	public static MochaConfigurationType getInstance()
+	public static NodeJSConfigurationType getInstance()
 	{
-		return EP_NAME.findExtensionOrFail(MochaConfigurationType.class);
+		return EP_NAME.findExtensionOrFail(NodeJSConfigurationType.class);
 	}
 
-	public MochaConfigurationType()
+	public NodeJSConfigurationType()
 	{
-		super("#MochaConfigurationType", "Mocha", "", MochaIconGroup.mocha());
+		super("NodeJSConfigurationType", "NodeJS", "", NodeJSApiIconGroup.nodejs());
 
 		addFactory(new ConfigurationFactory(this)
 		{
 			@Override
 			public RunConfiguration createTemplateConfiguration(Project project)
 			{
-				return new MochaConfiguration("Unnamed", new RunConfigurationModule(project), this);
+				return new NodeJSConfiguration("Unnamed", new RunConfigurationModule(project), this);
 			}
 
 			@Override
 			public boolean isApplicable(@Nonnull Project project)
 			{
-				return ModuleExtensionHelper.getInstance(project).hasModuleExtension(MochaModuleExtension.class);
+				return ModuleExtensionHelper.getInstance(project).hasModuleExtension(NodeJSModuleExtension.class);
 			}
 		});
 	}

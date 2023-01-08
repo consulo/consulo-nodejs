@@ -16,22 +16,22 @@
 
 package consulo.nodejs.run;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunConfigurationModule;
-import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.options.SettingsEditor;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.content.bundle.Sdk;
+import consulo.execution.configuration.ConfigurationFactory;
+import consulo.execution.configuration.RunConfiguration;
+import consulo.execution.configuration.RunConfigurationModule;
+import consulo.execution.configuration.ui.SettingsEditor;
+import consulo.execution.executor.Executor;
+import consulo.execution.runner.ExecutionEnvironment;
+import consulo.language.util.ModuleUtilCore;
+import consulo.module.Module;
+import consulo.module.ModuleManager;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
+import consulo.process.ExecutionException;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.VirtualFile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

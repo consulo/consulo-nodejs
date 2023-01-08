@@ -16,32 +16,32 @@
 
 package consulo.mocha.run;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunConfigurationModule;
-import com.intellij.execution.process.OSProcessHandler;
-import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.execution.testframework.TestConsoleProperties;
-import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil;
-import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties;
-import com.intellij.execution.ui.ConsoleView;
-import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.options.SettingsEditor;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.container.plugin.PluginManager;
+import consulo.content.bundle.Sdk;
+import consulo.execution.configuration.ConfigurationFactory;
+import consulo.execution.configuration.RunConfiguration;
+import consulo.execution.configuration.RunConfigurationModule;
+import consulo.execution.configuration.ui.SettingsEditor;
+import consulo.execution.executor.Executor;
+import consulo.execution.runner.ExecutionEnvironment;
+import consulo.execution.test.TestConsoleProperties;
+import consulo.execution.test.sm.SMTestRunnerConnectionUtil;
+import consulo.execution.test.sm.runner.SMTRunnerConsoleProperties;
+import consulo.execution.ui.console.ConsoleView;
+import consulo.language.util.ModuleUtilCore;
 import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.mocha.psi.MochaPsiElementUtil;
+import consulo.module.Module;
+import consulo.module.ModuleManager;
 import consulo.nodejs.packages.call.NpmRunUtil;
 import consulo.nodejs.run.NodeJSConfigurationBase;
 import consulo.nodejs.run.NodeJSRunState;
+import consulo.process.ExecutionException;
+import consulo.process.ProcessHandler;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.VirtualFile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -115,7 +115,7 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 		{
 			@Nonnull
 			@Override
-			public ConsoleView createConsole(OSProcessHandler processHandler)
+			public ConsoleView createConsole(ProcessHandler processHandler)
 			{
 				SMTRunnerConsoleProperties testConsoleProperties = new SMTRunnerConsoleProperties(MochaConfiguration.this, "Mocha", executor);
 				testConsoleProperties.setIdBasedTestTree(true);

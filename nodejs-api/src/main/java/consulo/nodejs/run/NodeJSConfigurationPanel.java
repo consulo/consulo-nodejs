@@ -16,17 +16,17 @@
 
 package consulo.nodejs.run;
 
-import com.intellij.execution.CommonProgramRunConfigurationParameters;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.ui.TextComponentAccessor;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.ui.JBUI;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.execution.CommonProgramRunConfigurationParameters;
+import consulo.fileChooser.FileChooserDescriptor;
+import consulo.module.Module;
+import consulo.project.Project;
+import consulo.ui.ex.awt.JBUI;
+import consulo.ui.ex.awt.LabeledComponent;
+import consulo.ui.ex.awt.TextComponentAccessor;
+import consulo.ui.ex.awt.TextFieldWithBrowseButton;
+import consulo.util.io.FileUtil;
+import consulo.util.lang.StringUtil;
 
 import javax.swing.*;
 

@@ -16,24 +16,24 @@
 
 package consulo.nodejs.run;
 
-import com.intellij.execution.DefaultExecutionResult;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.ExecutionResult;
-import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.process.ColoredProcessHandler;
-import com.intellij.execution.process.OSProcessHandler;
-import com.intellij.execution.process.ProcessListener;
-import com.intellij.execution.runners.ProgramRunner;
-import com.intellij.execution.ui.ConsoleView;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.SmartList;
+import consulo.content.bundle.Sdk;
+import consulo.execution.DefaultExecutionResult;
+import consulo.execution.ExecutionResult;
+import consulo.execution.configuration.RunProfileState;
+import consulo.execution.executor.Executor;
+import consulo.execution.runner.ProgramRunner;
+import consulo.execution.ui.console.ConsoleView;
+import consulo.execution.ui.console.TextConsoleBuilder;
+import consulo.execution.ui.console.TextConsoleBuilderFactory;
+import consulo.module.Module;
 import consulo.nodejs.bundle.NodeJSBundleType;
+import consulo.process.ExecutionException;
+import consulo.process.ProcessHandler;
+import consulo.process.cmd.GeneralCommandLine;
+import consulo.process.event.ProcessListener;
+import consulo.process.local.ProcessHandlerFactory;
+import consulo.util.collection.SmartList;
+import consulo.util.lang.StringUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -114,7 +114,7 @@ public class NodeJSRunState implements RunProfileState
 			generalCommandLine.addParameters(StringUtil.splitHonorQuotes(programParameters, ' '));
 		}
 
-		OSProcessHandler processHandler = new ColoredProcessHandler(generalCommandLine);
+		ProcessHandler processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(generalCommandLine);
 		for(ProcessListener processListener : myProcessListeners)
 		{
 			processHandler.addProcessListener(processListener);
@@ -125,7 +125,7 @@ public class NodeJSRunState implements RunProfileState
 	}
 
 	@Nonnull
-	public ConsoleView createConsole(OSProcessHandler processHandler)
+	public ConsoleView createConsole(ProcessHandler processHandler)
 	{
 		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myConfiguration.getProject());
 		return builder.getConsole();

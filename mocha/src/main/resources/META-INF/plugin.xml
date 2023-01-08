@@ -25,18 +25,4 @@
 	<tags>
 		<tag>test.framework</tag>
 	</tags>
-
-	<extensions defaultExtensionNs="com.intellij">
-		<moduleExtensionProvider key="mocha"
-								 parentKey="nodejs"
-								 icon="consulo.mocha.MochaIconGroup@mocha"
-								 name="Mocha"
-								 immutableClass="consulo.mocha.module.extension.MochaModuleExtension"
-								 mutableClass="consulo.mocha.module.extension.MochaMutableModuleExtension"/>
-		<contentFolderSupportPatcher implementation="consulo.mocha.module.MochaContentFolderSupportPatcher"/>
-
-		<configurationType implementation="consulo.mocha.run.MochaConfigurationType" />
-
-		<runConfigurationProducer implementation="consulo.mocha.run.MochaConfigurationProducer" />
-	</extensions>
 </consulo-plugin>

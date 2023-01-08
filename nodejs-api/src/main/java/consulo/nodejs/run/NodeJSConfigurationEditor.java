@@ -16,9 +16,9 @@
 
 package consulo.nodejs.run;
 
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SettingsEditor;
-import com.intellij.openapi.project.Project;
+import consulo.configurable.ConfigurationException;
+import consulo.execution.configuration.ui.SettingsEditor;
+import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
 
 import javax.annotation.Nonnull;

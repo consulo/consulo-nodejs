@@ -16,22 +16,23 @@
 
 package consulo.nodejs.run;
 
-import com.intellij.application.options.ModuleListCellRenderer;
-import com.intellij.execution.CommonProgramRunConfigurationParameters;
-import com.intellij.execution.ui.CommonProgramParametersPanel;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.DefaultSdksModel;
-import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.util.Conditions;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.CollectionComboBoxModel;
-import com.intellij.ui.RawCommandLineEditor;
+import consulo.content.bundle.SdkTypeId;
+import consulo.execution.CommonProgramRunConfigurationParameters;
+import consulo.execution.ui.awt.CommonProgramParametersPanel;
+import consulo.execution.ui.awt.RawCommandLineEditor;
+import consulo.ide.setting.ShowSettingsUtil;
+import consulo.ide.setting.bundle.SettingsSdksModel;
+import consulo.module.Module;
+import consulo.module.ui.awt.ModuleListCellRenderer;
+import consulo.module.ui.awt.SdkComboBox;
 import consulo.nodejs.bundle.NodeJSBundleType;
-import consulo.roots.ui.configuration.SdkComboBox;
+import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.awt.CollectionComboBoxModel;
+import consulo.ui.ex.awt.ComboBox;
+import consulo.ui.ex.awt.LabeledComponent;
+import consulo.util.lang.StringUtil;
+import consulo.util.lang.function.Conditions;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,10 +66,9 @@ public abstract class NodeJSConfigurationPanelBase extends CommonProgramParamete
 		copyDialogCaption(myVmParametersComponent);
 
 		myUseAlternativeBundleCheckBox = new JCheckBox("Use alternative bundle: ");
-		DefaultSdksModel projectSdksModel = new DefaultSdksModel();
-		projectSdksModel.reset();
+		SettingsSdksModel sdksModel = ShowSettingsUtil.getInstance().getSdksModel();
 
-		myAlternativeBundleComboBox = new SdkComboBox(projectSdksModel, Conditions.<SdkTypeId>is(NodeJSBundleType.getInstance()), true);
+		myAlternativeBundleComboBox = new SdkComboBox(sdksModel, Conditions.<SdkTypeId>is(NodeJSBundleType.getInstance()), true);
 		myAlternativeBundleComboBox.setEnabled(false);
 		myUseAlternativeBundleCheckBox.addItemListener(e -> myAlternativeBundleComboBox.setEnabled(myUseAlternativeBundleCheckBox.isSelected()));
 		super.initComponents();

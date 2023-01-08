@@ -16,22 +16,22 @@
 
 package consulo.nodejs.packages.call;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.RunContentExecutor;
-import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.ProcessHandler;
-import com.intellij.execution.process.ProcessHandlerFactory;
-import com.intellij.execution.process.ProcessTerminatedListener;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.SystemInfo;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.application.util.SystemInfo;
+import consulo.content.bundle.Sdk;
+import consulo.execution.RunContentExecutor;
+import consulo.execution.process.ProcessTerminatedListener;
+import consulo.language.util.ModuleUtilCore;
+import consulo.module.Module;
 import consulo.nodejs.NodeJSConstants;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
+import consulo.process.ExecutionException;
+import consulo.process.ProcessHandler;
+import consulo.process.cmd.GeneralCommandLine;
+import consulo.process.local.ProcessHandlerFactory;
+import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.awt.Messages;
+import consulo.virtualFileSystem.VirtualFile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
