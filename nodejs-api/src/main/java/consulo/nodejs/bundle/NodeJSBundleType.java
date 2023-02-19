@@ -29,7 +29,7 @@ import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.platform.Platform;
 import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
-import consulo.process.local.CapturingProcessHandler;
+import consulo.process.local.ExecUtil;
 import consulo.process.local.ProcessOutput;
 import consulo.ui.image.Image;
 import consulo.util.lang.StringUtil;
@@ -175,7 +175,7 @@ public class NodeJSBundleType extends SdkType
 			commandLine.withWorkDirectory(s);
 			commandLine.addParameter("-v");
 
-			ProcessOutput processOutput = new CapturingProcessHandler(commandLine).runProcess();
+			ProcessOutput processOutput = ExecUtil.execAndGetOutput(commandLine);
 			String stdout = processOutput.getStdout();
 			if(StringUtil.startsWith(stdout, "v"))
 			{
