@@ -22,6 +22,7 @@ import consulo.execution.configuration.ConfigurationTypeBase;
 import consulo.execution.configuration.RunConfiguration;
 import consulo.execution.configuration.RunConfigurationModule;
 import consulo.mocha.icon.MochaIconGroup;
+import consulo.mocha.localize.MochaLocalize;
 import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.project.Project;
@@ -43,7 +44,7 @@ public class MochaConfigurationType extends ConfigurationTypeBase
 
 	public MochaConfigurationType()
 	{
-		super("#MochaConfigurationType", "Mocha", "", MochaIconGroup.mocha());
+		super("#MochaConfigurationType", MochaLocalize.mochaConfigurationName(), MochaIconGroup.mocha());
 
 		addFactory(new ConfigurationFactory(this)
 		{

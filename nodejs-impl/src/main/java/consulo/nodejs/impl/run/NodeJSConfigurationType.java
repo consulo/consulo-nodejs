@@ -23,6 +23,7 @@ import consulo.execution.configuration.RunConfiguration;
 import consulo.execution.configuration.RunConfigurationModule;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
+import consulo.nodejs.localize.NodeJSLocalize;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.nodejs.run.NodeJSConfiguration;
 import consulo.project.Project;
@@ -44,7 +45,7 @@ public class NodeJSConfigurationType extends ConfigurationTypeBase
 
 	public NodeJSConfigurationType()
 	{
-		super("NodeJSConfigurationType", "NodeJS", "", NodeJSApiIconGroup.nodejs());
+		super("NodeJSConfigurationType", NodeJSLocalize.nodejsConfigurationName(), NodeJSApiIconGroup.nodejs());
 
 		addFactory(new ConfigurationFactory(this)
 		{

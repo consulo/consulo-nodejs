@@ -7,6 +7,7 @@ import consulo.execution.configuration.RunConfiguration;
 import consulo.execution.configuration.RunConfigurationModule;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
+import consulo.nodejs.localize.NodeJSLocalize;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.project.Project;
 
@@ -21,7 +22,7 @@ public class NpxConfigurationType extends ConfigurationTypeBase
 {
 	public NpxConfigurationType()
 	{
-		super("NpxConfigurationType", "Npx", "", NodeJSApiIconGroup.npm());
+		super("NpxConfigurationType", NodeJSLocalize.npxConfigurationName(), NodeJSApiIconGroup.npm());
 
 		addFactory(new ConfigurationFactory(this)
 		{

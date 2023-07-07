@@ -14,4 +14,5 @@ module consulo.mocha
 	exports consulo.mocha.module.extension;
 	exports consulo.mocha.psi;
 	exports consulo.mocha.run;
+	exports consulo.mocha.localize;
 }

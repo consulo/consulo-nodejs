@@ -17,4 +17,5 @@ module consulo.nodejs.api
 	exports consulo.nodejs.module.extension;
 	exports consulo.nodejs.packages.call;
 	exports consulo.nodejs.run;
+	exports consulo.nodejs.localize;
 }
