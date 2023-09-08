@@ -31,6 +31,6 @@ public class NodeJSFileTypeDetector extends HashBangFileTypeDetector
 {
 	public NodeJSFileTypeDetector()
 	{
-		super(JavaScriptFileType.INSTANCE, "/usr/bin/env node", LocalizeValue.of("Node.js"));
+		super(JavaScriptFileType.INSTANCE, "/usr/bin/env node", LocalizeValue.localizeTODO("Node.js"));
 	}
 }
