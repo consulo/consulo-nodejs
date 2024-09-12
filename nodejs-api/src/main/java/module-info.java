@@ -4,18 +4,20 @@
  */
 module consulo.nodejs.api
 {
-	requires transitive consulo.ide.api;
+    requires transitive consulo.ide.api;
 
-	requires transitive consulo.javascript.base.api;
+    requires transitive consulo.javascript.base.api;
 
-	// TODO remove in future
-	requires java.desktop;
+    // TODO remove in future
+    requires java.desktop;
 
-	exports consulo.nodejs;
-	exports consulo.nodejs.bundle;
-	exports consulo.nodejs.icon;
-	exports consulo.nodejs.module.extension;
-	exports consulo.nodejs.packages.call;
-	exports consulo.nodejs.run;
-	exports consulo.nodejs.localize;
+    exports consulo.nodejs;
+    exports consulo.nodejs.bundle;
+    exports consulo.nodejs.icon;
+    exports consulo.nodejs.module.extension;
+    exports consulo.nodejs.packages.call;
+    exports consulo.nodejs.run;
+    exports consulo.nodejs.localize;
+
+    opens consulo.nodejs.run to consulo.util.xml.serializer;
 }
