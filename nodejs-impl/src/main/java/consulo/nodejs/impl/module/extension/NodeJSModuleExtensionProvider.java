@@ -10,7 +10,7 @@ import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.ui.image.Image;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL

@@ -19,7 +19,7 @@ package consulo.nodejs.impl.packages.jom;
 import consulo.json.jom.JomElement;
 import consulo.json.jom.JomPropertyGetter;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.Map;
 import java.util.Set;
 

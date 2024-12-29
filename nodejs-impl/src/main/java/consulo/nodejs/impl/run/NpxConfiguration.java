@@ -15,8 +15,8 @@ import consulo.nodejs.run.NodeJSConfigurationBase;
 import consulo.nodejs.run.NodeJSRunState;
 import consulo.process.ExecutionException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 

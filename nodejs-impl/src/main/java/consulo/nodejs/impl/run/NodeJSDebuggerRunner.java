@@ -40,7 +40,7 @@ import consulo.util.lang.ExceptionUtil;
 import consulo.util.lang.StringUtil;
 import consulo.util.lang.ref.Ref;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.IOException;
 
 /**

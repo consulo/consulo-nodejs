@@ -27,7 +27,7 @@ import consulo.ui.image.Image;
 import consulo.util.lang.Comparing;
 import consulo.virtualFileSystem.VirtualFile;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL

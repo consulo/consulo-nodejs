@@ -10,7 +10,7 @@ import consulo.module.Module;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.virtualFileSystem.VirtualFile;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.function.Predicate;
 
 /**

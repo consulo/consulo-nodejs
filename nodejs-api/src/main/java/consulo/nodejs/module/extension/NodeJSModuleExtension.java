@@ -26,7 +26,7 @@ import consulo.module.content.layer.extension.ModuleExtensionWithSdkBase;
 import consulo.nodejs.bundle.NodeJSBundleType;
 import org.jdom.Element;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL

@@ -28,7 +28,7 @@ import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.nodejs.run.NodeJSConfiguration;
 import consulo.project.Project;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL

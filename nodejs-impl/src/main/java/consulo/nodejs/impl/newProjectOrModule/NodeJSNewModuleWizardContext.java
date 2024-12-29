@@ -3,7 +3,7 @@ package consulo.nodejs.impl.newProjectOrModule;
 import consulo.content.bundle.Sdk;
 import consulo.ide.newModule.NewModuleWizardContext;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
