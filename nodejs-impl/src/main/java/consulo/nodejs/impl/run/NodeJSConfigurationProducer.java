@@ -26,7 +26,7 @@ import consulo.nodejs.run.NodeJSConfigurationProducerUtil;
 import consulo.util.io.FileUtil;
 import consulo.util.lang.Comparing;
 import consulo.util.lang.ObjectUtil;
-import consulo.util.lang.ref.Ref;
+import consulo.util.lang.ref.SimpleReference;
 import consulo.virtualFileSystem.VirtualFile;
 
 /**
@@ -34,37 +34,32 @@ import consulo.virtualFileSystem.VirtualFile;
  * @since 03.12.2015
  */
 @ExtensionImpl
-public class NodeJSConfigurationProducer extends RunConfigurationProducer<NodeJSConfiguration>
-{
-	public NodeJSConfigurationProducer()
-	{
-		super(NodeJSConfigurationType.getInstance());
-	}
+public class NodeJSConfigurationProducer extends RunConfigurationProducer<NodeJSConfiguration> {
+    public NodeJSConfigurationProducer() {
+        super(NodeJSConfigurationType.getInstance());
+    }
 
-	@Override
-	protected boolean setupConfigurationFromContext(NodeJSConfiguration configuration, ConfigurationContext context, Ref<PsiElement> sourceElement)
-	{
-		VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, null);
-		if(executableFile != null)
-		{
-			Module module = context.getModule();
-			assert module != null;
-			configuration.setModule(module);
-			String moduleDirPath = module.getModuleDirPath();
-			String path = executableFile.getPath();
-			String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(path), '/');
+    @Override
+    protected boolean setupConfigurationFromContext(NodeJSConfiguration configuration, ConfigurationContext context, SimpleReference<PsiElement> sourceElement) {
+        VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, null);
+        if (executableFile != null) {
+            Module module = context.getModule();
+            assert module != null;
+            configuration.setModule(module);
+            String moduleDirPath = module.getModuleDirPath();
+            String path = executableFile.getPath();
+            String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(path), '/');
 
-			configuration.setName(ObjectUtil.notNull(relativePath, path));
-			configuration.setScriptFilePath(ObjectUtil.notNull(relativePath, path));
-			return true;
-		}
-		return false;
-	}
+            configuration.setName(ObjectUtil.notNull(relativePath, path));
+            configuration.setScriptFilePath(ObjectUtil.notNull(relativePath, path));
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public boolean isConfigurationFromContext(NodeJSConfiguration configuration, ConfigurationContext context)
-	{
-		VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, null);
-		return Comparing.equal(executableFile, configuration.getScriptFile());
-	}
+    @Override
+    public boolean isConfigurationFromContext(NodeJSConfiguration configuration, ConfigurationContext context) {
+        VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, null);
+        return Comparing.equal(executableFile, configuration.getScriptFile());
+    }
 }

@@ -25,7 +25,6 @@ import consulo.execution.action.RunConfigurationProducer;
 import consulo.execution.configuration.RunConfiguration;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
-import consulo.language.util.ModuleUtilCore;
 import consulo.mocha.module.extension.MochaModuleExtension;
 import consulo.mocha.psi.MochaPsiElementUtil;
 import consulo.module.Module;
@@ -35,7 +34,7 @@ import consulo.nodejs.run.NodeJSConfigurationProducerUtil;
 import consulo.util.io.FileUtil;
 import consulo.util.lang.Comparing;
 import consulo.util.lang.ObjectUtil;
-import consulo.util.lang.ref.Ref;
+import consulo.util.lang.ref.SimpleReference;
 import consulo.virtualFileSystem.VirtualFile;
 
 import java.util.function.Predicate;
@@ -45,63 +44,55 @@ import java.util.function.Predicate;
  * @since 19.12.2015
  */
 @ExtensionImpl
-public class MochaConfigurationProducer extends RunConfigurationProducer<MochaConfiguration>
-{
-	private static final Predicate<JSFile> ourFileCondition = file ->
-	{
-		Module module = ModuleUtilCore.findModuleForPsiElement(file);
-		return module != null &&
-				ModuleUtilCore.getExtension(module, MochaModuleExtension.class) != null &&
-				NpmRunUtil.findNpmModule(module,  MochaPsiElementUtil.MOCHA) != null &&
-				MochaPsiElementUtil.containsTestsInFiles(file);
-	};
+public class MochaConfigurationProducer extends RunConfigurationProducer<MochaConfiguration> {
+    private static final Predicate<JSFile> ourFileCondition = file ->
+    {
+        Module module = file.getModule();
+        return module != null &&
+            module.getExtension(MochaModuleExtension.class) != null &&
+            NpmRunUtil.findNpmModule(module, MochaPsiElementUtil.MOCHA) != null &&
+            MochaPsiElementUtil.containsTestsInFiles(file);
+    };
 
-	public MochaConfigurationProducer()
-	{
-		super(MochaConfigurationType.getInstance());
-	}
+    public MochaConfigurationProducer() {
+        super(MochaConfigurationType.getInstance());
+    }
 
-	@Override
-	protected boolean setupConfigurationFromContext(MochaConfiguration configuration, ConfigurationContext context, Ref<PsiElement> sourceElement)
-	{
-		VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, ourFileCondition);
-		if(executableFile != null)
-		{
-			Module module = context.getModule();
-			assert module != null;
-			configuration.setModule(module);
-			String moduleDirPath = module.getModuleDirPath();
-			String path = executableFile.getPath();
-			String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(path), '/');
+    @Override
+    protected boolean setupConfigurationFromContext(MochaConfiguration configuration, ConfigurationContext context, SimpleReference<PsiElement> sourceElement) {
+        VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, ourFileCondition);
+        if (executableFile != null) {
+            Module module = context.getModule();
+            assert module != null;
+            configuration.setModule(module);
+            String moduleDirPath = module.getModuleDirPath();
+            String path = executableFile.getPath();
+            String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(path), '/');
 
-			configuration.setName(ObjectUtil.notNull(relativePath, path));
-			configuration.setTargetType(MochaConfiguration.TargetType.FILE);
-			configuration.setFilePath(ObjectUtil.notNull(relativePath, path));
-			return true;
-		}
-		return false;
-	}
+            configuration.setName(ObjectUtil.notNull(relativePath, path));
+            configuration.setTargetType(MochaConfiguration.TargetType.FILE);
+            configuration.setFilePath(ObjectUtil.notNull(relativePath, path));
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public boolean isConfigurationFromContext(MochaConfiguration configuration, ConfigurationContext context)
-	{
-		VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, ourFileCondition);
-		return configuration.getTargetType() == MochaConfiguration.TargetType.FILE && Comparing.equal(executableFile, configuration.getFileOrDirectory());
-	}
+    @Override
+    public boolean isConfigurationFromContext(MochaConfiguration configuration, ConfigurationContext context) {
+        VirtualFile executableFile = NodeJSConfigurationProducerUtil.findExecutableFile(context, ourFileCondition);
+        return configuration.getTargetType() == MochaConfiguration.TargetType.FILE && Comparing.equal(executableFile, configuration.getFileOrDirectory());
+    }
 
-	@Override
-	@RequiredReadAction
-	public boolean shouldReplace(ConfigurationFromContext self, ConfigurationFromContext other)
-	{
-		RunConfiguration configuration = other.getConfiguration();
-		if(configuration instanceof NodeJSConfiguration)
-		{
-			PsiFile containingFile = other.getSourceElement().getContainingFile();
-			if(containingFile instanceof JSFile)
-			{
-				return ourFileCondition.test((JSFile) containingFile);
-			}
-		}
-		return false;
-	}
+    @Override
+    @RequiredReadAction
+    public boolean shouldReplace(ConfigurationFromContext self, ConfigurationFromContext other) {
+        RunConfiguration configuration = other.getConfiguration();
+        if (configuration instanceof NodeJSConfiguration) {
+            PsiFile containingFile = other.getSourceElement().getContainingFile();
+            if (containingFile instanceof JSFile) {
+                return ourFileCondition.test((JSFile) containingFile);
+            }
+        }
+        return false;
+    }
 }
