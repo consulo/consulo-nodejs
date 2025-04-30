@@ -16,28 +16,26 @@
 package consulo.nodejs.impl.run;
 
 import consulo.annotation.component.ExtensionImpl;
-import consulo.execution.configuration.ConfigurationFactory;
-import consulo.execution.configuration.ConfigurationTypeBase;
-import consulo.execution.configuration.RunConfiguration;
-import consulo.execution.configuration.RunConfigurationModule;
+import consulo.application.Application;
+import consulo.execution.configuration.*;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.nodejs.localize.NodeJSLocalize;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.nodejs.run.NodeJSConfiguration;
 import consulo.project.Project;
-
 import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 18.03.14
+ * @since 2014-03-18
  */
 @ExtensionImpl
 public class NodeJSConfigurationType extends ConfigurationTypeBase {
     @Nonnull
     public static NodeJSConfigurationType getInstance() {
-        return EP_NAME.findExtensionOrFail(NodeJSConfigurationType.class);
+        return Application.get().getExtensionPoint(ConfigurationType.class)
+            .findExtensionOrFail(NodeJSConfigurationType.class);
     }
 
     public NodeJSConfigurationType() {
