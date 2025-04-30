@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.mocha.run;
 
 import consulo.annotation.component.ExtensionImpl;
@@ -34,31 +33,25 @@ import jakarta.annotation.Nonnull;
  * @since 19.12.2015
  */
 @ExtensionImpl
-public class MochaConfigurationType extends ConfigurationTypeBase
-{
-	@Nonnull
-	public static MochaConfigurationType getInstance()
-	{
-		return EP_NAME.findExtensionOrFail(MochaConfigurationType.class);
-	}
+public class MochaConfigurationType extends ConfigurationTypeBase {
+    @Nonnull
+    public static MochaConfigurationType getInstance() {
+        return EP_NAME.findExtensionOrFail(MochaConfigurationType.class);
+    }
 
-	public MochaConfigurationType()
-	{
-		super("#MochaConfigurationType", MochaLocalize.mochaConfigurationName(), MochaIconGroup.mocha());
+    public MochaConfigurationType() {
+        super("#MochaConfigurationType", MochaLocalize.mochaConfigurationName(), MochaIconGroup.mocha());
 
-		addFactory(new ConfigurationFactory(this)
-		{
-			@Override
-			public RunConfiguration createTemplateConfiguration(Project project)
-			{
-				return new MochaConfiguration("Unnamed", new RunConfigurationModule(project), this);
-			}
+        addFactory(new ConfigurationFactory(this) {
+            @Override
+            public RunConfiguration createTemplateConfiguration(Project project) {
+                return new MochaConfiguration("Unnamed", new RunConfigurationModule(project), this);
+            }
 
-			@Override
-			public boolean isApplicable(@Nonnull Project project)
-			{
-				return ModuleExtensionHelper.getInstance(project).hasModuleExtension(MochaModuleExtension.class);
-			}
-		});
-	}
+            @Override
+            public boolean isApplicable(@Nonnull Project project) {
+                return ModuleExtensionHelper.getInstance(project).hasModuleExtension(MochaModuleExtension.class);
+            }
+        });
+    }
 }
