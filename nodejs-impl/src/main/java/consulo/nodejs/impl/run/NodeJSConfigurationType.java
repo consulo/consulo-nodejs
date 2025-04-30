@@ -13,53 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.nodejs.impl.run;
 
 import consulo.annotation.component.ExtensionImpl;
-import consulo.execution.configuration.ConfigurationFactory;
-import consulo.execution.configuration.ConfigurationTypeBase;
-import consulo.execution.configuration.RunConfiguration;
-import consulo.execution.configuration.RunConfigurationModule;
+import consulo.application.Application;
+import consulo.execution.configuration.*;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.nodejs.localize.NodeJSLocalize;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.nodejs.run.NodeJSConfiguration;
 import consulo.project.Project;
-
 import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 18.03.14
+ * @since 2014-03-18
  */
 @ExtensionImpl
-public class NodeJSConfigurationType extends ConfigurationTypeBase
-{
-	@Nonnull
-	public static NodeJSConfigurationType getInstance()
-	{
-		return EP_NAME.findExtensionOrFail(NodeJSConfigurationType.class);
-	}
+public class NodeJSConfigurationType extends ConfigurationTypeBase {
+    @Nonnull
+    public static NodeJSConfigurationType getInstance() {
+        return Application.get().getExtensionPoint(ConfigurationType.class)
+            .findExtensionOrFail(NodeJSConfigurationType.class);
+    }
 
-	public NodeJSConfigurationType()
-	{
-		super("NodeJSConfigurationType", NodeJSLocalize.nodejsConfigurationName(), NodeJSApiIconGroup.nodejs());
+    public NodeJSConfigurationType() {
+        super("NodeJSConfigurationType", NodeJSLocalize.nodejsConfigurationName(), NodeJSApiIconGroup.nodejs());
 
-		addFactory(new ConfigurationFactory(this)
-		{
-			@Override
-			public RunConfiguration createTemplateConfiguration(Project project)
-			{
-				return new NodeJSConfiguration("Unnamed", new RunConfigurationModule(project), this);
-			}
+        addFactory(new ConfigurationFactory(this) {
+            @Override
+            public RunConfiguration createTemplateConfiguration(Project project) {
+                return new NodeJSConfiguration("Unnamed", new RunConfigurationModule(project), this);
+            }
 
-			@Override
-			public boolean isApplicable(@Nonnull Project project)
-			{
-				return ModuleExtensionHelper.getInstance(project).hasModuleExtension(NodeJSModuleExtension.class);
-			}
-		});
-	}
+            @Override
+            public boolean isApplicable(@Nonnull Project project) {
+                return ModuleExtensionHelper.getInstance(project).hasModuleExtension(NodeJSModuleExtension.class);
+            }
+        });
+    }
 }
