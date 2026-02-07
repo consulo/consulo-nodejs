@@ -16,12 +16,12 @@
 
 package consulo.nodejs.impl.packages;
 
+import com.intellij.json.JsonFileType;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.fileEditor.EditorNotificationBuilder;
 import consulo.fileEditor.EditorNotificationProvider;
 import consulo.fileEditor.FileEditor;
-import consulo.json.JsonFileType;
 import consulo.json.jom.JomElement;
 import consulo.json.jom.JomFileElement;
 import consulo.json.jom.JomManager;
@@ -31,10 +31,10 @@ import consulo.localize.LocalizeValue;
 import consulo.nodejs.packages.call.NpmRunUtil;
 import consulo.project.Project;
 import consulo.virtualFileSystem.VirtualFile;
-import jakarta.inject.Inject;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import jakarta.inject.Inject;
+
 import java.util.function.Supplier;
 
 /**
@@ -42,46 +42,39 @@ import java.util.function.Supplier;
  * @since 05.12.2015
  */
 @ExtensionImpl
-public class PackageEditorNotificationProvider implements EditorNotificationProvider
-{
-	private final Project myProject;
+public class PackageEditorNotificationProvider implements EditorNotificationProvider {
+    private final Project myProject;
 
-	@Inject
-	public PackageEditorNotificationProvider(Project project)
-	{
-		myProject = project;
-	}
+    @Inject
+    public PackageEditorNotificationProvider(Project project) {
+        myProject = project;
+    }
 
-	@Nonnull
-	@Override
-	public String getId()
-	{
-		return "npm";
-	}
+    @Nonnull
+    @Override
+    public String getId() {
+        return "npm";
+    }
 
-	@RequiredReadAction
-	@Nullable
-	@Override
-	public EditorNotificationBuilder buildNotification(@Nonnull VirtualFile file, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> supplier)
-	{
-		if(file.getFileType() != JsonFileType.INSTANCE)
-		{
-			return null;
-		}
+    @RequiredReadAction
+    @Nullable
+    @Override
+    public EditorNotificationBuilder buildNotification(@Nonnull VirtualFile file, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> supplier) {
+        if (file.getFileType() != JsonFileType.INSTANCE) {
+            return null;
+        }
 
-		final PsiFile jsonFile = PsiManager.getInstance(myProject).findFile(file);
-		if(jsonFile == null)
-		{
-			return null;
-		}
-		JomFileElement<JomElement> fileElement = JomManager.getInstance(myProject).getFileElement(jsonFile);
-		if(fileElement == null)
-		{
-			return null;
-		}
-		EditorNotificationBuilder builder = supplier.get();
-		builder.withText(LocalizeValue.localizeTODO("npm"));
-		builder.withAction(LocalizeValue.localizeTODO("Update"), e -> NpmRunUtil.run(myProject, file, NpmRunUtil.UPDATE));
-		return builder;
-	}
+        final PsiFile jsonFile = PsiManager.getInstance(myProject).findFile(file);
+        if (jsonFile == null) {
+            return null;
+        }
+        JomFileElement<JomElement> fileElement = JomManager.getInstance(myProject).getFileElement(jsonFile);
+        if (fileElement == null) {
+            return null;
+        }
+        EditorNotificationBuilder builder = supplier.get();
+        builder.withText(LocalizeValue.localizeTODO("npm"));
+        builder.withAction(LocalizeValue.localizeTODO("Update"), e -> NpmRunUtil.run(myProject, file, NpmRunUtil.UPDATE));
+        return builder;
+    }
 }

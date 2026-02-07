@@ -5,7 +5,9 @@
 module consulo.nodejs {
     requires consulo.nodejs.api;
 
-    requires consulo.javascript.json.javascript.impl;
+    requires consulo.json.api;
+    requires consulo.json.jom.api;
+    
     requires consulo.javascript.v8.debugger.impl;
 
     // TODO remove in future
