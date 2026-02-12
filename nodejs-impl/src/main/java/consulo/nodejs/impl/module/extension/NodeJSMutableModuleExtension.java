@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.nodejs.impl.module.extension;
 
 import consulo.content.bundle.Sdk;
@@ -22,6 +21,7 @@ import consulo.javascript.language.JavaScriptLanguageVersion;
 import consulo.javascript.language.StandardJavaScriptVersions;
 import consulo.javascript.module.extension.JavaScriptMutableModuleExtension;
 import consulo.language.version.LanguageVersion;
+import consulo.localize.LocalizeValue;
 import consulo.module.content.layer.ModuleRootLayer;
 import consulo.module.extension.MutableModuleInheritableNamedPointer;
 import consulo.module.ui.extension.ModuleExtensionBundleBoxBuilder;
@@ -34,61 +34,55 @@ import consulo.ui.util.LabeledComponents;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import java.util.List;
 
 /**
  * @author VISTALL
- * @since 14.03.14
+ * @since 2014-03-14
  */
-public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implements JavaScriptMutableModuleExtension<NodeJSModuleExtension>
-{
-	public NodeJSMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer rootModel)
-	{
-		super(id, rootModel);
-	}
+public class NodeJSMutableModuleExtension extends NodeJSModuleExtension implements JavaScriptMutableModuleExtension<NodeJSModuleExtension> {
+    public NodeJSMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer rootModel) {
+        super(id, rootModel);
+    }
 
-	@Nonnull
-	@Override
-	public MutableModuleInheritableNamedPointer<Sdk> getInheritableSdk()
-	{
-		return (MutableModuleInheritableNamedPointer<Sdk>) super.getInheritableSdk();
-	}
+    @Nonnull
+    @Override
+    public MutableModuleInheritableNamedPointer<Sdk> getInheritableSdk() {
+        return (MutableModuleInheritableNamedPointer<Sdk>) super.getInheritableSdk();
+    }
 
+    @Nullable
+    @Override
 	@RequiredUIAccess
-	@Nullable
-	@Override
-	public Component createConfigurationComponent(@Nonnull Disposable disposable, @Nonnull Runnable runnable)
-	{
-		VerticalLayout layout = VerticalLayout.create();
-		layout.add(ModuleExtensionBundleBoxBuilder.createAndDefine(this, disposable, runnable).build());
+    public Component createConfigurationComponent(@Nonnull Disposable disposable, @Nonnull Runnable runnable) {
+        VerticalLayout layout = VerticalLayout.create();
+        layout.add(ModuleExtensionBundleBoxBuilder.createAndDefine(this, disposable, runnable).build());
 
-		List<JavaScriptLanguageVersion> validLanguageVersions = StandardJavaScriptVersions.getInstance().getValidLanguageVersions();
+        List<JavaScriptLanguageVersion> validLanguageVersions = StandardJavaScriptVersions.getInstance().getValidLanguageVersions();
 
-		ComboBox<JavaScriptLanguageVersion> langVersionBox = ComboBox.create(validLanguageVersions);
-		langVersionBox.addValueListener(e -> setLanguageVersion(e.getValue()));
-		langVersionBox.setValue((JavaScriptLanguageVersion) getLanguageVersion());
-		langVersionBox.setRender((presentation, i, version) -> presentation.append(version.getPresentableName()));
+        ComboBox<JavaScriptLanguageVersion> langVersionBox = ComboBox.create(validLanguageVersions);
+        langVersionBox.addValueListener(e -> setLanguageVersion(e.getValue()));
+        langVersionBox.setValue((JavaScriptLanguageVersion) getLanguageVersion());
+        langVersionBox.setTextRenderer(version -> LocalizeValue.of(version.getPresentableName()));
 
-		layout.add(LabeledComponents.leftFilled("Language Version", langVersionBox));
+        layout.add(LabeledComponents.leftFilled("Language Version", langVersionBox));
 
-		return layout;
-	}
+        return layout;
+    }
 
-	@Override
-	public void setEnabled(boolean b)
-	{
-		myIsEnabled = b;
-	}
+    @Override
+    public void setEnabled(boolean b) {
+        myIsEnabled = b;
+    }
 
-	@Override
-	public boolean isModified(@Nonnull NodeJSModuleExtension nodeJSModuleExtension)
-	{
-		return isModifiedImpl(nodeJSModuleExtension) || myLanguageVersion != nodeJSModuleExtension.getLanguageVersion();
-	}
+    @Override
+    public boolean isModified(@Nonnull NodeJSModuleExtension nodeJSModuleExtension) {
+        return isModifiedImpl(nodeJSModuleExtension) || myLanguageVersion != nodeJSModuleExtension.getLanguageVersion();
+    }
 
-	@Override
-	public void setLanguageVersion(@Nonnull LanguageVersion languageVersion)
-	{
-		myLanguageVersion = languageVersion;
-	}
+    @Override
+    public void setLanguageVersion(@Nonnull LanguageVersion languageVersion) {
+        myLanguageVersion = languageVersion;
+    }
 }
