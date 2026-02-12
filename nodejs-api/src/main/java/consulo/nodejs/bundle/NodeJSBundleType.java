@@ -27,12 +27,12 @@ import consulo.content.bundle.SdkModificator;
 import consulo.content.bundle.SdkType;
 import consulo.javascript.language.JavaScriptFileType;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
+import consulo.nodejs.localize.NodeJSLocalize;
 import consulo.platform.Platform;
 import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
 import consulo.process.util.CapturingProcessUtil;
 import consulo.process.util.ProcessOutput;
-import consulo.ui.image.Image;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
@@ -79,7 +79,7 @@ public class NodeJSBundleType extends SdkType {
     }
 
     public NodeJSBundleType() {
-        super("NODEJS");
+        super("NODEJS", NodeJSLocalize.nodejsName(), NodeJSApiIconGroup.nodejs());
     }
 
     @Nonnull
@@ -172,17 +172,5 @@ public class NodeJSBundleType extends SdkType {
     @Override
     public String suggestSdkName(String s, String sdkHome) {
         return "nodejs " + getVersionString(sdkHome);
-    }
-
-    @Nonnull
-    @Override
-    public String getPresentableName() {
-        return "NodeJS";
-    }
-
-    @Nonnull
-    @Override
-    public Image getIcon() {
-        return NodeJSApiIconGroup.nodejs();
     }
 }

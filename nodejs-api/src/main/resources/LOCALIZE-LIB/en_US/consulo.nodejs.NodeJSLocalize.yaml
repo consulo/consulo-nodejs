@@ -1,4 +1,6 @@
 nodejs.configuration.name:
-  text: 'Node.js'
+    text: Node.js
+nodejs.name:
+    text: Node.js
 npx.configuration.name:
-  text: Npx
+    text: Npx
