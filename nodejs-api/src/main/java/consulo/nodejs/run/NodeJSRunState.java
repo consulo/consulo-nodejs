@@ -34,100 +34,87 @@ import consulo.process.event.ProcessListener;
 import consulo.process.local.ProcessHandlerFactory;
 import consulo.util.collection.SmartList;
 import consulo.util.lang.StringUtil;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import java.util.List;
 
 /**
  * @author VISTALL
  * @since 20.03.14
  */
-public class NodeJSRunState implements RunProfileState
-{
-	private final Module myModule;
-	private final Sdk mySdk;
-	private final NodeJSConfigurationBase myConfiguration;
-	private final List<String> myVmArguments = new SmartList<String>();
-	private final List<String> myArguments = new SmartList<String>();
-	private final List<ProcessListener> myProcessListeners = new SmartList<ProcessListener>();
+public class NodeJSRunState implements RunProfileState {
+    private final Module myModule;
+    private final Sdk mySdk;
+    private final NodeJSConfigurationBase myConfiguration;
+    private final List<String> myVmArguments = new SmartList<String>();
+    private final List<String> myArguments = new SmartList<String>();
+    private final List<ProcessListener> myProcessListeners = new SmartList<ProcessListener>();
 
-	public NodeJSRunState(@Nullable Module module, @Nonnull Sdk sdk, NodeJSConfigurationBase configuration)
-	{
-		myModule = module;
-		mySdk = sdk;
-		myConfiguration = configuration;
-	}
+    public NodeJSRunState(@Nullable Module module, @Nonnull Sdk sdk, NodeJSConfigurationBase configuration) {
+        myModule = module;
+        mySdk = sdk;
+        myConfiguration = configuration;
+    }
 
-	public void addProcessListener(ProcessListener processListener)
-	{
-		myProcessListeners.add(processListener);
-	}
+    public void addProcessListener(ProcessListener processListener) {
+        myProcessListeners.add(processListener);
+    }
 
-	public void addArgument(String argument)
-	{
-		myArguments.add(argument);
-	}
+    public void addArgument(String argument) {
+        myArguments.add(argument);
+    }
 
-	public void addVmArgument(String argument)
-	{
-		myVmArguments.add(argument);
-	}
+    public void addVmArgument(String argument) {
+        myVmArguments.add(argument);
+    }
 
-	protected void setupExePath(@Nonnull GeneralCommandLine commandLine, @Nonnull Sdk sdk)
-	{
-		commandLine.setExePath(NodeJSBundleType.getExePath(mySdk).getPath());
-	}
+    protected void setupExePath(@Nonnull GeneralCommandLine commandLine, @Nonnull Sdk sdk) {
+        commandLine.setExePath(NodeJSBundleType.getExePath(mySdk).getPath());
+    }
 
-	@Nullable
-	@Override
-	public ExecutionResult execute(Executor executor, @Nonnull ProgramRunner programRunner) throws ExecutionException
-	{
-		GeneralCommandLine generalCommandLine = new GeneralCommandLine();
+    @Nullable
+    @Override
+    public ExecutionResult execute(Executor executor, @Nonnull ProgramRunner programRunner) throws ExecutionException {
+        GeneralCommandLine generalCommandLine = new GeneralCommandLine();
 
-		String workingDirectory = myConfiguration.getWorkingDirectory();
-		if(!StringUtil.isEmpty(workingDirectory))
-		{
-			generalCommandLine.withWorkDirectory(myConfiguration.getWorkingDirectory());
-		}
-		else if(myModule != null)
-		{
-			generalCommandLine.withWorkDirectory(myModule.getModuleDirPath());
-		}
+        String workingDirectory = myConfiguration.getWorkingDirectory();
+        if (!StringUtil.isEmpty(workingDirectory)) {
+            generalCommandLine.withWorkDirectory(myConfiguration.getWorkingDirectory());
+        }
+        else if (myModule != null) {
+            generalCommandLine.withWorkDirectory(myModule.getModuleDirPath());
+        }
 
-		setupExePath(generalCommandLine, mySdk);
+        setupExePath(generalCommandLine, mySdk);
 
-		String vmParameters = myConfiguration.getVmParameters();
-		if(!StringUtil.isEmpty(vmParameters))
-		{
-			generalCommandLine.addParameters(StringUtil.splitHonorQuotes(vmParameters, ' '));
-		}
+        String vmParameters = myConfiguration.getVmParameters();
+        if (!StringUtil.isEmpty(vmParameters)) {
+            generalCommandLine.addParameters(StringUtil.splitHonorQuotes(vmParameters, ' '));
+        }
 
-		generalCommandLine.addParameters(myVmArguments);
-		generalCommandLine.addParameters(myArguments);
-		generalCommandLine.withPassParentEnvironment(myConfiguration.isPassParentEnvs());
-		generalCommandLine.withEnvironment(myConfiguration.getEnvs());
+        generalCommandLine.addParameters(myVmArguments);
+        generalCommandLine.addParameters(myArguments);
+        generalCommandLine.withPassParentEnvironment(myConfiguration.isPassParentEnvs());
+        generalCommandLine.withEnvironment(myConfiguration.getEnvs());
 
-		String programParameters = myConfiguration.getProgramParameters();
-		if(!StringUtil.isEmpty(programParameters))
-		{
-			generalCommandLine.addParameters(StringUtil.splitHonorQuotes(programParameters, ' '));
-		}
+        String programParameters = myConfiguration.getProgramParameters();
+        if (!StringUtil.isEmpty(programParameters)) {
+            generalCommandLine.addParameters(StringUtil.splitHonorQuotes(programParameters, ' '));
+        }
 
-		ProcessHandler processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(generalCommandLine);
-		for(ProcessListener processListener : myProcessListeners)
-		{
-			processHandler.addProcessListener(processListener);
-		}
-		ConsoleView console = createConsole(processHandler);
-		console.attachToProcess(processHandler);
-		return new DefaultExecutionResult(console, processHandler);
-	}
+        ProcessHandler processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(generalCommandLine);
+        for (ProcessListener processListener : myProcessListeners) {
+            processHandler.addProcessListener(processListener);
+        }
+        ConsoleView console = createConsole(processHandler);
+        console.attachToProcess(processHandler);
+        return new DefaultExecutionResult(console, processHandler);
+    }
 
-	@Nonnull
-	public ConsoleView createConsole(ProcessHandler processHandler)
-	{
-		TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myConfiguration.getProject());
-		return builder.getConsole();
-	}
+    @Nonnull
+    public ConsoleView createConsole(ProcessHandler processHandler) {
+        TextConsoleBuilder builder = TextConsoleBuilderFactory.getInstance().createBuilder(myConfiguration.getProject());
+        return builder.getConsole();
+    }
 }
