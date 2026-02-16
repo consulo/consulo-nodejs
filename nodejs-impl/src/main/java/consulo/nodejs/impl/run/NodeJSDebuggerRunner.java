@@ -36,7 +36,6 @@ import consulo.process.ProcessOutputTypes;
 import consulo.process.event.ProcessEvent;
 import consulo.process.event.ProcessListener;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.util.concurrent.CancellablePromise;
 import consulo.util.dataholder.Key;
 import consulo.util.io.NetUtil;
 import consulo.util.lang.ExceptionUtil;
@@ -97,11 +96,6 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner {
                                         tools.getDebugger().enable();
 
                                         debugProcess.initTools(tools);
-
-                                        CancellablePromise<Void> promise =
-                                            ReadAction.nonBlocking(() -> debugProcess.getSession().initBreakpoints()).submitDefault();
-
-                                        promise.onProcessed(unused -> tools.getRuntime().runIfWaitingForDebugger());
 
                                         vm.set(null);
                                     }
