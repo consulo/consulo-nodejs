@@ -18,7 +18,6 @@ package consulo.nodejs.impl.run;
 
 import com.github.kklisura.cdt.services.impl.ChromeDevToolsServiceImpl;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.application.ReadAction;
 import consulo.document.FileDocumentManager;
 import consulo.execution.ExecutionResult;
 import consulo.execution.configuration.RunProfile;
