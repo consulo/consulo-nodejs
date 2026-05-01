@@ -25,6 +25,7 @@ module consulo.nodejs {
     requires consulo.localize.api;
     requires consulo.module.api;
     requires consulo.module.content.api;
+    requires consulo.module.creation.api;
     requires consulo.module.ui.api;
     requires consulo.platform.api;
     requires consulo.process.api;

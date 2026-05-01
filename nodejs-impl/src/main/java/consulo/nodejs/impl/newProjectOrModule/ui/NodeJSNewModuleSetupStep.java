@@ -18,8 +18,8 @@ package consulo.nodejs.impl.newProjectOrModule.ui;
 
 import consulo.content.bundle.SdkTable;
 import consulo.disposer.Disposable;
-import consulo.ide.newModule.ui.UnifiedProjectOrModuleNameStep;
 import consulo.localize.LocalizeValue;
+import consulo.module.creation.ui.UnifiedProjectOrModuleNameStep;
 import consulo.module.ui.BundleBox;
 import consulo.module.ui.BundleBoxBuilder;
 import consulo.nodejs.bundle.NodeJSBundleType;

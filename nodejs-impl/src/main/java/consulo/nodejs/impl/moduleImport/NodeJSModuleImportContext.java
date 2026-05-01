@@ -1,7 +1,7 @@
 package consulo.nodejs.impl.moduleImport;
 
 import consulo.content.bundle.Sdk;
-import consulo.ide.moduleImport.ModuleImportContext;
+import consulo.module.creation.importing.ModuleImportContext;
 import consulo.nodejs.impl.newProjectOrModule.NodeJSNewModuleWizardContext;
 import consulo.project.Project;
 

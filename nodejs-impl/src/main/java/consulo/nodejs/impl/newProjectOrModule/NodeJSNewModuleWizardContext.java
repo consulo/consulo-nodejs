@@ -1,8 +1,8 @@
 package consulo.nodejs.impl.newProjectOrModule;
 
 import consulo.content.bundle.Sdk;
-import consulo.ide.newModule.NewModuleWizardContext;
 
+import consulo.module.creation.NewModuleWizardContext;
 import jakarta.annotation.Nullable;
 
 /**
