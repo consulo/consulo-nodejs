@@ -22,10 +22,12 @@ import consulo.container.plugin.PluginManager;
 import consulo.content.OrderRootType;
 import consulo.content.base.BinariesOrderRootType;
 import consulo.content.base.SourcesOrderRootType;
+import consulo.content.bundle.BundleType;
 import consulo.content.bundle.Sdk;
 import consulo.content.bundle.SdkModificator;
 import consulo.content.bundle.SdkType;
 import consulo.javascript.language.JavaScriptFileType;
+import consulo.logging.Logger;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.nodejs.localize.NodeJSLocalize;
 import consulo.platform.Platform;
@@ -40,79 +42,90 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 /**
  * @author VISTALL
  * @since 14.03.14
  */
 @ExtensionImpl
-public class NodeJSBundleType extends SdkType {
+public class NodeJSBundleType extends BundleType {
+    private static final Logger LOG = Logger.getInstance(NodeJSBundleType.class);
+
     @Nonnull
     public static NodeJSBundleType getInstance() {
         return Application.get().getExtensionPoint(SdkType.class).findExtensionOrFail(NodeJSBundleType.class);
     }
 
     @Nonnull
-    public static File getExePath(@Nonnull Sdk sdk) {
-        String homePath = sdk.getHomePath();
-        assert homePath != null;
-        return getExePath(homePath);
+    public static Path getExePath(@Nonnull Sdk sdk) {
+        return getExePath(sdk.getPlatform(), sdk.getHomeNioPath());
     }
 
     @Nonnull
-    public static File getExePath(@Nonnull String home) {
-        return getExePath(home, "node.exe", "node");
+    public static Path getExePath(@Nonnull Platform platform, @Nonnull Path home) {
+        return getExePath(platform, home, "node.exe", "node");
     }
 
     @Nonnull
-    public static File getExePath(@Nonnull String home, @Nonnull String winName, String otherName) {
-        String executable = Platform.current().os().isWindows() ? winName : otherName;
+    public static Path getExePath(@Nonnull Platform platform, @Nonnull Path home, @Nonnull String winName, String otherName) {
+        String executable = platform.os().isWindows() ? winName : otherName;
 
-        File firstTry = new File(home, "bin/" + executable);
-        if (firstTry.exists()) {
+        Path firstTry = home.resolve("bin/" + executable);
+        if (Files.exists(firstTry)) {
             return firstTry;
         }
-        return new File(home, executable);
+        return home.resolve(executable);
     }
 
     public NodeJSBundleType() {
         super("NODEJS", NodeJSLocalize.nodejsName(), NodeJSApiIconGroup.nodejs());
     }
 
-    @Nonnull
     @Override
-    public Collection<String> suggestHomePaths() {
-        List<String> paths = new ArrayList<>();
-        Platform platform = Platform.current();
+    public void collectHomePaths(Platform platform, Consumer<Path> consumer) {
         if (platform.os().isWindows()) {
-            collectNodePathsAtWindows(paths, "ProgramFiles");
-            collectNodePathsAtWindows(paths, "ProgramFiles(x86)");
+            collectNodePathsAtWindows(platform, consumer, "ProgramFiles");
+            collectNodePathsAtWindows(platform, consumer, "ProgramFiles(x86)");
         }
         else {
-            File userHome = platform.user().homePath().toFile();
+            Path usrBinNode = platform.fs().getPath("/usr/bin/node");
+            if (Files.exists(usrBinNode)) {
+                consumer.accept(usrBinNode.getParent());
+            }
 
-            File nvmHome = new File(userHome, ".nvm/versions/node");
-            if (nvmHome.exists()) {
-                for (File file : nvmHome.listFiles()) {
-                    if (file.isDirectory()) {
-                        paths.add(file.getPath());
-                    }
+            Path userHome = platform.user().homePath();
+
+            Path nvmNodeDir = userHome.resolve(".nvm/versions/node");
+            if (Files.exists(nvmNodeDir)) {
+                try {
+                    Files.list(nvmNodeDir).forEach(path -> {
+                        if (Files.isDirectory(path)) {
+                            consumer.accept(path);
+                        }
+                    });
+                }
+                catch (IOException e) {
+                    LOG.warn("Fail to visit dir " + nvmNodeDir, e);
                 }
             }
         }
-        return paths;
     }
 
-    private static void collectNodePathsAtWindows(List<String> list, String env) {
-        String programFiles = Platform.current().os().getEnvironmentVariable(env);
-        if (programFiles != null) {
-            File nodejsPath = new File(programFiles, "nodejs");
-            if (nodejsPath.exists()) {
-                list.add(nodejsPath.getPath());
-            }
+    private static void collectNodePathsAtWindows(Platform platform, Consumer<Path> pathConsumer, String env) {
+        String programFiles = platform.os().getEnvironmentVariable(env);
+        if (programFiles == null) {
+            return;
+        }
+
+        Path programFilesPath = platform.fs().getPath(programFiles);
+
+        Path nodejsPath = programFilesPath.resolve("nodejs");
+        if (Files.exists(nodejsPath)) {
+            pathConsumer.accept(nodejsPath);
         }
     }
 
@@ -134,23 +147,25 @@ public class NodeJSBundleType extends SdkType {
     }
 
     @Override
-    public boolean canCreatePredefinedSdks() {
-        return true;
+    public boolean canCreatePredefinedSdks(Platform platform) {
+        return Platform.LOCAL.equals(platform.getId());
     }
 
     @Override
-    public boolean isValidSdkHome(String sdkHome) {
-        return getExePath(sdkHome).exists();
+    public boolean isValidSdkHome(Platform platform, Path path) {
+        return Files.exists(getExePath(platform, path));
     }
 
-    @Nullable
     @Override
-    public String getVersionString(String s) {
+    public @Nullable String getVersionString(Platform platform, Path path) {
+        Path exePath = getExePath(platform, path);
+
         try {
             GeneralCommandLine commandLine = new GeneralCommandLine();
-            commandLine.setExePath(getExePath(s).getPath());
-            commandLine.withWorkDirectory(s);
+            commandLine.withExecutablePath(exePath);
+            commandLine.withWorkingDirectory(path);
             commandLine.addParameter("-v");
+            commandLine.withPlatform(platform);
 
             ProcessOutput processOutput = CapturingProcessUtil.execAndGetOutput(commandLine);
             String stdout = processOutput.getStdout();
@@ -160,6 +175,7 @@ public class NodeJSBundleType extends SdkType {
             return stdout.trim();
         }
         catch (ExecutionException e) {
+            LOG.warn("Failed to execute " + exePath, e);
             return null;
         }
     }
@@ -170,7 +186,7 @@ public class NodeJSBundleType extends SdkType {
     }
 
     @Override
-    public String suggestSdkName(String s, String sdkHome) {
-        return "nodejs " + getVersionString(sdkHome);
+    public String suggestSdkName(Platform platform, String currentSdkName, Path path) {
+        return getDisplayName().get() + " " + getVersionString(platform, path);
     }
 }

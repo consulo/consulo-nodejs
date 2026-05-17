@@ -27,6 +27,7 @@ import consulo.execution.ui.console.TextConsoleBuilder;
 import consulo.execution.ui.console.TextConsoleBuilderFactory;
 import consulo.module.Module;
 import consulo.nodejs.bundle.NodeJSBundleType;
+import consulo.platform.Platform;
 import consulo.process.ExecutionException;
 import consulo.process.ProcessHandler;
 import consulo.process.cmd.GeneralCommandLine;
@@ -69,14 +70,19 @@ public class NodeJSRunState implements RunProfileState {
         myVmArguments.add(argument);
     }
 
-    protected void setupExePath(@Nonnull GeneralCommandLine commandLine, @Nonnull Sdk sdk) {
-        commandLine.setExePath(NodeJSBundleType.getExePath(mySdk).getPath());
+    protected void setupExePath(@Nonnull GeneralCommandLine commandLine,
+                                @Nonnull Sdk sdk,
+                                @Nonnull Platform platform) {
+        commandLine.withExecutablePath(NodeJSBundleType.getExePath(mySdk));
     }
 
     @Nullable
     @Override
     public ExecutionResult execute(Executor executor, @Nonnull ProgramRunner programRunner) throws ExecutionException {
+        Platform platform = Platform.current();
+
         GeneralCommandLine generalCommandLine = new GeneralCommandLine();
+        generalCommandLine.withPlatform(platform);
 
         String workingDirectory = myConfiguration.getWorkingDirectory();
         if (!StringUtil.isEmpty(workingDirectory)) {
@@ -86,7 +92,7 @@ public class NodeJSRunState implements RunProfileState {
             generalCommandLine.withWorkDirectory(myModule.getModuleDirPath());
         }
 
-        setupExePath(generalCommandLine, mySdk);
+        setupExePath(generalCommandLine, mySdk, platform);
 
         String vmParameters = myConfiguration.getVmParameters();
         if (!StringUtil.isEmpty(vmParameters)) {
