@@ -184,9 +184,4 @@ public class NodeJSBundleType extends BundleType {
     public boolean isRootTypeApplicable(OrderRootType type) {
         return type == BinariesOrderRootType.getInstance() || type == SourcesOrderRootType.getInstance();
     }
-
-    @Override
-    public String suggestSdkName(Platform platform, String currentSdkName, Path path) {
-        return getDisplayName().get() + " " + getVersionString(platform, path);
-    }
 }
