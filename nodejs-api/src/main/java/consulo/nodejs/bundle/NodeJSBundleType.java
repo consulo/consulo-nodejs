@@ -22,10 +22,7 @@ import consulo.container.plugin.PluginManager;
 import consulo.content.OrderRootType;
 import consulo.content.base.BinariesOrderRootType;
 import consulo.content.base.SourcesOrderRootType;
-import consulo.content.bundle.BundleType;
-import consulo.content.bundle.Sdk;
-import consulo.content.bundle.SdkModificator;
-import consulo.content.bundle.SdkType;
+import consulo.content.bundle.*;
 import consulo.javascript.language.JavaScriptFileType;
 import consulo.logging.Logger;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
@@ -45,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -52,8 +50,10 @@ import java.util.function.Consumer;
  * @since 14.03.14
  */
 @ExtensionImpl
-public class NodeJSBundleType extends BundleType {
+public class NodeJSBundleType extends PlatformAwareSdkType {
     private static final Logger LOG = Logger.getInstance(NodeJSBundleType.class);
+
+    private static final Set<String> ourAllowedRootTypeIds = Set.of(BinariesOrderRootType.ID, SourcesOrderRootType.ID);
 
     @Nonnull
     public static NodeJSBundleType getInstance() {
@@ -137,8 +137,8 @@ public class NodeJSBundleType extends BundleType {
         if (stubsDirectory != null) {
             for (VirtualFile file : stubsDirectory.getChildren()) {
                 if (file.getFileType() == JavaScriptFileType.INSTANCE) {
-                    modificator.addRoot(file, BinariesOrderRootType.getInstance());
-                    modificator.addRoot(file, SourcesOrderRootType.getInstance());
+                    modificator.addRoot(file, BinariesOrderRootType.ID);
+                    modificator.addRoot(file, SourcesOrderRootType.ID);
                 }
             }
         }
@@ -181,7 +181,7 @@ public class NodeJSBundleType extends BundleType {
     }
 
     @Override
-    public boolean isRootTypeApplicable(OrderRootType type) {
-        return type == BinariesOrderRootType.getInstance() || type == SourcesOrderRootType.getInstance();
+    public boolean isRootTypeApplicable(String type) {
+        return ourAllowedRootTypeIds.contains(type);
     }
 }
