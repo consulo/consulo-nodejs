@@ -27,49 +27,42 @@ import consulo.nodejs.impl.newProjectOrModule.NodeJSNewModuleWizardContext;
 import consulo.ui.ComboBox;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.util.FormBuilder;
-
 import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
  * @since 17.12.2015
  */
-public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> extends UnifiedProjectOrModuleNameStep<C>
-{
-	private BundleBox myBundleBox;
+public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> extends UnifiedProjectOrModuleNameStep<C> {
+    private BundleBox myBundleBox;
 
-	public NodeJSNewModuleSetupStep(@Nonnull C context)
-	{
-		super(context);
-	}
+    public NodeJSNewModuleSetupStep(@Nonnull C context) {
+        super(context);
+    }
 
-	@RequiredUIAccess
-	@Override
-	protected void extend(@Nonnull FormBuilder builder, @Nonnull Disposable uiDisposable)
-	{
-		super.extend(builder, uiDisposable);
+    @RequiredUIAccess
+    @Override
+    protected void extend(@Nonnull FormBuilder builder, @Nonnull Disposable uiDisposable) {
+        super.extend(builder, uiDisposable);
 
-		BundleBoxBuilder boxBuilder = BundleBoxBuilder.create(uiDisposable);
-		boxBuilder.withSdkTypeFilterByType(NodeJSBundleType.getInstance());
+        BundleBoxBuilder boxBuilder = BundleBoxBuilder.create(uiDisposable);
+        boxBuilder.withSdkTypeFilterByType(NodeJSBundleType.getInstance());
 
-		builder.addLabeled(LocalizeValue.localizeTODO("Bundle:"), (myBundleBox = boxBuilder.build()).getComponent());
+        builder.addLabeled(LocalizeValue.localizeTODO("Bundle:"), (myBundleBox = boxBuilder.build()).getComponent());
 
-		ComboBox<BundleBox.BundleBoxItem> component = myBundleBox.getComponent();
-		if(component.getListModel().getSize() > 0)
-		{
-			component.setValueByIndex(0);
-		}
-	}
+        ComboBox<BundleBox.BundleBoxItem> component = myBundleBox.getComponent();
+        if (component.getDataModel().getSize() > 0) {
+            component.setValueByIndex(0);
+        }
+    }
 
-	@Override
-	public void onStepLeave(@Nonnull C context)
-	{
-		super.onStepLeave(context);
+    @Override
+    public void onStepLeave(@Nonnull C context) {
+        super.onStepLeave(context);
 
-		String selectedBundleName = myBundleBox.getSelectedBundleName();
-		if(selectedBundleName != null)
-		{
-			context.setSdk(SdkTable.getInstance().findSdk(selectedBundleName));
-		}
-	}
+        String selectedBundleName = myBundleBox.getSelectedBundleName();
+        if (selectedBundleName != null) {
+            context.setSdk(SdkTable.getInstance().findSdk(selectedBundleName));
+        }
+    }
 }
