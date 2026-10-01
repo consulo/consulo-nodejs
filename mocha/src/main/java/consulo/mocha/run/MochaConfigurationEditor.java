@@ -19,10 +19,10 @@ package consulo.mocha.run;
 import consulo.configurable.ConfigurationException;
 import consulo.execution.configuration.ui.SettingsEditor;
 import consulo.project.Project;
+import consulo.ui.Component;
 import consulo.ui.annotation.RequiredUIAccess;
 
-import jakarta.annotation.Nonnull;
-import javax.swing.*;
+import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
@@ -31,6 +31,7 @@ import javax.swing.*;
 public class MochaConfigurationEditor extends SettingsEditor<MochaConfiguration>
 {
 	private final Project myProject;
+	@Nullable
 	private MochaConfigurationPanel myConfigurationPanel;
 
 	public MochaConfigurationEditor(Project project)
@@ -42,24 +43,31 @@ public class MochaConfigurationEditor extends SettingsEditor<MochaConfiguration>
 	@RequiredUIAccess
 	protected void resetEditorFrom(MochaConfiguration mochaConfiguration)
 	{
-		myConfigurationPanel.reset(mochaConfiguration);
+		MochaConfigurationPanel configurationPanel = myConfigurationPanel;
+		if(configurationPanel != null)
+		{
+			configurationPanel.reset(mochaConfiguration);
+		}
 	}
 
 	@Override
 	@RequiredUIAccess
 	protected void applyEditorTo(MochaConfiguration mochaConfiguration) throws ConfigurationException
 	{
-		myConfigurationPanel.applyTo(mochaConfiguration);
+		MochaConfigurationPanel configurationPanel = myConfigurationPanel;
+		if(configurationPanel != null)
+		{
+			configurationPanel.apply(mochaConfiguration);
+		}
 	}
 
-	@Nonnull
 	@Override
-	protected JComponent createEditor()
+	@RequiredUIAccess
+	protected Component createUIComponent()
 	{
-		if(myConfigurationPanel == null)
-		{
-			myConfigurationPanel = new MochaConfigurationPanel(myProject);
-		}
-		return myConfigurationPanel;
+		MochaConfigurationPanel configurationPanel = new MochaConfigurationPanel(myProject, this);
+		myConfigurationPanel = configurationPanel;
+		configurationPanel.build();
+		return configurationPanel.getComponent();
 	}
 }

@@ -16,168 +16,114 @@
 
 package consulo.mocha.run;
 
-import consulo.execution.CommonProgramRunConfigurationParameters;
+import consulo.disposer.Disposable;
 import consulo.fileChooser.FileChooserDescriptor;
-import consulo.module.Module;
+import consulo.fileChooser.FileChooserTextBoxBuilder;
+import consulo.localize.LocalizeValue;
+import consulo.mocha.localize.MochaLocalize;
+import consulo.nodejs.localize.NodeJSLocalize;
 import consulo.nodejs.run.NodeJSConfigurationPanelBase;
 import consulo.project.Project;
+import consulo.ui.Label;
+import consulo.ui.RadioGroup;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.ui.ex.awt.*;
-import consulo.util.io.FileUtil;
-import consulo.util.lang.StringUtil;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import consulo.ui.layout.HorizontalLayout;
+import consulo.ui.util.FormBuilder;
 
 /**
  * @author VISTALL
  * @since 19.12.2015
  */
-public class MochaConfigurationPanel extends NodeJSConfigurationPanelBase
+public class MochaConfigurationPanel extends NodeJSConfigurationPanelBase<MochaConfiguration>
 {
-	private JRadioButton myDirectoryButton;
-	private JRadioButton myFileButton;
+	private final RadioGroup<MochaConfiguration.TargetType> myTargetGroup;
+	private final HorizontalLayout myTargetPanel;
 
-	private TextFieldWithBrowseButton myDirectoryField;
-	private TextFieldWithBrowseButton myFileField;
+	private final Label myDirectoryLabel;
+	private final FileChooserTextBoxBuilder.Controller myDirectoryField;
+	private final Label myFileLabel;
+	private final FileChooserTextBoxBuilder.Controller myFileField;
 
-	public MochaConfigurationPanel(Project project)
+	@RequiredUIAccess
+	public MochaConfigurationPanel(Project project, Disposable uiDisposable)
 	{
-		super(project);
+		super(project, uiDisposable);
+
+		myTargetGroup = RadioGroup.create();
+		myTargetPanel = HorizontalLayout.create();
+		myTargetPanel.add(myTargetGroup.newButton(MochaLocalize.runConfigurationDirectory(), MochaConfiguration.TargetType.DIRECTORY));
+		myTargetPanel.add(myTargetGroup.newButton(MochaLocalize.runConfigurationFile(), MochaConfiguration.TargetType.FILE));
+		myTargetGroup.addValueListener(targetType -> updateTargetFields());
+
+		myDirectoryLabel = Label.create(LocalizeValue.join(MochaLocalize.runConfigurationDirectory(), LocalizeValue.colon()));
+		myDirectoryField = createModuleRelativePathField(NodeJSLocalize.runConfigurationSelectScriptTitle(),
+				MochaLocalize.runConfigurationSelectScriptDirectory(),
+				new FileChooserDescriptor(false, true, false, false, false, false));
+
+		myFileLabel = Label.create(LocalizeValue.join(MochaLocalize.runConfigurationFile(), LocalizeValue.colon()));
+		myFileField = createModuleRelativePathField(NodeJSLocalize.runConfigurationSelectScriptTitle(),
+				MochaLocalize.runConfigurationSelectScriptFile(),
+				new FileChooserDescriptor(true, false, false, false, false, false));
 	}
 
 	@Override
-	protected void addComponents()
+	@RequiredUIAccess
+	protected void addBefore(FormBuilder builder)
 	{
-		add(myVmParametersComponent);
-		addComponentsInternal();
-		add(LabeledComponent.create(myModuleBox, "Module"));
-		add(JBUI.Panels.simplePanel().addToLeft(myUseAlternativeBundleCheckBox).addToCenter(myAlternativeBundleComboBox));
-
-		ButtonGroup targetGroup = new ButtonGroup();
-
-		final CardLayout pathLayout = new CardLayout();
-		final JPanel pathPanel = new JPanel(pathLayout);
-
-		pathPanel.add(JBUI.Panels.verticalPanel().addComponent(createPathComponent(true)), "directory");
-		pathPanel.add(JBUI.Panels.verticalPanel().addComponent(createPathComponent(false)), "file");
-
-		ItemListener listener = new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(ItemEvent e)
-			{
-				pathLayout.show(pathPanel, myDirectoryButton.isSelected() ? "directory" : "file");
-			}
-		};
-
-		myDirectoryButton = new JRadioButton("Directory");
-		myDirectoryButton.addItemListener(listener);
-
-		myFileButton = new JRadioButton("File");
-		myFileButton.addItemListener(listener);
-
-		targetGroup.add(myDirectoryButton);
-		targetGroup.add(myFileButton);
-
-		JPanel panel = new JPanel();
-		panel.add(new JBLabel("Test in:"));
-		panel.add(myDirectoryButton);
-		panel.add(myFileButton);
-
-		add(panel);
-		add(pathPanel);
-
-		getProgramParametersComponent().setVisible(false);
+		addVmParameters(builder);
 	}
 
-	private JComponent createPathComponent(boolean directory)
+	@Override
+	@RequiredUIAccess
+	protected void addAfter(FormBuilder builder)
 	{
-		String label = directory ? "Directory" : "File";
-		TextFieldWithBrowseButton textField = new TextFieldWithBrowseButton();
-		textField.addBrowseFolderListener("Select Script", "Select Script " + label, myProject, new FileChooserDescriptor(!directory, directory, false, false, false, false),
-				new TextComponentAccessor<JTextField>()
-		{
-			@Override
-			public String getText(JTextField textField)
-			{
-				return textField.getText();
-			}
+		addModuleAndBundle(builder);
 
-			@Override
-			public void setText(JTextField textField, String text)
-			{
-				Module selectedItem = (Module) myModuleBox.getSelectedItem();
-				if(selectedItem == null)
-				{
-					textField.setText(text);
-				}
-				else
-				{
-					String moduleDirPath = selectedItem.getModuleDirPath();
-					String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(text), '/');
-					if(StringUtil.isEmpty(relativePath))
-					{
-						relativePath = text;
-					}
-					textField.setText(relativePath);
-				}
-			}
-		});
-		if(directory)
-		{
-			myDirectoryField = textField;
-		}
-		else
-		{
-			myFileField = textField;
-		}
-		return LabeledComponent.create(textField, label);
+		builder.addLabeled(MochaLocalize.runConfigurationTestInLabel(), myTargetPanel);
+		builder.addLabeled(myDirectoryLabel, myDirectoryField.getComponent());
+		builder.addLabeled(myFileLabel, myFileField.getComponent());
+
+		updateTargetFields();
 	}
 
 	@RequiredUIAccess
+	private MochaConfiguration.TargetType getTargetType()
+	{
+		return myTargetGroup.getValue() == MochaConfiguration.TargetType.FILE ? MochaConfiguration.TargetType.FILE : MochaConfiguration.TargetType.DIRECTORY;
+	}
+
+	@RequiredUIAccess
+	private void updateTargetFields()
+	{
+		boolean directory = getTargetType() == MochaConfiguration.TargetType.DIRECTORY;
+
+		myDirectoryLabel.setVisible(directory);
+		myDirectoryField.getComponent().setVisible(directory);
+		myFileLabel.setVisible(!directory);
+		myFileField.getComponent().setVisible(!directory);
+	}
+
 	@Override
-	public void reset(CommonProgramRunConfigurationParameters configuration)
+	@RequiredUIAccess
+	public void reset(MochaConfiguration configuration)
 	{
 		super.reset(configuration);
 
-		MochaConfiguration mochaConfiguration = (MochaConfiguration) configuration;
+		myTargetGroup.setValue(configuration.getTargetType(), false);
+		resetPathField(myDirectoryField, configuration.getDirectoryPath());
+		resetPathField(myFileField, configuration.getFilePath());
 
-		switch(mochaConfiguration.getTargetType())
-		{
-			case DIRECTORY:
-				myDirectoryButton.setSelected(true);
-				break;
-			case FILE:
-				myFileButton.setSelected(true);
-				break;
-		}
-
-		myDirectoryField.setText(mochaConfiguration.getDirectoryPath());
-		myFileField.setText(mochaConfiguration.getFilePath());
+		updateTargetFields();
 	}
 
-	@RequiredUIAccess
 	@Override
-	public void applyTo(CommonProgramRunConfigurationParameters configuration)
+	@RequiredUIAccess
+	public void apply(MochaConfiguration configuration)
 	{
-		super.applyTo(configuration);
+		super.apply(configuration);
 
-		MochaConfiguration mochaConfiguration = (MochaConfiguration) configuration;
-
-		if(myDirectoryButton.isSelected())
-		{
-			mochaConfiguration.setTargetType(MochaConfiguration.TargetType.DIRECTORY);
-			mochaConfiguration.setFilePath(null);
-			mochaConfiguration.setDirectoryPath(myDirectoryField.getText());
-		}
-		else
-		{
-			mochaConfiguration.setTargetType(MochaConfiguration.TargetType.FILE);
-			mochaConfiguration.setFilePath(myFileField.getText());
-			mochaConfiguration.setDirectoryPath(null);
-		}
+		configuration.setTargetType(getTargetType());
+		configuration.setDirectoryPath(myDirectoryField.getValue());
+		configuration.setFilePath(myFileField.getValue());
 	}
 }

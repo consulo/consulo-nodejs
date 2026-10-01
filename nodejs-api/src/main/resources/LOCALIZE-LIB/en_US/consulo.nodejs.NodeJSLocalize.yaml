@@ -4,3 +4,17 @@ nodejs.name:
     text: Node.js
 npx.configuration.name:
     text: Npx
+run.configuration.command.label:
+    text: 'Command:'
+run.configuration.module.label:
+    text: 'Module:'
+run.configuration.script.label:
+    text: 'Script:'
+run.configuration.select.script.description:
+    text: Select Script File For Execution
+run.configuration.select.script.title:
+    text: Select Script
+run.configuration.use.alternative.bundle:
+    text: 'Use alternative bundle:'
+run.configuration.vm.arguments:
+    text: VM arguments

@@ -16,97 +16,57 @@
 
 package consulo.nodejs.run;
 
-import consulo.annotation.access.RequiredReadAction;
-import consulo.execution.CommonProgramRunConfigurationParameters;
+import consulo.disposer.Disposable;
 import consulo.fileChooser.FileChooserDescriptor;
-import consulo.module.Module;
+import consulo.fileChooser.FileChooserTextBoxBuilder;
+import consulo.nodejs.localize.NodeJSLocalize;
 import consulo.project.Project;
-import consulo.ui.ex.awt.JBUI;
-import consulo.ui.ex.awt.LabeledComponent;
-import consulo.ui.ex.awt.TextComponentAccessor;
-import consulo.ui.ex.awt.TextFieldWithBrowseButton;
-import consulo.util.io.FileUtil;
-import consulo.util.lang.StringUtil;
-
-import javax.swing.*;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.util.FormBuilder;
 
 /**
  * @author VISTALL
  * @since 04.12.2015
  */
-public class NodeJSConfigurationPanel extends NodeJSConfigurationPanelBase
-{
-	private TextFieldWithBrowseButton myScriptTextField;
+public class NodeJSConfigurationPanel extends NodeJSConfigurationPanelBase<NodeJSConfiguration> {
+    private final FileChooserTextBoxBuilder.Controller myScriptTextField;
 
-	public NodeJSConfigurationPanel(Project project)
-	{
-		super(project);
-	}
+    @RequiredUIAccess
+    public NodeJSConfigurationPanel(Project project, Disposable uiDisposable) {
+        super(project, uiDisposable);
 
-	@Override
-	protected void initComponents()
-	{
-		myScriptTextField = new TextFieldWithBrowseButton();
-		myScriptTextField.addBrowseFolderListener("Select Script", "Select Script File For Execution", myProject, new FileChooserDescriptor(true, false, false, false, false, false),
-				new TextComponentAccessor<JTextField>()
-		{
-			@Override
-			public String getText(JTextField textField)
-			{
-				return textField.getText();
-			}
+        myScriptTextField = createModuleRelativePathField(NodeJSLocalize.runConfigurationSelectScriptTitle(),
+            NodeJSLocalize.runConfigurationSelectScriptDescription(),
+            new FileChooserDescriptor(true, false, false, false, false, false));
+    }
 
-			@Override
-			public void setText(JTextField textField, String text)
-			{
-				Module selectedItem = (Module) myModuleBox.getSelectedItem();
-				if(selectedItem == null)
-				{
-					textField.setText(text);
-				}
-				else
-				{
-					String moduleDirPath = selectedItem.getModuleDirPath();
-					String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(text), '/');
-					if(StringUtil.isEmpty(relativePath))
-					{
-						relativePath = text;
-					}
-					textField.setText(relativePath);
-				}
-			}
-		});
+    @Override
+    @RequiredUIAccess
+    protected void addBefore(FormBuilder builder) {
+        builder.addLabeled(NodeJSLocalize.runConfigurationScriptLabel(), myScriptTextField.getComponent());
 
-		super.initComponents();
-	}
+        addVmParameters(builder);
+    }
 
-	@Override
-	protected void addComponents()
-	{
-		add(LabeledComponent.create(myScriptTextField, "Script"));
-		add(myVmParametersComponent);
-		addComponentsInternal();
-		add(LabeledComponent.create(myModuleBox, "Module"));
-		add(JBUI.Panels.simplePanel().addToLeft(myUseAlternativeBundleCheckBox).addToCenter(myAlternativeBundleComboBox));
-	}
+    @Override
+    @RequiredUIAccess
+    protected void addAfter(FormBuilder builder) {
+        addModuleAndBundle(builder);
+    }
 
-	@Override
-	@RequiredReadAction
-	public void applyTo(CommonProgramRunConfigurationParameters configuration)
-	{
-		super.applyTo(configuration);
-		NodeJSConfiguration nodeJSConfiguration = (NodeJSConfiguration) configuration;
+    @Override
+    @RequiredUIAccess
+    public void apply(NodeJSConfiguration configuration) {
+        super.apply(configuration);
 
-		nodeJSConfiguration.setScriptFilePath(myScriptTextField.getText());
-	}
+        configuration.setScriptFilePath(myScriptTextField.getValue());
+    }
 
-	@Override
-	@RequiredReadAction
-	public void reset(CommonProgramRunConfigurationParameters configuration)
-	{
-		super.reset(configuration);
-		NodeJSConfiguration nodeJSConfiguration = (NodeJSConfiguration) configuration;
+    @Override
+    @RequiredUIAccess
+    public void reset(NodeJSConfiguration configuration) {
+        super.reset(configuration);
 
-		myScriptTextField.setText(nodeJSConfiguration.getScriptFilePath());
-	}
+        resetPathField(myScriptTextField, configuration.getScriptFilePath());
+    }
 }

@@ -16,98 +16,170 @@
 
 package consulo.nodejs.run;
 
-import consulo.content.bundle.SdkTypeId;
-import consulo.execution.CommonProgramRunConfigurationParameters;
-import consulo.execution.ui.awt.CommonProgramParametersPanel;
-import consulo.execution.ui.awt.RawCommandLineEditor;
-import consulo.ide.setting.ShowSettingsUtil;
-import consulo.ide.setting.bundle.SettingsSdksModel;
+import consulo.disposer.Disposable;
+import consulo.execution.ui.CommonProgramParametersLayout;
+import consulo.fileChooser.FileChooserDescriptor;
+import consulo.fileChooser.FileChooserTextBoxBuilder;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
-import consulo.module.ui.awt.ModuleListCellRenderer;
-import consulo.module.ui.awt.SdkComboBox;
+import consulo.module.ui.BundleBox;
+import consulo.module.ui.BundleBoxBuilder;
 import consulo.nodejs.bundle.NodeJSBundleType;
+import consulo.nodejs.localize.NodeJSLocalize;
+import consulo.platform.base.icon.PlatformIconGroup;
+import consulo.process.cmd.ParametersListUtil;
 import consulo.project.Project;
+import consulo.ui.CheckBox;
+import consulo.ui.ComboBox;
+import consulo.ui.TextBox;
+import consulo.ui.TextBoxWithExpandAction;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.ui.ex.awt.CollectionComboBoxModel;
-import consulo.ui.ex.awt.ComboBox;
-import consulo.ui.ex.awt.LabeledComponent;
+import consulo.ui.ex.TextComponentAccessor;
+import consulo.ui.ex.dialog.DialogService;
+import consulo.ui.model.FlatDataModel;
+import consulo.ui.model.MutableFlatDataModel;
+import consulo.ui.util.FormBuilder;
+import consulo.util.io.FileUtil;
 import consulo.util.lang.StringUtil;
-import consulo.util.lang.function.Conditions;
 
-import javax.swing.*;
-import java.awt.*;
+import jakarta.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author VISTALL
  * @since 19.12.2015
  */
-public abstract class NodeJSConfigurationPanelBase extends CommonProgramParametersPanel
-{
-	protected LabeledComponent<RawCommandLineEditor> myVmParametersComponent;
-	protected ComboBox myModuleBox;
-	protected JCheckBox myUseAlternativeBundleCheckBox;
-	protected SdkComboBox myAlternativeBundleComboBox;
+public abstract class NodeJSConfigurationPanelBase<C extends NodeJSConfigurationBase> extends CommonProgramParametersLayout<C> {
+    protected final Project myProject;
+    private final Disposable myUIDisposable;
 
-	protected final Project myProject;
+    private final MutableFlatDataModel<Module> myModuleModel = FlatDataModel.of(new ArrayList<>());
 
-	public NodeJSConfigurationPanelBase(Project project)
-	{
-		myProject = project;
-	}
+    private final TextBoxWithExpandAction myVmParametersComponent;
+    private final ComboBox<Module> myModuleBox;
+    private final CheckBox myUseAlternativeBundleCheckBox;
+    private final BundleBox myAlternativeBundleBox;
 
-	@Override
-	protected void initComponents()
-	{
-		myModuleBox = new ComboBox();
-		myModuleBox.setRenderer(new ModuleListCellRenderer());
+    @RequiredUIAccess
+    public NodeJSConfigurationPanelBase(Project project, Disposable uiDisposable) {
+        super(project.getApplication().getInstance(DialogService.class));
+        myProject = project;
+        myUIDisposable = uiDisposable;
 
-		myVmParametersComponent = LabeledComponent.create(new RawCommandLineEditor(), "VM arguments");
-		myVmParametersComponent.setLabelLocation(BorderLayout.WEST);
-		copyDialogCaption(myVmParametersComponent);
+        myVmParametersComponent = TextBoxWithExpandAction.create(
+            PlatformIconGroup.actionsShow(),
+            NodeJSLocalize.runConfigurationVmArguments().get(),
+            ParametersListUtil.DEFAULT_LINE_PARSER,
+            ParametersListUtil.DEFAULT_LINE_JOINER
+        );
 
-		myUseAlternativeBundleCheckBox = new JCheckBox("Use alternative bundle: ");
-		SettingsSdksModel sdksModel = ShowSettingsUtil.getInstance().getSdksModel();
+        myModuleBox = ComboBox.create(myModuleModel);
+        myModuleBox.setRender((presentation, item) ->
+        {
+            Module module = item.getValue();
+            if (module != null) {
+                presentation.withIcon(PlatformIconGroup.nodesModule());
+                presentation.append(module.getName());
+            }
+        });
 
-		myAlternativeBundleComboBox = new SdkComboBox(sdksModel, Conditions.<SdkTypeId>is(NodeJSBundleType.getInstance()), true);
-		myAlternativeBundleComboBox.setEnabled(false);
-		myUseAlternativeBundleCheckBox.addItemListener(e -> myAlternativeBundleComboBox.setEnabled(myUseAlternativeBundleCheckBox.isSelected()));
-		super.initComponents();
+        myAlternativeBundleBox = BundleBoxBuilder.create(uiDisposable)
+            .withSdkTypeFilter(sdkType -> sdkType == NodeJSBundleType.getInstance())
+            .withNoneItem()
+            .build();
 
-		setPreferredSize(null);
-	}
+        myUseAlternativeBundleCheckBox = CheckBox.create(NodeJSLocalize.runConfigurationUseAlternativeBundle());
+        myUseAlternativeBundleCheckBox.addValueListener(event -> updateAlternativeBundleState());
 
-	protected void addComponentsInternal()
-	{
-		super.addComponents();
-	}
+        updateAlternativeBundleState();
+    }
 
-	@Override
-	protected abstract void addComponents();
+    @RequiredUIAccess
+    protected void addVmParameters(FormBuilder builder) {
+        builder.addLabeled(LocalizeValue.join(NodeJSLocalize.runConfigurationVmArguments(), LocalizeValue.colon()), myVmParametersComponent);
+    }
 
-	@Override
-	@RequiredUIAccess
-	public void applyTo(CommonProgramRunConfigurationParameters configuration)
-	{
-		super.applyTo(configuration);
-		NodeJSConfigurationBase nodeJSConfiguration = (NodeJSConfigurationBase) configuration;
+    @RequiredUIAccess
+    protected void addModuleAndBundle(FormBuilder builder) {
+        builder.addLabeled(NodeJSLocalize.runConfigurationModuleLabel(), myModuleBox);
+        builder.addLabeled(myUseAlternativeBundleCheckBox, myAlternativeBundleBox.getComponent());
+    }
 
-		nodeJSConfiguration.setVmParameters(myVmParametersComponent.getComponent().getText());
-		nodeJSConfiguration.getConfigurationModule().setModule((Module) myModuleBox.getSelectedItem());
-		nodeJSConfiguration.setUseAlternativeBundle(myUseAlternativeBundleCheckBox.isSelected());
-		nodeJSConfiguration.setAlternativeBundleName(StringUtil.nullize(myAlternativeBundleComboBox.getSelectedSdkName()));
-	}
+    @RequiredUIAccess
+    protected FileChooserTextBoxBuilder.Controller createModuleRelativePathField(LocalizeValue dialogTitle,
+                                                                                 LocalizeValue dialogDescription,
+                                                                                 FileChooserDescriptor descriptor) {
+        FileChooserTextBoxBuilder builder = FileChooserTextBoxBuilder.create(myProject);
+        builder.dialogTitle(dialogTitle);
+        builder.dialogDescription(dialogDescription);
+        builder.fileChooserDescriptor(descriptor);
+        builder.textBoxAccessor(new TextComponentAccessor<>() {
+            @Override
+            @RequiredUIAccess
+            public String getValue(TextBox textBox) {
+                return StringUtil.notNullize(textBox.getValue());
+            }
 
-	@Override
-	@RequiredUIAccess
-	public void reset(CommonProgramRunConfigurationParameters configuration)
-	{
-		super.reset(configuration);
-		NodeJSConfigurationBase nodeJSConfiguration = (NodeJSConfigurationBase) configuration;
+            @Override
+            @RequiredUIAccess
+            public void setValue(TextBox textBox, String text, boolean fireListeners) {
+                Module module = getSelectedModule();
+                String moduleDirPath = module == null ? null : module.getModuleDirPath();
+                String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(text), '/');
+                textBox.setValue(StringUtil.isEmpty(relativePath) ? text : relativePath, fireListeners);
+            }
+        });
+        builder.uiDisposable(myUIDisposable);
+        return builder.build();
+    }
 
-		myVmParametersComponent.getComponent().setText(nodeJSConfiguration.getVmParameters());
-		myModuleBox.setModel(new CollectionComboBoxModel(nodeJSConfiguration.getValidModules()));
-		myModuleBox.setSelectedItem(nodeJSConfiguration.getConfigurationModule().getModule());
-		myUseAlternativeBundleCheckBox.setSelected(nodeJSConfiguration.isUseAlternativeBundle());
-		myAlternativeBundleComboBox.setSelectedSdk(nodeJSConfiguration.getAlternativeBundleName());
-	}
+    @RequiredUIAccess
+    protected static void resetPathField(FileChooserTextBoxBuilder.Controller field, @Nullable String path) {
+        field.getComponent().setValue(StringUtil.notNullize(path));
+    }
+
+    @Nullable
+    @RequiredUIAccess
+    protected Module getSelectedModule() {
+        return myModuleBox.getValue();
+    }
+
+    @RequiredUIAccess
+    private void updateAlternativeBundleState() {
+        myAlternativeBundleBox.getComponent().setEnabled(Boolean.TRUE.equals(myUseAlternativeBundleCheckBox.getValue()));
+    }
+
+    @Override
+    @RequiredUIAccess
+    public void apply(C configuration) {
+        super.apply(configuration);
+
+        configuration.setVmParameters(myVmParametersComponent.getValue());
+        configuration.getConfigurationModule().setModule(getSelectedModule());
+        configuration.setUseAlternativeBundle(Boolean.TRUE.equals(myUseAlternativeBundleCheckBox.getValue()));
+        configuration.setAlternativeBundleName(StringUtil.nullize(myAlternativeBundleBox.getSelectedBundleName()));
+    }
+
+    @Override
+    @RequiredUIAccess
+    public void reset(C configuration) {
+        super.reset(configuration);
+
+        myVmParametersComponent.setValue(StringUtil.notNullize(configuration.getVmParameters()));
+
+        List<Module> modules = new ArrayList<>(configuration.getValidModules());
+        Module module = configuration.getConfigurationModule().getModule();
+        if (module != null && !modules.contains(module)) {
+            modules.add(module);
+        }
+        myModuleModel.replaceAll(modules);
+        myModuleBox.setValue(module);
+
+        myUseAlternativeBundleCheckBox.setValue(configuration.isUseAlternativeBundle());
+        myAlternativeBundleBox.setSelectedBundle(configuration.getAlternativeBundleName());
+
+        updateAlternativeBundleState();
+    }
 }

@@ -1,2 +1,12 @@
 mocha.configuration.name:
   text: Mocha
+run.configuration.directory:
+  text: Directory
+run.configuration.file:
+  text: File
+run.configuration.select.script.directory:
+  text: Select Script Directory
+run.configuration.select.script.file:
+  text: Select Script File
+run.configuration.test.in.label:
+  text: 'Test in:'

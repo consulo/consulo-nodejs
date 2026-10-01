@@ -1,63 +1,59 @@
 package consulo.nodejs.impl.run;
 
-import consulo.annotation.access.RequiredReadAction;
-import consulo.execution.CommonProgramRunConfigurationParameters;
+import consulo.disposer.Disposable;
+import consulo.nodejs.localize.NodeJSLocalize;
 import consulo.nodejs.run.NodeJSConfigurationPanelBase;
 import consulo.project.Project;
-import consulo.ui.ex.awt.JBTextField;
-import consulo.ui.ex.awt.JBUI;
-import consulo.ui.ex.awt.LabeledComponent;
+import consulo.ui.TextBox;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.util.FormBuilder;
+import consulo.util.lang.StringUtil;
 
 /**
  * @author VISTALL
  * @since 2019-12-30
  */
-public class NpxConfigurationPanel extends NodeJSConfigurationPanelBase
+public class NpxConfigurationPanel extends NodeJSConfigurationPanelBase<NpxConfiguration>
 {
-	private JBTextField myCommandField;
+	private final TextBox myCommandField;
 
-	public NpxConfigurationPanel(Project project)
+	@RequiredUIAccess
+	public NpxConfigurationPanel(Project project, Disposable uiDisposable)
 	{
-		super(project);
+		super(project, uiDisposable);
+
+		myCommandField = TextBox.create();
 	}
 
 	@Override
-	protected void initComponents()
+	@RequiredUIAccess
+	protected void addBefore(FormBuilder builder)
 	{
-		myCommandField = new JBTextField();
-
-		super.initComponents();
+		builder.addLabeled(NodeJSLocalize.runConfigurationCommandLabel(), myCommandField);
 	}
 
 	@Override
-	protected void addComponents()
+	@RequiredUIAccess
+	protected void addAfter(FormBuilder builder)
 	{
-		add(LabeledComponent.create(myCommandField, "Command"));
-		addComponentsInternal();
-		add(LabeledComponent.create(myModuleBox, "Module"));
-		add(JBUI.Panels.simplePanel().addToLeft(myUseAlternativeBundleCheckBox).addToCenter(myAlternativeBundleComboBox));
+		addModuleAndBundle(builder);
 	}
 
 	@Override
-	@RequiredReadAction
-	public void applyTo(CommonProgramRunConfigurationParameters configuration)
+	@RequiredUIAccess
+	public void apply(NpxConfiguration configuration)
 	{
-		super.applyTo(configuration);
+		super.apply(configuration);
 
-		NpxConfiguration npxConfiguration = (NpxConfiguration) configuration;
-
-		npxConfiguration.setNpxCommand(myCommandField.getText());
+		configuration.setNpxCommand(myCommandField.getValue());
 	}
 
 	@Override
-	@RequiredReadAction
-	public void reset(CommonProgramRunConfigurationParameters configuration)
+	@RequiredUIAccess
+	public void reset(NpxConfiguration configuration)
 	{
 		super.reset(configuration);
 
-		NpxConfiguration npxConfiguration = (NpxConfiguration) configuration;
-
-		myCommandField.setText(npxConfiguration.getNpxCommand());
+		myCommandField.setValue(StringUtil.notNullize(configuration.getNpxCommand()));
 	}
 }
-

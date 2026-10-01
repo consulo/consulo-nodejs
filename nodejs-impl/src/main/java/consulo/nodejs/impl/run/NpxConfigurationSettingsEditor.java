@@ -3,10 +3,10 @@ package consulo.nodejs.impl.run;
 import consulo.configurable.ConfigurationException;
 import consulo.execution.configuration.ui.SettingsEditor;
 import consulo.project.Project;
+import consulo.ui.Component;
 import consulo.ui.annotation.RequiredUIAccess;
 
-import jakarta.annotation.Nonnull;
-import javax.swing.*;
+import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
@@ -15,6 +15,7 @@ import javax.swing.*;
 public class NpxConfigurationSettingsEditor extends SettingsEditor<NpxConfiguration>
 {
 	private final Project myProject;
+	@Nullable
 	private NpxConfigurationPanel myConfigurationPanel;
 
 	public NpxConfigurationSettingsEditor(Project project)
@@ -26,24 +27,31 @@ public class NpxConfigurationSettingsEditor extends SettingsEditor<NpxConfigurat
 	@RequiredUIAccess
 	protected void resetEditorFrom(NpxConfiguration npxConfiguration)
 	{
-		myConfigurationPanel.reset(npxConfiguration);
+		NpxConfigurationPanel configurationPanel = myConfigurationPanel;
+		if(configurationPanel != null)
+		{
+			configurationPanel.reset(npxConfiguration);
+		}
 	}
 
 	@Override
 	@RequiredUIAccess
 	protected void applyEditorTo(NpxConfiguration npxConfiguration) throws ConfigurationException
 	{
-		myConfigurationPanel.applyTo(npxConfiguration);
+		NpxConfigurationPanel configurationPanel = myConfigurationPanel;
+		if(configurationPanel != null)
+		{
+			configurationPanel.apply(npxConfiguration);
+		}
 	}
 
-	@Nonnull
 	@Override
-	protected JComponent createEditor()
+	@RequiredUIAccess
+	protected Component createUIComponent()
 	{
-		if(myConfigurationPanel == null)
-		{
-			myConfigurationPanel = new NpxConfigurationPanel(myProject);
-		}
-		return myConfigurationPanel;
+		NpxConfigurationPanel configurationPanel = new NpxConfigurationPanel(myProject, this);
+		myConfigurationPanel = configurationPanel;
+		configurationPanel.build();
+		return configurationPanel.getComponent();
 	}
 }

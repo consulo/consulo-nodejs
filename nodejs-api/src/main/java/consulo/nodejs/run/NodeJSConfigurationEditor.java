@@ -19,47 +19,47 @@ package consulo.nodejs.run;
 import consulo.configurable.ConfigurationException;
 import consulo.execution.configuration.ui.SettingsEditor;
 import consulo.project.Project;
+import consulo.ui.Component;
 import consulo.ui.annotation.RequiredUIAccess;
-
-import jakarta.annotation.Nonnull;
-import javax.swing.*;
+import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
  * @since 18.03.14
  */
-public class NodeJSConfigurationEditor extends SettingsEditor<NodeJSConfiguration>
-{
-	private final Project myProject;
-	private NodeJSConfigurationPanel myConfigurationPanel;
+public class NodeJSConfigurationEditor extends SettingsEditor<NodeJSConfiguration> {
+    private final Project myProject;
+    @Nullable
+    private NodeJSConfigurationPanel myConfigurationPanel;
 
-	public NodeJSConfigurationEditor(Project project)
-	{
-		myProject = project;
-	}
+    public NodeJSConfigurationEditor(Project project) {
+        myProject = project;
+    }
 
-	@Override
-	@RequiredUIAccess
-	protected void resetEditorFrom(NodeJSConfiguration nodeJSConfiguration)
-	{
-		myConfigurationPanel.reset(nodeJSConfiguration);
-	}
+    @Override
+    @RequiredUIAccess
+    protected void resetEditorFrom(NodeJSConfiguration nodeJSConfiguration) {
+        NodeJSConfigurationPanel configurationPanel = myConfigurationPanel;
+        if (configurationPanel != null) {
+            configurationPanel.reset(nodeJSConfiguration);
+        }
+    }
 
-	@Override
-	@RequiredUIAccess
-	protected void applyEditorTo(NodeJSConfiguration nodeJSConfiguration) throws ConfigurationException
-	{
-		myConfigurationPanel.applyTo(nodeJSConfiguration);
-	}
+    @Override
+    @RequiredUIAccess
+    protected void applyEditorTo(NodeJSConfiguration nodeJSConfiguration) throws ConfigurationException {
+        NodeJSConfigurationPanel configurationPanel = myConfigurationPanel;
+        if (configurationPanel != null) {
+            configurationPanel.apply(nodeJSConfiguration);
+        }
+    }
 
-	@Nonnull
-	@Override
-	protected JComponent createEditor()
-	{
-		if(myConfigurationPanel == null)
-		{
-			myConfigurationPanel = new NodeJSConfigurationPanel(myProject);
-		}
-		return myConfigurationPanel;
-	}
+    @Override
+    @RequiredUIAccess
+    protected Component createUIComponent() {
+        NodeJSConfigurationPanel configurationPanel = new NodeJSConfigurationPanel(myProject, this);
+        myConfigurationPanel = configurationPanel;
+        configurationPanel.build();
+        return configurationPanel.getComponent();
+    }
 }
