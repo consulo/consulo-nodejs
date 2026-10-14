@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.nodejs.run;
 
 import consulo.disposer.Disposable;
@@ -49,7 +48,7 @@ import java.util.List;
 
 /**
  * @author VISTALL
- * @since 19.12.2015
+ * @since 2015-12-19
  */
 public abstract class NodeJSConfigurationPanelBase<C extends NodeJSConfigurationBase> extends CommonProgramParametersLayout<C> {
     protected final Project myProject;
@@ -76,8 +75,7 @@ public abstract class NodeJSConfigurationPanelBase<C extends NodeJSConfiguration
         );
 
         myModuleBox = ComboBox.create(myModuleModel);
-        myModuleBox.setRender((presentation, item) ->
-        {
+        myModuleBox.setRenderer((presentation, item) -> {
             Module module = item.getValue();
             if (module != null) {
                 presentation.withIcon(PlatformIconGroup.nodesModule());
@@ -98,7 +96,10 @@ public abstract class NodeJSConfigurationPanelBase<C extends NodeJSConfiguration
 
     @RequiredUIAccess
     protected void addVmParameters(FormBuilder builder) {
-        builder.addLabeled(LocalizeValue.join(NodeJSLocalize.runConfigurationVmArguments(), LocalizeValue.colon()), myVmParametersComponent);
+        builder.addLabeled(
+            LocalizeValue.join(NodeJSLocalize.runConfigurationVmArguments(), LocalizeValue.colon()),
+            myVmParametersComponent
+        );
     }
 
     @RequiredUIAccess
@@ -108,9 +109,11 @@ public abstract class NodeJSConfigurationPanelBase<C extends NodeJSConfiguration
     }
 
     @RequiredUIAccess
-    protected FileChooserTextBoxBuilder.Controller createModuleRelativePathField(LocalizeValue dialogTitle,
-                                                                                 LocalizeValue dialogDescription,
-                                                                                 FileChooserDescriptor descriptor) {
+    protected FileChooserTextBoxBuilder.Controller createModuleRelativePathField(
+        LocalizeValue dialogTitle,
+        LocalizeValue dialogDescription,
+        FileChooserDescriptor descriptor
+    ) {
         FileChooserTextBoxBuilder builder = FileChooserTextBoxBuilder.create(myProject);
         builder.dialogTitle(dialogTitle);
         builder.dialogDescription(dialogDescription);
@@ -127,7 +130,9 @@ public abstract class NodeJSConfigurationPanelBase<C extends NodeJSConfiguration
             public void setValue(TextBox textBox, String text, boolean fireListeners) {
                 Module module = getSelectedModule();
                 String moduleDirPath = module == null ? null : module.getModuleDirPath();
-                String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(text), '/');
+                String relativePath = moduleDirPath == null
+                    ? null
+                    : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(text), '/');
                 textBox.setValue(StringUtil.isEmpty(relativePath) ? text : relativePath, fireListeners);
             }
         });
