@@ -39,4 +39,6 @@ module consulo.mocha
 	exports consulo.mocha.psi;
 	exports consulo.mocha.run;
 	exports consulo.mocha.localize;
+
+	opens consulo.mocha.run to consulo.util.xml.serializer, consulo.execution.api;
 }

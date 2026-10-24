@@ -16,12 +16,12 @@
 
 package consulo.nodejs.run;
 
+import consulo.execution.configuration.LegacyRunConfigurationConverter;
+import consulo.execution.configuration.fragment.RunConfigurationFragment;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.content.bundle.Sdk;
 import consulo.execution.configuration.ConfigurationFactory;
-import consulo.execution.configuration.RunConfiguration;
 import consulo.execution.configuration.RunConfigurationModule;
-import consulo.execution.configuration.ui.SettingsEditor;
 import consulo.execution.executor.Executor;
 import consulo.execution.runner.ExecutionEnvironment;
 import consulo.language.util.ModuleUtilCore;
@@ -44,11 +44,43 @@ import java.util.List;
  */
 public class NodeJSConfiguration extends NodeJSConfigurationBase
 {
-	private String myScriptFilePath;
 
 	public NodeJSConfiguration(String name, RunConfigurationModule configurationModule, ConfigurationFactory factory)
 	{
 		super(name, configurationModule, factory);
+	}
+
+	@Override
+	protected Class<NodeJSConfigurationOptions> getOptionsClass()
+	{
+		return NodeJSConfigurationOptions.class;
+	}
+
+	@Override
+	public NodeJSConfigurationOptions getOptions()
+	{
+		return (NodeJSConfigurationOptions) super.getOptions();
+	}
+
+	@Override
+	protected void convertLegacyState(LegacyRunConfigurationConverter converter)
+	{
+		super.convertLegacyState(converter);
+
+		NodeJSConfigurationOptions options = new NodeJSConfigurationOptions();
+		convertLegacyCommonState(converter, options);
+		NodeJSConfigurationLegacyState old = converter.readXml(NodeJSConfigurationLegacyState.class);
+		options.setScriptFilePath(old.scriptFilePath);
+		converter.setOptions(options);
+	}
+
+	@Override
+	public List<RunConfigurationFragment<?>> createFragments()
+	{
+		List<RunConfigurationFragment<?>> fragments = new ArrayList<>();
+		fragments.add(new NodeJSScriptFragment());
+		fragments.addAll(createCommonFragments());
+		return fragments;
 	}
 
 	@Override
@@ -66,12 +98,6 @@ public class NodeJSConfiguration extends NodeJSConfigurationBase
 		return list;
 	}
 
-	@Nonnull
-	@Override
-	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
-	{
-		return new NodeJSConfigurationEditor(getProject());
-	}
 
 	@Nonnull
 	@Override
@@ -79,22 +105,23 @@ public class NodeJSConfiguration extends NodeJSConfigurationBase
 	{
 		if(getScriptFile() == null)
 		{
-			throw new ExecutionException("Script file is not found by path '" + myScriptFilePath + "'");
+			throw new ExecutionException("Script file is not found by path '" + getScriptFilePath() + "'");
 		}
 
 		NodeJSRunState state = new NodeJSRunState(module, targetSdk, this);
-		state.addArgument(myScriptFilePath);
+		state.addArgument(getScriptFilePath());
 		return state;
 	}
 
 	@Nullable
 	public VirtualFile getScriptFile()
 	{
-		if(StringUtil.isEmpty(myScriptFilePath))
+		String scriptFilePath = getScriptFilePath();
+		if(StringUtil.isEmpty(scriptFilePath))
 		{
 			return null;
 		}
-		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(myScriptFilePath);
+		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(scriptFilePath);
 		if(fileByPath != null)
 		{
 			return fileByPath;
@@ -109,16 +136,16 @@ public class NodeJSConfiguration extends NodeJSConfigurationBase
 		{
 			return null;
 		}
-		return LocalFileSystem.getInstance().findFileByPath(moduleDirPath + "/" + myScriptFilePath);
+		return LocalFileSystem.getInstance().findFileByPath(moduleDirPath + "/" + scriptFilePath);
 	}
 
 	public String getScriptFilePath()
 	{
-		return myScriptFilePath;
+		return getOptions().getScriptFilePath();
 	}
 
 	public void setScriptFilePath(String scriptFilePath)
 	{
-		myScriptFilePath = scriptFilePath;
+		getOptions().setScriptFilePath(scriptFilePath);
 	}
 }

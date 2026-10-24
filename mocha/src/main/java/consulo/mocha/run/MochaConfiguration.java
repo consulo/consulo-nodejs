@@ -16,13 +16,13 @@
 
 package consulo.mocha.run;
 
+import consulo.execution.configuration.LegacyRunConfigurationConverter;
+import consulo.execution.configuration.fragment.RunConfigurationFragment;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.container.plugin.PluginManager;
 import consulo.content.bundle.Sdk;
 import consulo.execution.configuration.ConfigurationFactory;
-import consulo.execution.configuration.RunConfiguration;
 import consulo.execution.configuration.RunConfigurationModule;
-import consulo.execution.configuration.ui.SettingsEditor;
 import consulo.execution.executor.Executor;
 import consulo.execution.runner.ExecutionEnvironment;
 import consulo.execution.test.TestConsoleProperties;
@@ -61,13 +61,45 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 		FILE
 	}
 
-	private TargetType myTargetType = TargetType.DIRECTORY;
-	private String myFilePath;
-	private String myDirectoryPath;
 
 	public MochaConfiguration(String name, RunConfigurationModule configurationModule, ConfigurationFactory factory)
 	{
 		super(name, configurationModule, factory);
+	}
+
+	@Override
+	protected Class<MochaConfigurationOptions> getOptionsClass()
+	{
+		return MochaConfigurationOptions.class;
+	}
+
+	@Override
+	public MochaConfigurationOptions getOptions()
+	{
+		return (MochaConfigurationOptions) super.getOptions();
+	}
+
+	@Override
+	protected void convertLegacyState(LegacyRunConfigurationConverter converter)
+	{
+		super.convertLegacyState(converter);
+
+		MochaConfigurationOptions options = new MochaConfigurationOptions();
+		convertLegacyCommonState(converter, options);
+		MochaConfigurationLegacyState old = converter.readXml(MochaConfigurationLegacyState.class);
+		options.setTargetType("DIRECTORY".equals(old.targetType) ? null : old.targetType);
+		options.setFilePath(old.filePath);
+		options.setDirectoryPath(old.directoryPath);
+		converter.setOptions(options);
+	}
+
+	@Override
+	public List<RunConfigurationFragment<?>> createFragments()
+	{
+		List<RunConfigurationFragment<?>> fragments = new ArrayList<>();
+		fragments.add(new MochaTargetFragment());
+		fragments.addAll(createCommonFragments());
+		return fragments;
 	}
 
 	@Override
@@ -85,12 +117,6 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 		return list;
 	}
 
-	@Nonnull
-	@Override
-	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
-	{
-		return new MochaConfigurationEditor(getProject());
-	}
 
 	@Nonnull
 	@Override
@@ -108,7 +134,7 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 		VirtualFile fileOrDirectory = getFileOrDirectory();
 		if(fileOrDirectory == null)
 		{
-			throw new ExecutionException((myTargetType == TargetType.DIRECTORY ? "Directory" : "File") + " is not set");
+			throw new ExecutionException((getTargetType() == TargetType.DIRECTORY ? "Directory" : "File") + " is not set");
 		}
 
 		NodeJSRunState state = new NodeJSRunState(module, targetSdk, this)
@@ -139,7 +165,7 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 			state.addArgument("bdd");
 		}
 
-		switch(myTargetType)
+		switch(getTargetType())
 		{
 			case DIRECTORY:
 				state.addArgument("--recursive");
@@ -155,7 +181,7 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 	@Nullable
 	public String getPath()
 	{
-		return myTargetType == TargetType.FILE ? myFilePath : myDirectoryPath;
+		return getTargetType() == TargetType.FILE ? getFilePath() : getDirectoryPath();
 	}
 
 	@Nullable
@@ -188,31 +214,31 @@ public class MochaConfiguration extends NodeJSConfigurationBase
 	@Nonnull
 	public TargetType getTargetType()
 	{
-		return myTargetType;
+		return "FILE".equals(getOptions().getTargetType()) ? TargetType.FILE : TargetType.DIRECTORY;
 	}
 
 	public void setTargetType(TargetType targetType)
 	{
-		myTargetType = targetType;
+		getOptions().setTargetType(targetType == TargetType.FILE ? targetType.name() : null);
 	}
 
 	public String getDirectoryPath()
 	{
-		return myDirectoryPath;
+		return getOptions().getDirectoryPath();
 	}
 
 	public void setDirectoryPath(String directoryPath)
 	{
-		myDirectoryPath = directoryPath;
+		getOptions().setDirectoryPath(directoryPath);
 	}
 
 	public String getFilePath()
 	{
-		return myFilePath;
+		return getOptions().getFilePath();
 	}
 
 	public void setFilePath(String filePath)
 	{
-		myFilePath = filePath;
+		getOptions().setFilePath(filePath);
 	}
 }

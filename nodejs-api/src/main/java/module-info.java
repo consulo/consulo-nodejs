@@ -42,5 +42,5 @@ module consulo.nodejs.api
     exports consulo.nodejs.run;
     exports consulo.nodejs.localize;
 
-    opens consulo.nodejs.run to consulo.util.xml.serializer;
+    opens consulo.nodejs.run to consulo.util.xml.serializer, consulo.execution.api;
 }

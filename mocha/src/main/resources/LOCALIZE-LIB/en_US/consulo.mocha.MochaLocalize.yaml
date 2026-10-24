@@ -4,6 +4,8 @@ run.configuration.directory:
   text: Directory
 run.configuration.file:
   text: File
+run.configuration.fragment.target:
+    text: Tests
 run.configuration.select.script.directory:
   text: Select Script Directory
 run.configuration.select.script.file:

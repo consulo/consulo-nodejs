@@ -1,10 +1,10 @@
 package consulo.nodejs.impl.run;
 
+import consulo.execution.configuration.LegacyRunConfigurationConverter;
+import consulo.execution.configuration.fragment.RunConfigurationFragment;
 import consulo.content.bundle.Sdk;
 import consulo.execution.configuration.ConfigurationFactory;
-import consulo.execution.configuration.RunConfiguration;
 import consulo.execution.configuration.RunConfigurationModule;
-import consulo.execution.configuration.ui.SettingsEditor;
 import consulo.execution.executor.Executor;
 import consulo.execution.runner.ExecutionEnvironment;
 import consulo.language.util.ModuleUtilCore;
@@ -26,11 +26,43 @@ import java.util.List;
  */
 public class NpxConfiguration extends NodeJSConfigurationBase
 {
-	private String myNpxCommand;
 
 	public NpxConfiguration(String name, RunConfigurationModule configurationModule, ConfigurationFactory factory)
 	{
 		super(name, configurationModule, factory);
+	}
+
+	@Override
+	protected Class<NpxConfigurationOptions> getOptionsClass()
+	{
+		return NpxConfigurationOptions.class;
+	}
+
+	@Override
+	public NpxConfigurationOptions getOptions()
+	{
+		return (NpxConfigurationOptions) super.getOptions();
+	}
+
+	@Override
+	protected void convertLegacyState(LegacyRunConfigurationConverter converter)
+	{
+		super.convertLegacyState(converter);
+
+		NpxConfigurationOptions options = new NpxConfigurationOptions();
+		convertLegacyCommonState(converter, options);
+		NpxConfigurationLegacyState old = converter.readXml(NpxConfigurationLegacyState.class);
+		options.setNpxCommand(old.npxCommand);
+		converter.setOptions(options);
+	}
+
+	@Override
+	public List<RunConfigurationFragment<?>> createFragments()
+	{
+		List<RunConfigurationFragment<?>> fragments = new ArrayList<>();
+		fragments.add(new NpxCommandFragment());
+		fragments.addAll(createCommonFragments());
+		return fragments;
 	}
 
 	@Nonnull
@@ -53,24 +85,18 @@ public class NpxConfiguration extends NodeJSConfigurationBase
 	protected NodeJSRunState createRunState(@Nullable Module module, @Nonnull Sdk targetSdk, @Nonnull Executor executor, @Nonnull ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		NpxRunState npxRunState = new NpxRunState(module, targetSdk, this);
-		npxRunState.addVmArgument(myNpxCommand);
+		npxRunState.addVmArgument(getNpxCommand());
 		return npxRunState;
 	}
 
-	@Nonnull
-	@Override
-	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
-	{
-		return new NpxConfigurationSettingsEditor(getProject());
-	}
 
 	public String getNpxCommand()
 	{
-		return myNpxCommand;
+		return getOptions().getNpxCommand();
 	}
 
 	public void setNpxCommand(String npxCommand)
 	{
-		myNpxCommand = npxCommand;
+		getOptions().setNpxCommand(npxCommand);
 	}
 }

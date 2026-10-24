@@ -6,6 +6,14 @@ npx.configuration.name:
     text: Npx
 run.configuration.command.label:
     text: 'Command:'
+run.configuration.fragment.alternative.bundle:
+    text: Alternative bundle
+run.configuration.fragment.command:
+    text: Command
+run.configuration.fragment.script:
+    text: Script
+run.configuration.fragment.vm.arguments:
+    text: VM arguments
 run.configuration.module.label:
     text: 'Module:'
 run.configuration.script.label:

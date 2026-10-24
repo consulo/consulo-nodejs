@@ -20,9 +20,14 @@ import consulo.content.bundle.Sdk;
 import consulo.content.bundle.SdkTable;
 import consulo.execution.CommonProgramRunConfigurationParameters;
 import consulo.execution.configuration.ConfigurationFactory;
+import consulo.execution.configuration.LegacyRunConfigurationConverter;
 import consulo.execution.configuration.ModuleBasedConfiguration;
 import consulo.execution.configuration.RunConfigurationModule;
 import consulo.execution.configuration.RunProfileState;
+import consulo.execution.configuration.fragment.EnvironmentFragmentState;
+import consulo.execution.configuration.fragment.ProgramParametersFragmentState;
+import consulo.execution.configuration.fragment.RunConfigurationFragment;
+import consulo.execution.configuration.fragment.WorkingDirectoryFragmentState;
 import consulo.execution.executor.Executor;
 import consulo.execution.runner.ExecutionEnvironment;
 import consulo.language.util.ModuleUtilCore;
@@ -30,17 +35,10 @@ import consulo.module.Module;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.process.ExecutionException;
 import consulo.util.lang.StringUtil;
-import consulo.util.xml.serializer.InvalidDataException;
-import consulo.util.xml.serializer.SkipEmptySerializationFilter;
-import consulo.util.xml.serializer.WriteExternalException;
-import consulo.util.xml.serializer.XmlSerializer;
-import org.jdom.Element;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author VISTALL
@@ -48,17 +46,39 @@ import java.util.Map;
  */
 public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<RunConfigurationModule> implements CommonProgramRunConfigurationParameters
 {
-	private String myVmParameters;
-	private String myWorkingDirectory;
-	private boolean myUseAlternativeBundle;
-	private String myAlternativeBundleName;
-	private String myProgramParameters;
-	private Map<String, String> myEnvs = new HashMap<>();
-	private boolean myPassParentEnvs = true;
 
 	public NodeJSConfigurationBase(String name, RunConfigurationModule configurationModule, ConfigurationFactory factory)
 	{
 		super(name, configurationModule, factory);
+	}
+
+	@Override
+	public NodeJSConfigurationBaseOptions getOptions()
+	{
+		return (NodeJSConfigurationBaseOptions) super.getOptions();
+	}
+
+	/**
+	 * Converts the settings an old configuration element wrote with the bean serializer
+	 */
+	protected static void convertLegacyCommonState(LegacyRunConfigurationConverter converter, NodeJSConfigurationBaseOptions options)
+	{
+		NodeJSConfigurationBaseLegacyState old = converter.readXml(NodeJSConfigurationBaseLegacyState.class);
+		options.setVmParameters(old.vmParameters);
+		options.setUseAlternativeBundle(old.useAlternativeBundle);
+		options.setAlternativeBundleName(old.alternativeBundleName);
+
+		converter.addFragment(new ProgramParametersFragmentState(old.programParameters));
+		converter.addFragment(new WorkingDirectoryFragmentState(old.workingDirectory));
+		converter.addFragment(new EnvironmentFragmentState(old.envs, old.passParentEnvs));
+	}
+
+	/**
+	 * Fragments shared by the Node.js based configurations, after their own target ones
+	 */
+	protected List<RunConfigurationFragment<?>> createCommonFragments()
+	{
+		return List.of(new NodeJSVmParametersFragment<>(), new NodeJSAlternativeBundleFragment<>());
 	}
 
 	@Override
@@ -70,23 +90,24 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 	public RunProfileState getState(@Nonnull Executor executor, @Nonnull final ExecutionEnvironment executionEnvironment) throws ExecutionException
 	{
 		Module module = getConfigurationModule().getModule();
-		if(module == null && !myUseAlternativeBundle)
+		if(module == null && !isUseAlternativeBundle())
 		{
 			throw new ExecutionException("Module is not set for run configuration");
 		}
 
 		Sdk targetSdk;
-		if(myUseAlternativeBundle)
+		String alternativeBundleName = getAlternativeBundleName();
+		if(isUseAlternativeBundle())
 		{
-			if(StringUtil.isEmpty(myAlternativeBundleName))
+			if(StringUtil.isEmpty(alternativeBundleName))
 			{
 				throw new ExecutionException("NodeJS alternative bundle is empty");
 			}
 
-			targetSdk = SdkTable.getInstance().findSdk(myAlternativeBundleName);
+			targetSdk = SdkTable.getInstance().findSdk(alternativeBundleName);
 			if(targetSdk == null)
 			{
-				throw new ExecutionException("NodeJS alternative bundle '" + myAlternativeBundleName + "' is not found");
+				throw new ExecutionException("NodeJS alternative bundle '" + alternativeBundleName + "' is not found");
 			}
 		}
 		else
@@ -107,98 +128,37 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 			@Nonnull Executor executor,
 			@Nonnull ExecutionEnvironment executionEnvironment) throws ExecutionException;
 
-	@Override
-	public void writeExternal(Element element) throws WriteExternalException
-	{
-		super.writeExternal(element);
-		XmlSerializer.serializeInto(this, element, new SkipEmptySerializationFilter());
-	}
 
-	@Override
-	public void readExternal(Element element) throws InvalidDataException
-	{
-		super.readExternal(element);
-		XmlSerializer.deserializeInto(this, element);
-	}
 
+	@Nullable
 	public String getVmParameters()
 	{
-		return myVmParameters;
+		return getOptions().getVmParameters();
 	}
 
-	public void setVmParameters(String vmParameters)
+	public void setVmParameters(@Nullable String vmParameters)
 	{
-		myVmParameters = vmParameters;
-	}
-
-	@Override
-	public void setProgramParameters(@Nullable String value)
-	{
-		myProgramParameters = value;
-	}
-
-	@Nullable
-	@Override
-	public String getProgramParameters()
-	{
-		return myProgramParameters;
-	}
-
-	@Override
-	public void setWorkingDirectory(@Nullable String value)
-	{
-		myWorkingDirectory = value;
-	}
-
-	@Nullable
-	@Override
-	public String getWorkingDirectory()
-	{
-		return myWorkingDirectory;
-	}
-
-	@Override
-	public void setEnvs(@Nonnull Map<String, String> envs)
-	{
-		myEnvs = envs;
-	}
-
-	@Nonnull
-	@Override
-	public Map<String, String> getEnvs()
-	{
-		return myEnvs;
-	}
-
-	@Override
-	public void setPassParentEnvs(boolean passParentEnvs)
-	{
-		myPassParentEnvs = passParentEnvs;
-	}
-
-	@Override
-	public boolean isPassParentEnvs()
-	{
-		return myPassParentEnvs;
+		getOptions().setVmParameters(vmParameters);
 	}
 
 	public boolean isUseAlternativeBundle()
 	{
-		return myUseAlternativeBundle;
+		return getOptions().isUseAlternativeBundle();
 	}
 
 	public void setUseAlternativeBundle(boolean useAlternativeBundle)
 	{
-		myUseAlternativeBundle = useAlternativeBundle;
+		getOptions().setUseAlternativeBundle(useAlternativeBundle);
 	}
 
+	@Nullable
 	public String getAlternativeBundleName()
 	{
-		return myAlternativeBundleName;
+		return getOptions().getAlternativeBundleName();
 	}
 
-	public void setAlternativeBundleName(String alternativeBundleName)
+	public void setAlternativeBundleName(@Nullable String alternativeBundleName)
 	{
-		myAlternativeBundleName = alternativeBundleName;
+		getOptions().setAlternativeBundleName(alternativeBundleName);
 	}
 }

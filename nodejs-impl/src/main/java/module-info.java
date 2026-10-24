@@ -44,5 +44,5 @@ module consulo.nodejs {
     requires java.desktop;
     requires cdt.java.client;
 
-    opens consulo.nodejs.impl.run to consulo.util.xml.serializer;
+    opens consulo.nodejs.impl.run to consulo.util.xml.serializer, consulo.execution.api;
 }
