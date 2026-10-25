@@ -6,7 +6,6 @@ module consulo.mocha
 {
 	requires consulo.nodejs.api;
 
-	requires consulo.ide.api;
 	requires consulo.module.ui.api;
 	requires consulo.application.api;
 	requires consulo.application.content.api;

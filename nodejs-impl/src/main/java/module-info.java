@@ -10,7 +10,6 @@ module consulo.nodejs {
     
     requires consulo.javascript.cdt.debugger.impl;
 
-    requires consulo.ide.api;
     requires consulo.application.api;
     requires consulo.application.content.api;
     requires consulo.configurable.api;

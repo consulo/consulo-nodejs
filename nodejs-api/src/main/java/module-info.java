@@ -4,7 +4,6 @@
  */
 module consulo.nodejs.api
 {
-    requires transitive consulo.ide.api;
     requires transitive consulo.javascript.base.api;
 
     requires consulo.application.api;
