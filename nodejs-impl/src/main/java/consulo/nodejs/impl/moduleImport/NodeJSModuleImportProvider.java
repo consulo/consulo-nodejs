@@ -1,8 +1,6 @@
 package consulo.nodejs.impl.moduleImport;
 
-import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.application.WriteAction;
 import consulo.application.concurrent.coroutine.ReadLock;
 import consulo.application.concurrent.coroutine.WriteLock;
 import consulo.content.base.ExcludedContentFolderTypeProvider;
@@ -25,7 +23,8 @@ import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 /**
@@ -47,8 +46,8 @@ public class NodeJSModuleImportProvider implements ModuleImportProvider<NodeJSMo
     }
 
     @Override
-    public boolean canImport(@Nonnull File file) {
-        return new File(file, "package.json").exists();
+    public boolean canImport(@Nonnull Path fileOrDir) {
+        return Files.isDirectory(fileOrDir) && Files.exists(fileOrDir.resolve("package.json"));
     }
 
     @Nonnull
