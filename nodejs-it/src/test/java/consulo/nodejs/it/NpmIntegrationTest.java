@@ -33,7 +33,9 @@ import consulo.externalSystem.rt.model.ExternalSystemSourceType;
 import consulo.externalSystem.service.project.ProjectData;
 import consulo.externalSystem.service.project.manage.ProjectDataManager;
 import consulo.externalSystem.util.DisposeAwareProjectChange;
+import consulo.externalSystem.service.module.extension.ExternalSystemMutableModuleExtension;
 import consulo.externalSystem.util.ExternalSystemApiUtil;
+import consulo.externalSystem.util.ExternalSystemConstants;
 import consulo.it.HeadlessProjectExtension;
 import consulo.it.HeadlessProjects;
 import consulo.language.content.ProductionContentFolderTypeProvider;
@@ -52,6 +54,8 @@ import consulo.nodejs.impl.npm.NpmSystem;
 import consulo.nodejs.impl.npm.NpmUtil;
 import consulo.nodejs.impl.npm.project.NpmPackageData;
 import consulo.nodejs.impl.npm.project.NpmProjectResolver;
+import consulo.nodejs.impl.npm.setting.NpmProjectSettings;
+import consulo.nodejs.impl.npm.setting.NpmSettings;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.nodejs.npm.NpmConstants;
 import consulo.nodejs.npm.NpmPackage;
@@ -348,6 +352,102 @@ public class NpmIntegrationTest {
             }
         }
         return result;
+    }
+
+
+    /**
+     * A package.json in a module of another build system (a Maven module with Java and a frontend, like Vaadin), linked
+     * as an npm project: the module stays owned by the build system and keeps its folders and libraries, npm adds its
+     * part - no module of its own, no content root
+     */
+    @Test
+    public void linkedPackageExtendsModuleOfAnotherBuildSystem(HeadlessProjects projects) throws Exception {
+        Path directory = createPackage(projects, PACKAGE_JSON);
+        Files.createDirectories(directory.resolve("src/main/java"));
+        Project project = projects.open(directory);
+        VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(directory);
+        assertThat(root).isNotNull();
+        root.refresh(false, true);
+
+        String moduleName = "java-and-frontend";
+        runWrite(project, () -> {
+            ModifiableModuleModel moduleModel = ModuleManager.getInstance(project).getModifiableModel();
+            Module module = moduleModel.newModule(moduleName, directory.toString());
+            moduleModel.commit();
+            ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+            ContentEntry contentEntry = model.addContentEntry(root);
+            contentEntry.addFolder(root.getUrl() + "/src/main/java", ProductionContentFolderTypeProvider.getInstance());
+            model.getModuleLibraryTable().createLibrary("Maven: org.acme:acme:1.0");
+            ExternalSystemMutableModuleExtension<?> owner = model.getExtensionWithoutCheck(TestBuildSystemModuleExtensionProvider.SYSTEM_ID.getId());
+            owner.setEnabled(true);
+            owner.setOption(ExternalSystemConstants.EXTERNAL_SYSTEM_ID_KEY, TestBuildSystemModuleExtensionProvider.SYSTEM_ID.getId());
+            model.commit();
+        });
+
+        String projectName = project.getName();
+        DataNode<ProjectData> projectNode = resolve(project, directory);
+        assertThat(ExternalSystemApiUtil.findAll(projectNode, ProjectKeys.MODULE)).isEmpty();
+        DataNode<NpmPackageData> packageNode = ExternalSystemApiUtil.find(projectNode, NpmPackageData.KEY);
+        assertThat(packageNode).isNotNull();
+        assertThat(ExternalSystemApiUtil.findAll(projectNode, ProjectKeys.TASK)).isNotEmpty();
+
+        importData(project, projectNode);
+        HeadlessProjects.awaitIdle(project);
+
+        assertThat(project.getName()).as("the project is not renamed").isEqualTo(projectName);
+        ReadAction.run(() -> {
+            assertThat(ModuleManager.getInstance(project).getModules()).hasSize(1);
+            Module module = ModuleManager.getInstance(project).findModuleByName(moduleName);
+            assertThat(module).isNotNull();
+            assertThat(ExternalSystemApiUtil.getExtensionSystemOption(module, ExternalSystemConstants.EXTERNAL_SYSTEM_ID_KEY))
+                .isEqualTo(TestBuildSystemModuleExtensionProvider.SYSTEM_ID.getId());
+            assertThat(NpmUtil.isLinked(module)).isFalse();
+            assertThat(libraryNames(module)).contains("Maven: org.acme:acme:1.0", "npm: vue", "npm: mocha");
+            ContentEntry[] contentEntries = ModuleRootManager.getInstance(module).getContentEntries();
+            assertThat(contentEntries).hasSize(1);
+            assertThat(folders(contentEntries[0], ProductionContentFolderTypeProvider.getInstance())).containsExactly(root.getUrl() + "/src/main/java");
+            assertThat(module.getExtension(NodeJSModuleExtension.class)).isNotNull();
+        });
+    }
+
+    /**
+     * A project generator (create-vue, Vite) links the generated package: the module of the wizard is taken over, with
+     * the dependencies of the package
+     */
+    @Test
+    public void linkAndImportTakesOverWizardModule(HeadlessProjects projects) throws Exception {
+        Path directory = createPackage(projects, PACKAGE_JSON);
+        Project project = projects.open(directory);
+        VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(directory);
+        assertThat(root).isNotNull();
+
+        // the new project wizard names the module as the project and its directory
+        String moduleName = directory.getFileName().toString();
+        runWrite(project, () -> {
+            ModifiableModuleModel moduleModel = ModuleManager.getInstance(project).getModifiableModel();
+            Module module = moduleModel.newModule(moduleName, directory.toString());
+            moduleModel.commit();
+            ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+            model.addContentEntry(root);
+            model.commit();
+        });
+
+        // what linkAndImport does: link the package, then the refresh imports it (its sync view needs the IDE, not
+        // in the headless application - so the import is run here)
+        NpmProjectSettings projectSettings = new NpmProjectSettings();
+        projectSettings.setExternalProjectPath(directory.toString());
+        NpmSettings.getInstance(project).linkProject(projectSettings);
+        importData(project, resolve(project, directory));
+        HeadlessProjects.awaitIdle(project);
+
+        ReadAction.run(() -> {
+            assertThat(ModuleManager.getInstance(project).getModules()).hasSize(1);
+            Module linked = ModuleManager.getInstance(project).findModuleByName(moduleName);
+            assertThat(linked).isNotNull();
+            assertThat(NpmUtil.isLinked(linked)).isTrue();
+            assertThat(npmLibraries(linked).keySet()).contains("npm: vue", "npm: mocha");
+        });
+        assertThat(NpmUtil.findProjectSettings(project, directory.toString())).isNotNull();
     }
 
     private static Path createPackage(HeadlessProjects projects, String packageJson) throws Exception {

@@ -29,6 +29,7 @@ import consulo.nodejs.run.NpmScriptRunConfiguration;
 import org.jspecify.annotations.Nullable;
 import consulo.localize.LocalizeValue;
 import consulo.nodejs.bundle.NodeJSBundleType;
+import consulo.nodejs.npm.NpmProjectModel;
 import consulo.platform.Platform;
 import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
@@ -88,7 +89,12 @@ public final class NpxProjectGenerator {
         StartupManager.getInstance(project).runAfterOpened(() -> Task.Backgroundable.queue(project,
             LocalizeValue.localizeTODO("Generating project with " + npxPackage),
             indicator -> {
-                if (generate(project, sdk, moduleDirectory, npxPackage, arguments) && runScript != null) {
+                if (!generate(project, sdk, moduleDirectory, npxPackage, arguments)) {
+                    return;
+                }
+                // the generated package.json: its dependencies (and the frameworks of them) and scripts are imported
+                NpmProjectModel.getInstance(project).linkAndImport(moduleDirectory.toString());
+                if (runScript != null) {
                     project.getApplication().invokeLater(() -> createRunConfiguration(project, moduleDirectory, runScript));
                 }
             }));

@@ -58,6 +58,14 @@ public interface NpmProjectModel {
     void scheduleSync(Module module);
 
     /**
+     * Links the package in the directory as an npm project and imports it in the background, as linking it in the npm
+     * tool window does: a generated project gets its modules, dependencies and scripts.
+     *
+     * @param packageDirectory the directory of the {@code package.json}
+     */
+    void linkAndImport(String packageDirectory);
+
+    /**
      * @return the {@code package.json} of the module: in one of its content roots
      */
     @RequiredReadAction

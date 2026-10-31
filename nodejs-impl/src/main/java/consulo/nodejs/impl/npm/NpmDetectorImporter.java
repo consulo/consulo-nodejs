@@ -58,6 +58,7 @@ public class NpmDetectorImporter implements NpmImporter {
         for (NpmModuleExtensionDetector detector : myApplication.getExtensionList(NpmModuleExtensionDetector.class)) {
             if (isDetected(detector, npmPackage)) {
                 NpmModuleExtensions.enableWithParents(model, detector.getExtensionId());
+                detector.configure(model, packageRoot);
             }
         }
     }

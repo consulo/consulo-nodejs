@@ -2,6 +2,7 @@ package consulo.nodejs.packages.detect;
 
 import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ExtensionAPI;
+import consulo.module.content.layer.ModifiableRootModel;
 import consulo.virtualFileSystem.VirtualFile;
 
 import java.util.Set;
@@ -28,5 +29,14 @@ public interface NpmModuleExtensionDetector {
      */
     default boolean isRelevantFile(VirtualFile file) {
         return NpmModuleExtensions.PACKAGE_JSON.equals(file.getName());
+    }
+
+    /**
+     * Configures the module once the extension is enabled: the declarations of the framework the code sees without
+     * imports ({@code JavaScriptDeclarations.set}: the generated auto-imports of Nuxt), its SDK, ...
+     *
+     * @param packageRoot the directory of the package.json
+     */
+    default void configure(ModifiableRootModel model, VirtualFile packageRoot) {
     }
 }

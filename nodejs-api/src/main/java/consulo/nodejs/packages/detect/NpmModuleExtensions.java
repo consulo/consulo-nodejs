@@ -2,11 +2,15 @@ package consulo.nodejs.packages.detect;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.application.Application;
+import consulo.content.bundle.Sdk;
+import consulo.content.bundle.SdkTable;
+import consulo.content.bundle.SdkType;
 import consulo.module.Module;
 import consulo.module.content.ModuleRootManager;
 import consulo.module.content.layer.ModifiableRootModel;
 import consulo.module.content.layer.ModuleExtensionProvider;
 import consulo.module.extension.MutableModuleExtension;
+import consulo.module.extension.MutableModuleExtensionWithSdk;
 import consulo.nodejs.npm.NpmPackage;
 import consulo.nodejs.npm.NpmPackageParser;
 import consulo.virtualFileSystem.VirtualFile;
@@ -78,6 +82,9 @@ public final class NpmModuleExtensions {
     public static void enableDetected(ModifiableRootModel model, @Nullable VirtualFile directory) {
         for (NpmModuleExtensionDetector detector : detect(directory)) {
             enableWithParents(model, detector.getExtensionId());
+            if (directory != null) {
+                detector.configure(model, directory);
+            }
         }
     }
 
@@ -90,9 +97,47 @@ public final class NpmModuleExtensions {
             MutableModuleExtension extension = model.getExtensionWithoutCheck(id);
             if (extension != null) {
                 extension.setEnabled(true);
+                if (extension instanceof MutableModuleExtensionWithSdk withSdk) {
+                    attachSdk(model, withSdk);
+                }
             }
             ModuleExtensionProvider provider = ModuleExtensionProvider.findProvider(id);
             id = provider != null ? provider.getParentId() : null;
         }
+    }
+
+    /**
+     * An extension with an SDK (Node.js, Web) gets one if it has none: the predefined SDK of its type, else the first
+     * one; and its order entry - the roots of the SDK (the standard library) are indexed and in the resolve scope only
+     * with it.
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static void attachSdk(ModifiableRootModel model, MutableModuleExtensionWithSdk extension) {
+        if (extension.getInheritableSdk().isNull()) {
+            Sdk sdk = findSdk(extension.getSdkTypeClass());
+            if (sdk != null) {
+                extension.getInheritableSdk().set(null, sdk);
+            }
+        }
+        if (!extension.getInheritableSdk().isNull() && model.findModuleExtensionSdkEntry(extension) == null) {
+            model.addModuleExtensionSdkEntry(extension);
+        }
+    }
+
+    private static @Nullable Sdk findSdk(@Nullable Class<? extends SdkType> sdkTypeClass) {
+        if (sdkTypeClass == null) {
+            return null;
+        }
+        SdkType sdkType = Application.get().getExtensionPoint(SdkType.class).findExtension(sdkTypeClass);
+        if (sdkType == null) {
+            return null;
+        }
+        SdkTable sdkTable = SdkTable.getInstance();
+        Sdk predefined = sdkTable.findPredefinedSdkByType(sdkType);
+        if (predefined != null) {
+            return predefined;
+        }
+        List<Sdk> sdks = sdkTable.getSdksOfType(sdkType);
+        return sdks.isEmpty() ? null : sdks.get(0);
     }
 }

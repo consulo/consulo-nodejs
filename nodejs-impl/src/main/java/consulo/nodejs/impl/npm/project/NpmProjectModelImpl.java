@@ -26,6 +26,10 @@ import consulo.content.bundle.Sdk;
 import consulo.content.library.Library;
 import consulo.content.library.LibraryTable;
 import consulo.disposer.Disposer;
+import consulo.javascript.library.JavaScriptStandardLibrary;
+import consulo.externalSystem.importing.ImportSpecBuilder;
+import consulo.externalSystem.model.task.ProgressExecutionMode;
+import consulo.externalSystem.service.project.ExternalSystemProjectRefresher;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
 import consulo.module.content.ModuleRootManager;
@@ -36,8 +40,12 @@ import consulo.module.content.layer.orderEntry.ModuleOrderEntry;
 import consulo.module.content.layer.orderEntry.OrderEntry;
 import consulo.nodejs.impl.module.extension.NodeJSMutableModuleExtension;
 import consulo.nodejs.impl.npm.NpmPackageReader;
+import consulo.nodejs.impl.npm.NpmSystem;
 import consulo.nodejs.impl.npm.NpmUtil;
+import consulo.nodejs.impl.npm.setting.NpmProjectSettings;
+import consulo.nodejs.impl.npm.setting.NpmSettings;
 import consulo.nodejs.npm.NpmConstants;
+import consulo.nodejs.packages.detect.NpmModuleExtensions;
 import consulo.nodejs.npm.NpmImporter;
 import consulo.nodejs.npm.NpmPackage;
 import consulo.nodejs.npm.NpmProjectModel;
@@ -113,6 +121,20 @@ public class NpmProjectModelImpl implements NpmProjectModel {
         );
     }
 
+    @Override
+    public void linkAndImport(String packageDirectory) {
+        if (NpmUtil.findProjectSettings(myProject, packageDirectory) == null) {
+            NpmProjectSettings projectSettings = new NpmProjectSettings();
+            projectSettings.setExternalProjectPath(packageDirectory);
+            NpmSettings.getInstance(myProject).linkProject(projectSettings);
+        }
+        ExternalSystemProjectRefresher.getInstance().refreshProjects(
+            new ImportSpecBuilder(myProject, NpmSystem.SYSTEM_ID)
+                .forceWhenUptodate()
+                .use(ProgressExecutionMode.IN_BACKGROUND_ASYNC)
+        );
+    }
+
     @RequiredReadAction
     @Override
     public @Nullable VirtualFile findPackageJson(Module module) {
@@ -166,15 +188,7 @@ public class NpmProjectModelImpl implements NpmProjectModel {
         if (!extension.isEnabled()) {
             extension.setEnabled(true);
         }
-        if (extension.getInheritableSdk().isNull()) {
-            Sdk sdk = NpmUtil.findNodeSdk(null, null);
-            if (sdk != null) {
-                extension.getInheritableSdk().set(null, sdk);
-            }
-        }
-        if (!extension.getInheritableSdk().isNull() && model.findModuleExtensionSdkEntry(extension) == null) {
-            model.addModuleExtensionSdkEntry(extension);
-        }
+        NpmModuleExtensions.attachSdk(model, extension);
     }
 
     /**
@@ -309,9 +323,13 @@ public class NpmProjectModelImpl implements NpmProjectModel {
 
             List<String> excluded = new ArrayList<>();
             if (installed != null) {
-                for (String directory : NpmConstants.PACKAGE_EXCLUDED_DIRECTORIES) {
-                    VirtualFile child = installed.findChild(directory);
-                    if (child != null && child.isDirectory()) {
+                for (VirtualFile child : installed.getChildren()) {
+                    if (!child.isDirectory()) {
+                        continue;
+                    }
+                    // the lib.*.d.ts of the typescript package are the standard library: it comes with the SDK of the
+                    // module, filtered by its language level and environment - not all of it, twice
+                    if (NpmConstants.PACKAGE_EXCLUDED_DIRECTORIES.contains(child.getName()) || JavaScriptStandardLibrary.isLibDirectory(child)) {
                         excluded.add(child.getUrl());
                     }
                 }

@@ -124,7 +124,9 @@ public class NpmProjectResolver implements ExternalSystemProjectResolver<NpmExec
             );
         });
 
-        return createProjectNode(projectPath, resolved.root(), resolved.foreignOwner() != null, resolved.workspaces());
+        // the package of a module of another build system doesn't name the project: the import would rename it
+        String projectName = resolved.foreignOwner() != null ? project.getName() : null;
+        return createProjectNode(projectPath, resolved.root(), resolved.foreignOwner() != null, resolved.workspaces(), projectName);
     }
 
     @Override
@@ -136,17 +138,19 @@ public class NpmProjectResolver implements ExternalSystemProjectResolver<NpmExec
      * @param root          the linked package
      * @param foreignModule whether the module of the root package is owned by another build system: it is only extended
      * @param workspaces    the packages of the workspaces of the root, a module each
+     * @param projectName   the name of the project data, {@code null} for the name of the root module
      */
     public static DataNode<ProjectData> createProjectNode(String linkedProjectPath,
                                                           NpmModule root,
                                                           boolean foreignModule,
-                                                          List<NpmModule> workspaces) {
+                                                          List<NpmModule> workspaces,
+                                                          @Nullable String projectName) {
         Set<String> moduleNames = new HashSet<>();
         // the root module is named as its directory, like the project
         String rootModuleName = root.existingModuleName() != null ? root.existingModuleName() : String.valueOf(root.directory().getFileName());
         moduleNames.add(rootModuleName);
         String directory = root.directory().toString();
-        ProjectData projectData = new ProjectData(SYSTEM_ID, rootModuleName, directory, linkedProjectPath);
+        ProjectData projectData = new ProjectData(SYSTEM_ID, projectName != null ? projectName : rootModuleName, directory, linkedProjectPath);
         DataNode<ProjectData> projectNode = new DataNode<>(ProjectKeys.PROJECT, projectData, null);
 
         addTasks(projectNode, root.npmPackage(), linkedProjectPath, true);

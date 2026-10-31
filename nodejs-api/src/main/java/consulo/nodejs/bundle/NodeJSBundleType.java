@@ -24,6 +24,7 @@ import consulo.content.base.BinariesOrderRootType;
 import consulo.content.base.SourcesOrderRootType;
 import consulo.content.bundle.*;
 import consulo.javascript.language.JavaScriptFileType;
+import consulo.javascript.library.JavaScriptStandardLibrary;
 import consulo.logging.Logger;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
 import consulo.nodejs.localize.NodeJSLocalize;
@@ -133,6 +134,8 @@ public class NodeJSBundleType extends PlatformAwareSdkType {
     public void setupSdkPaths(Sdk sdk) {
         SdkModificator modificator = sdk.getSdkModificator();
 
+        setupStandardLibrary(modificator);
+
         VirtualFile stubsDirectory = LocalFileSystem.getInstance().findFileByIoFile(new File(PluginManager.getPluginPath(NodeJSBundleType.class), "stubs"));
         if (stubsDirectory != null) {
             for (VirtualFile file : stubsDirectory.getChildren()) {
@@ -144,6 +147,34 @@ public class NodeJSBundleType extends PlatformAwareSdkType {
         }
 
         modificator.commitChanges();
+    }
+
+    /**
+     * The ECMAScript standard library of the bundle: the bundled lib directory (lib.es*.d.ts); the modules see the
+     * files of their language level only, without the DOM (the environment of Node.js has none)
+     *
+     * @return whether the roots were changed: a lib directory of an older plugin is replaced
+     */
+    public static boolean setupStandardLibrary(SdkModificator modificator) {
+        VirtualFile libDirectory = JavaScriptStandardLibrary.getInstance().getLibDirectory();
+        boolean changed = false;
+        for (String rootType : new String[]{BinariesOrderRootType.ID, SourcesOrderRootType.ID}) {
+            boolean present = false;
+            for (VirtualFile root : modificator.getRoots(rootType)) {
+                if (root.equals(libDirectory)) {
+                    present = true;
+                }
+                else if (JavaScriptStandardLibrary.isLibDirectory(root) || root.getName().equals(JavaScriptStandardLibrary.ES5_LIB_FILE)) {
+                    modificator.removeRoot(root, rootType);
+                    changed = true;
+                }
+            }
+            if (libDirectory != null && !present) {
+                modificator.addRoot(libDirectory, rootType);
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     @Override
