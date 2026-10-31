@@ -26,3 +26,39 @@ run.configuration.use.alternative.bundle:
     text: 'Use alternative bundle:'
 run.configuration.vm.arguments:
     text: VM arguments
+npm.script.configuration.name:
+  text: npm Script
+run.configuration.fragment.npm.script:
+  text: Script
+run.configuration.npm.script.label:
+  text: 'Script:'
+npm.framework.detected.notification:
+  text: "{0} is used by package.json, but the module has no {0} support"
+npm.framework.detected.enable.action:
+  text: Enable {0} support
+npm.system.name:
+  text: npm
+npm.status.reading:
+  text: Reading package.json
+npm.error.no.package.json:
+  text: There is no package.json in {0}
+npm.error.cannot.read:
+  text: Cannot read {0}
+npm.error.cannot.run:
+  text: 'Cannot run "{0}": {1}'
+npm.error.cancelled:
+  text: '"{0}" was cancelled'
+npm.error.command.failed:
+  text: '"{0}" failed with exit code {1}'
+npm.task.install.description:
+  text: Install the dependencies
+npm.task.ci.description:
+  text: Install the dependencies of the lock file from scratch
+npm.task.update.description:
+  text: Update the dependencies
+npm.settings.bundle.label:
+  text: 'Node.js bundle:'
+npm.settings.bundle.default:
+  text: <Bundle of the module>
+npm.sync.action:
+  text: Sync npm dependencies

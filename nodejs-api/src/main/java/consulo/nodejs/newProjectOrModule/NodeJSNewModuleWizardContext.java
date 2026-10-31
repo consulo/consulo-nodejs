@@ -1,4 +1,4 @@
-package consulo.nodejs.impl.newProjectOrModule;
+package consulo.nodejs.newProjectOrModule;
 
 import consulo.content.bundle.Sdk;
 

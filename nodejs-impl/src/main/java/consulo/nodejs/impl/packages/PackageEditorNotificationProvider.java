@@ -28,6 +28,11 @@ import consulo.json.jom.JomManager;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
 import consulo.localize.LocalizeValue;
+import consulo.module.Module;
+import consulo.nodejs.impl.npm.NpmUtil;
+import consulo.nodejs.impl.packages.jom.PackagesRootElement;
+import consulo.nodejs.localize.NodeJSLocalize;
+import consulo.nodejs.npm.NpmProjectModel;
 import consulo.nodejs.packages.call.NpmRunUtil;
 import consulo.project.Project;
 import consulo.virtualFileSystem.VirtualFile;
@@ -69,12 +74,19 @@ public class PackageEditorNotificationProvider implements EditorNotificationProv
             return null;
         }
         JomFileElement<JomElement> fileElement = JomManager.getInstance(myProject).getFileElement(jsonFile);
-        if (fileElement == null) {
+        if (fileElement == null || !(fileElement.getRootElement() instanceof PackagesRootElement)) {
             return null;
         }
         EditorNotificationBuilder builder = supplier.get();
         builder.withText(LocalizeValue.localizeTODO("npm"));
         builder.withAction(LocalizeValue.localizeTODO("Update"), e -> NpmRunUtil.run(myProject, file, NpmRunUtil.UPDATE));
+
+        // a module not imported from a linked npm package (a Maven module with a frontend) is synced on demand
+        VirtualFile packageDirectory = file.getParent();
+        Module module = packageDirectory == null ? null : NpmUtil.findModule(myProject, packageDirectory.toNioPath());
+        if (module != null && !NpmUtil.isLinked(module)) {
+            builder.withAction(NodeJSLocalize.npmSyncAction(), e -> NpmProjectModel.getInstance(myProject).scheduleSync(module));
+        }
         return builder;
     }
 }

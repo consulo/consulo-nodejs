@@ -20,9 +20,8 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.json.jom.JomFileDescriptor;
 import consulo.language.psi.PsiFile;
-import consulo.language.util.ModuleUtilCore;
 import consulo.nodejs.icon.NodeJSApiIconGroup;
-import consulo.nodejs.module.extension.NodeJSModuleExtension;
+import consulo.nodejs.npm.NpmConstants;
 import consulo.ui.image.Image;
 import consulo.util.lang.Comparing;
 import consulo.virtualFileSystem.VirtualFile;
@@ -36,8 +35,6 @@ import jakarta.annotation.Nonnull;
 @ExtensionImpl
 public class PackagesFileDescriptor extends JomFileDescriptor<PackagesRootElement>
 {
-	private static final String PACKAGES_JSON = "package.json";
-
 	public PackagesFileDescriptor()
 	{
 		super(PackagesRootElement.class);
@@ -50,25 +47,19 @@ public class PackagesFileDescriptor extends JomFileDescriptor<PackagesRootElemen
 		return NodeJSApiIconGroup.npm();
 	}
 
+	/**
+	 * Every {@code package.json} outside of {@code node_modules}: also of the modules without Node.js yet (an import, a
+	 * Maven module with a frontend), which are read by the npm import
+	 */
 	@Override
 	@RequiredReadAction
 	public boolean isMyFile(@Nonnull PsiFile psiFile)
 	{
-		if(!Comparing.equal(PACKAGES_JSON, psiFile.getName()))
+		if(!Comparing.equal(NpmConstants.PACKAGE_JSON, psiFile.getName()))
 		{
 			return false;
 		}
-		NodeJSModuleExtension extension = ModuleUtilCore.getExtension(psiFile, NodeJSModuleExtension.class);
-		if(extension == null)
-		{
-			return false;
-		}
-		VirtualFile moduleDir = extension.getModule().getModuleDir();
-		// if module dir is null or file is not in module dir
-		if(moduleDir == null || psiFile.getParent() == null || !moduleDir.equals(psiFile.getParent().getVirtualFile()))
-		{
-			return false;
-		}
-		return true;
+		VirtualFile file = psiFile.getVirtualFile();
+		return file == null || !file.getPath().contains("/" + NpmConstants.NODE_MODULES + "/");
 	}
 }

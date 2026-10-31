@@ -18,6 +18,7 @@ module consulo.nodejs {
     requires consulo.execution.api;
     requires consulo.execution.impl;
     requires consulo.execution.debug.api;
+    requires consulo.external.system.api;
     requires consulo.file.editor.api;
     requires consulo.http.api;
     requires consulo.language.api;
@@ -44,4 +45,5 @@ module consulo.nodejs {
     requires cdt.java.client;
 
     opens consulo.nodejs.impl.run to consulo.util.xml.serializer, consulo.execution.api;
+    opens consulo.nodejs.impl.npm.setting to consulo.util.xml.serializer;
 }

@@ -45,5 +45,6 @@
 		<module>nodejs-api</module>
 		<module>mocha</module>
 		<module>nodejs-impl</module>
+		<module>nodejs-it</module>
 	</modules>
 </project>

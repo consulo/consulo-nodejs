@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package consulo.nodejs.impl.newProjectOrModule.ui;
+package consulo.nodejs.newProjectOrModule;
 
 import consulo.content.bundle.SdkTable;
 import consulo.disposer.Disposable;
@@ -23,7 +23,6 @@ import consulo.module.creation.ui.UnifiedProjectOrModuleNameStep;
 import consulo.module.ui.BundleBox;
 import consulo.module.ui.BundleBoxBuilder;
 import consulo.nodejs.bundle.NodeJSBundleType;
-import consulo.nodejs.impl.newProjectOrModule.NodeJSNewModuleWizardContext;
 import consulo.ui.ComboBox;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.util.FormBuilder;

@@ -18,6 +18,9 @@ module consulo.nodejs.api
     requires consulo.localize.api;
     requires consulo.module.api;
     requires consulo.module.content.api;
+    requires consulo.module.creation.api;
+    requires consulo.disposer.api;
+    requires consulo.project.ui.api;
     requires consulo.module.ui.api;
     requires consulo.platform.api;
     requires consulo.process.api;
@@ -37,7 +40,10 @@ module consulo.nodejs.api
     exports consulo.nodejs.bundle;
     exports consulo.nodejs.icon;
     exports consulo.nodejs.module.extension;
+    exports consulo.nodejs.newProjectOrModule;
+    exports consulo.nodejs.npm;
     exports consulo.nodejs.packages.call;
+    exports consulo.nodejs.packages.detect;
     exports consulo.nodejs.run;
     exports consulo.nodejs.localize;
 

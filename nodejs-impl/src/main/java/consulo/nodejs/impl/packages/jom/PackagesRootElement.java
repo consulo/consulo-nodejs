@@ -20,6 +20,7 @@ import consulo.json.jom.JomElement;
 import consulo.json.jom.JomPropertyGetter;
 
 import jakarta.annotation.Nonnull;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -100,4 +101,18 @@ public interface PackagesRootElement extends JomElement
 	@Nonnull
 	@JomPropertyGetter
 	Map<String, String> getDevDependencies();
+
+	@Nonnull
+	@JomPropertyGetter
+	Map<String, String> getPeerDependencies();
+
+	@Nonnull
+	@JomPropertyGetter
+	Map<String, String> getOptionalDependencies();
+
+	/**
+	 * The array form of the workspaces; the object form ({@code {"packages": [...]}}) is read by NpmPackageReader
+	 */
+	@JomPropertyGetter
+	List<String> getWorkspaces();
 }
