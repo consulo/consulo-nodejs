@@ -16,6 +16,8 @@
 package consulo.nodejs.impl.npm;
 
 import consulo.annotation.access.RequiredReadAction;
+import consulo.document.Document;
+import consulo.document.FileDocumentManager;
 import consulo.json.jom.JomFileElement;
 import consulo.json.jom.JomManager;
 import consulo.language.psi.PsiFile;
@@ -31,7 +33,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Reads a {@code package.json} through its JOM model ({@link PackagesRootElement}).
+ * Reads a {@code package.json}: with unsaved changes in an editor through its JOM model ({@link PackagesRootElement}),
+ * the text being edited; else the file itself - the PSI of a file changed on disk (a checkout, npm) may be reloaded
+ * later than the import reads it.
  *
  * @since 2026-10-31
  */
@@ -43,6 +47,11 @@ public final class NpmPackageReader {
     public static @Nullable NpmPackage read(Project project, @Nullable VirtualFile packageJson) {
         if (packageJson == null || !packageJson.isValid() || packageJson.isDirectory()) {
             return null;
+        }
+        FileDocumentManager documentManager = FileDocumentManager.getInstance();
+        Document document = documentManager.getCachedDocument(packageJson);
+        if (document == null || !documentManager.isDocumentUnsaved(document)) {
+            return NpmPackageParser.parse(packageJson);
         }
         PsiFile file = PsiManager.getInstance(project).findFile(packageJson);
         if (file == null) {

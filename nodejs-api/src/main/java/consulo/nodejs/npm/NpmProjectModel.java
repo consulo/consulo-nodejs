@@ -59,7 +59,8 @@ public interface NpmProjectModel {
 
     /**
      * Links the package in the directory as an npm project and imports it in the background, as linking it in the npm
-     * tool window does: a generated project gets its modules, dependencies and scripts.
+     * tool window does: a generated project gets its modules, dependencies and scripts. Callable from any thread: the
+     * linking itself runs on the UI thread.
      *
      * @param packageDirectory the directory of the {@code package.json}
      */

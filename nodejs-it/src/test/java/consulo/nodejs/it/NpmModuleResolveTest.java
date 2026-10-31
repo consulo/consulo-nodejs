@@ -33,6 +33,7 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiReference;
 import consulo.language.psi.PsiManager;
+import consulo.language.psi.PsiNamedElement;
 import consulo.nodejs.impl.npm.NpmSystem;
 import consulo.nodejs.impl.npm.project.NpmProjectResolver;
 import consulo.project.Project;
@@ -58,7 +59,7 @@ public class NpmModuleResolveTest {
         Path directory = projects.newDirectory();
         write(directory, "package.json", "{\"name\": \"monorepo\", \"workspaces\": [\"packages/*\"]}");
         write(directory, "packages/app/package.json", "{\"name\": \"app\", \"dependencies\": {\"vue\": \"*\", \"@acme/ui\": \"*\"}}");
-        write(directory, "packages/app/src/main.js", "import { createApp } from 'vue';\nconst _ = require('lodash');\nimport './util';\n");
+        write(directory, "packages/app/src/main.js", "import { createApp } from 'vue';\nconst _ = require('lodash');\nimport './util';\ncreateApp();\n");
         write(directory, "packages/app/src/util.js", "export const x = 1;\n");
         // a workspace, not installed yet: no node_modules/@acme/ui
         write(directory, "packages/ui/package.json", "{\"name\": \"@acme/ui\", \"main\": \"lib/index.js\", \"types\": \"lib/index.d.ts\"}");
@@ -80,7 +81,7 @@ public class NpmModuleResolveTest {
                 }
             }
             """);
-        write(directory, "node_modules/vue/dist/vue.d.ts", "");
+        write(directory, "node_modules/vue/dist/vue.d.ts", "export declare function createApp(): object;\n");
         write(directory, "node_modules/vue/dist/vue.mjs", "");
         write(directory, "node_modules/vue/dist/vue.cjs", "");
         write(directory, "node_modules/vue/dist/vue.esm-browser.js", "");
@@ -121,7 +122,7 @@ public class NpmModuleResolveTest {
             assertThat(resolved(context, "express", Kind.TYPES)).isEqualTo("node_modules/express/index.js");
             assertThat(resolved(context, "@scope/lib", Kind.TYPES)).isEqualTo("node_modules/@types/scope__lib/index.d.ts");
 
-            assertThat(resolved(context, "./util", Kind.IMPORT)).isNull();
+            assertThat(resolved(context, "./util", Kind.IMPORT)).isEqualTo("packages/app/src/util.js");
             assertThat(resolved(context, "node:fs", Kind.IMPORT)).isNull();
             assertThat(resolved(context, "missing", Kind.IMPORT)).isNull();
 
@@ -130,6 +131,14 @@ public class NpmModuleResolveTest {
             assertThat(referenced(context, text.indexOf("'vue'") + 2)).isEqualTo("vue.mjs");
             assertThat(referenced(context, text.indexOf("'lodash'") + 2)).isEqualTo("lodash.js");
             assertThat(referenced(context, text.indexOf("'./util'") + 3)).isEqualTo("util.js");
+
+            // the imported name: its declaration in the package
+            PsiReference call = context.findReferenceAt(text.lastIndexOf("createApp") + 2);
+            assertThat(call).isNotNull();
+            PsiElement createApp = call.resolve();
+            assertThat(createApp).isInstanceOf(PsiNamedElement.class);
+            assertThat(((PsiNamedElement) createApp).getName()).isEqualTo("createApp");
+            assertThat(createApp.getContainingFile().getName()).isEqualTo("vue.d.ts");
         });
     }
 

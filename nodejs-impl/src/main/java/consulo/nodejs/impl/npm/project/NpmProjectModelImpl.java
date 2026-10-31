@@ -19,6 +19,7 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.access.RequiredWriteAction;
 import consulo.annotation.component.ServiceImpl;
 import consulo.application.Application;
+import consulo.application.concurrent.coroutine.ReadLock;
 import consulo.application.concurrent.coroutine.WriteLock;
 import consulo.content.base.BinariesOrderRootType;
 import consulo.content.base.SourcesOrderRootType;
@@ -90,6 +91,14 @@ public class NpmProjectModelImpl implements NpmProjectModel {
     @RequiredReadAction
     @Override
     public boolean apply(ModifiableRootModel model, VirtualFile packageRoot, NpmPackage npmPackage) {
+        return apply(model, packageRoot, npmPackage, findLocalPackages(model.getModule()));
+    }
+
+    /**
+     * @param localPackages the packages of the other modules ({@link #findLocalPackages}): read before, the files are not
+     *                      read here - a sync applies on the write thread
+     */
+    private boolean apply(ModifiableRootModel model, VirtualFile packageRoot, NpmPackage npmPackage, Map<String, Module> localPackages) {
         Module module = model.getModule();
 
         enableNodeJS(module, model);
@@ -101,7 +110,6 @@ public class NpmProjectModelImpl implements NpmProjectModel {
             }
         }
 
-        Map<String, Module> localPackages = findLocalPackages(module);
         syncModuleDependencies(model, npmPackage, localPackages);
         syncLibraries(model, packageRoot, npmPackage, localPackages.keySet());
         return model.isChanged();
@@ -112,27 +120,34 @@ public class NpmProjectModelImpl implements NpmProjectModel {
         if (!myPendingModules.add(module)) {
             return;
         }
-        // the model is taken and committed in one write action: a model taken earlier would undo the changes committed
-        // meanwhile (an import)
+        // the files are read under the read lock (the write thread can't read them); the model is taken and committed in
+        // one write action - a model taken earlier would undo the changes committed meanwhile (an import)
         CoroutineScope.launchAsync(
             myProject.coroutineContext(),
             () -> Coroutine
-                .first(WriteLock.<Object, Object>apply((ignored, continuation) -> sync(module)))
+                .first(ReadLock.<Object, @Nullable SyncInput>apply(ignored -> readSyncInput(module)))
+                .then(WriteLock.<@Nullable SyncInput, Object>apply((input, continuation) -> sync(module, input)))
         );
     }
 
     @Override
     public void linkAndImport(String packageDirectory) {
-        if (NpmUtil.findProjectSettings(myProject, packageDirectory) == null) {
-            NpmProjectSettings projectSettings = new NpmProjectSettings();
-            projectSettings.setExternalProjectPath(packageDirectory);
-            NpmSettings.getInstance(myProject).linkProject(projectSettings);
-        }
-        ExternalSystemProjectRefresher.getInstance().refreshProjects(
-            new ImportSpecBuilder(myProject, NpmSystem.SYSTEM_ID)
-                .forceWhenUptodate()
-                .use(ProgressExecutionMode.IN_BACKGROUND_ASYNC)
-        );
+        // linking updates the npm tool window: on the UI thread (the generators link from a background task)
+        myProject.getUIAccess().giveIfNeed(() -> {
+            if (myProject.isDisposed()) {
+                return;
+            }
+            if (NpmUtil.findProjectSettings(myProject, packageDirectory) == null) {
+                NpmProjectSettings projectSettings = new NpmProjectSettings();
+                projectSettings.setExternalProjectPath(packageDirectory);
+                NpmSettings.getInstance(myProject).linkProject(projectSettings);
+            }
+            ExternalSystemProjectRefresher.getInstance().refreshProjects(
+                new ImportSpecBuilder(myProject, NpmSystem.SYSTEM_ID)
+                    .forceWhenUptodate()
+                    .use(ProgressExecutionMode.IN_BACKGROUND_ASYNC)
+            );
+        });
     }
 
     @RequiredReadAction
@@ -147,8 +162,11 @@ public class NpmProjectModelImpl implements NpmProjectModel {
         return null;
     }
 
-    @RequiredWriteAction
-    private @Nullable Object sync(Module module) {
+    /**
+     * The package of the module and the packages of the project, read for a sync
+     */
+    @RequiredReadAction
+    private @Nullable SyncInput readSyncInput(Module module) {
         myPendingModules.remove(module);
         if (module.isDisposed()) {
             return null;
@@ -159,9 +177,17 @@ public class NpmProjectModelImpl implements NpmProjectModel {
         if (packageRoot == null || npmPackage == null) {
             return null;
         }
+        return new SyncInput(packageRoot, npmPackage, findLocalPackages(module));
+    }
+
+    @RequiredWriteAction
+    private @Nullable Object sync(Module module, @Nullable SyncInput input) {
+        if (input == null || module.isDisposed() || !input.packageRoot().isValid()) {
+            return null;
+        }
         ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
         try {
-            if (apply(model, packageRoot, npmPackage)) {
+            if (apply(model, input.packageRoot(), input.npmPackage(), input.localPackages())) {
                 model.commit();
             }
             else {
@@ -355,5 +381,8 @@ public class NpmProjectModelImpl implements NpmProjectModel {
             Disposer.dispose(libraryModel);
             throw e;
         }
+    }
+
+    private record SyncInput(VirtualFile packageRoot, NpmPackage npmPackage, Map<String, Module> localPackages) {
     }
 }

@@ -450,6 +450,41 @@ public class NpmIntegrationTest {
         assertThat(NpmUtil.findProjectSettings(project, directory.toString())).isNotNull();
     }
 
+    /**
+     * The background sync (a package.json change in a module not linked to npm): the files are read under the read lock,
+     * the model changed on the write thread - no read from the write thread
+     */
+    @Test
+    public void scheduleSyncAddsLibraries(HeadlessProjects projects) throws Exception {
+        Path directory = createPackage(projects, PACKAGE_JSON);
+        Project project = projects.open(directory);
+        VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(directory);
+        assertThat(root).isNotNull();
+        root.refresh(false, true);
+
+        String moduleName = "synced";
+        runWrite(project, () -> {
+            ModifiableModuleModel moduleModel = ModuleManager.getInstance(project).getModifiableModel();
+            Module module = moduleModel.newModule(moduleName, directory.toString());
+            moduleModel.commit();
+            ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+            model.addContentEntry(root);
+            model.commit();
+        });
+        Module module = ReadAction.compute(() -> ModuleManager.getInstance(project).findModuleByName(moduleName));
+        assertThat(module).isNotNull();
+
+        NpmProjectModel.getInstance(project).scheduleSync(module);
+        for (int i = 0; i < 100 && ReadAction.compute(() -> npmLibraries(module).isEmpty()); i++) {
+            HeadlessProjects.awaitIdle(project);
+            Thread.sleep(50);
+        }
+        ReadAction.run(() -> {
+            assertThat(npmLibraries(module).keySet()).contains("npm: vue", "npm: mocha");
+            assertThat(module.getExtension(NodeJSModuleExtension.class)).isNotNull();
+        });
+    }
+
     private static Path createPackage(HeadlessProjects projects, String packageJson) throws Exception {
         Path directory = projects.newDirectory();
         Files.writeString(directory.resolve(NpmConstants.PACKAGE_JSON), packageJson);
