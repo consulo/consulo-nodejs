@@ -15,6 +15,7 @@
  */
 package consulo.nodejs.impl.run;
 
+import consulo.application.ReadAction;
 import consulo.content.bundle.Sdk;
 import consulo.execution.configuration.ConfigurationFactory;
 import consulo.execution.configuration.LegacyRunConfigurationConverter;
@@ -25,12 +26,16 @@ import consulo.execution.runner.ExecutionEnvironment;
 import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
+import consulo.nodejs.impl.npm.NpmUtil;
+import consulo.nodejs.impl.npm.setting.NpmProjectSettings;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
+import consulo.nodejs.npm.NpmProjectModel;
 import consulo.nodejs.run.NodeJSConfigurationBase;
 import consulo.nodejs.run.NodeJSRunState;
 import consulo.nodejs.run.NpmScriptRunConfiguration;
 import consulo.process.ExecutionException;
 import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -75,12 +80,31 @@ public class NpmScriptConfiguration extends NodeJSConfigurationBase implements N
     @Override
     public List<Module> getValidModules() {
         List<Module> list = new ArrayList<>();
+        NpmProjectModel npmProjectModel = NpmProjectModel.getInstance(getProject());
         for (Module module : ModuleManager.getInstance(getProject()).getModules()) {
-            if (ModuleUtilCore.getExtension(module, NodeJSModuleExtension.class) != null) {
+            // a module of Node.js, or with a package.json: the scripts of a frontend (Web) run with npm too
+            if (ModuleUtilCore.getExtension(module, NodeJSModuleExtension.class) != null
+                || ReadAction.compute(() -> npmProjectModel.findPackageJson(module)) != null) {
                 list.add(module);
             }
         }
         return list;
+    }
+
+    /**
+     * The bundle of the Node.js extension, else the bundle of the npm project (a frontend module has no Node.js extension)
+     */
+    @Nullable
+    @Override
+    protected Sdk findModuleBundle(@Nonnull Module module) {
+        Sdk sdk = super.findModuleBundle(module);
+        if (sdk != null) {
+            return sdk;
+        }
+        VirtualFile packageJson = ReadAction.compute(() -> NpmProjectModel.getInstance(getProject()).findPackageJson(module));
+        VirtualFile packageDirectory = packageJson == null ? null : packageJson.getParent();
+        NpmProjectSettings settings = packageDirectory == null ? null : NpmUtil.findProjectSettings(getProject(), packageDirectory.getPath());
+        return NpmUtil.findNodeSdk(settings == null ? null : settings.getNodeSdkName(), module);
     }
 
     @Nonnull

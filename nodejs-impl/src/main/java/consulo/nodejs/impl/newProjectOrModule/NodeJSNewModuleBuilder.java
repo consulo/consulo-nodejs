@@ -118,8 +118,7 @@ public class NodeJSNewModuleBuilder implements NewModuleBuilder
 		@Override
 		public void process(@Nonnull ViteNewModuleContext context, @Nonnull ContentEntry contentEntry, @Nonnull ModifiableRootModel modifiableRootModel)
 		{
-			context.setupNodeJS(modifiableRootModel);
-			// a Vite application runs in a browser
+			// a Vite application runs in a browser: Web, not Node.js - npm runs it with the chosen bundle
 			context.setupWeb(modifiableRootModel);
 
 			Sdk sdk = context.getSdk();

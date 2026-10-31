@@ -156,7 +156,7 @@ public class NpmIntegrationTest {
             Module module = ModuleManager.getInstance(project).findModuleByName(moduleName);
             assertThat(module).isNotNull();
             assertThat(NpmUtil.isLinked(module)).isTrue();
-            assertThat(module.getExtension(NodeJSModuleExtension.class)).isNotNull();
+            assertFrontend(module);
 
             ContentEntry[] contentEntries = ModuleRootManager.getInstance(module).getContentEntries();
             assertThat(contentEntries).hasSize(1);
@@ -252,7 +252,7 @@ public class NpmIntegrationTest {
             assertThat(contentEntries).hasSize(1);
             assertThat(folders(contentEntries[0], ProductionContentFolderTypeProvider.getInstance()))
                 .containsExactly(root.getUrl() + "/src/main/java");
-            assertThat(module.getExtension(NodeJSModuleExtension.class)).isNotNull();
+            assertFrontend(module);
             assertThat(NpmUtil.isLinked(module)).isFalse();
         });
     }
@@ -406,7 +406,7 @@ public class NpmIntegrationTest {
             ContentEntry[] contentEntries = ModuleRootManager.getInstance(module).getContentEntries();
             assertThat(contentEntries).hasSize(1);
             assertThat(folders(contentEntries[0], ProductionContentFolderTypeProvider.getInstance())).containsExactly(root.getUrl() + "/src/main/java");
-            assertThat(module.getExtension(NodeJSModuleExtension.class)).isNotNull();
+            assertFrontend(module);
         });
     }
 
@@ -481,8 +481,43 @@ public class NpmIntegrationTest {
         }
         ReadAction.run(() -> {
             assertThat(npmLibraries(module).keySet()).contains("npm: vue", "npm: mocha");
-            assertThat(module.getExtension(NodeJSModuleExtension.class)).isNotNull();
+            assertFrontend(module);
         });
+    }
+
+    /**
+     * A frontend is Web, a server Node.js, a framework rendering on the server both
+     */
+    @Test
+    public void frontendServerAndServerRendering(HeadlessProjects projects) throws Exception {
+        assertExtensions(projects, "{\"name\": \"api\", \"dependencies\": {\"express\": \"^5.0.0\"}}", false, true);
+        assertExtensions(projects, "{\"name\": \"spa\", \"devDependencies\": {\"vite\": \"^7.0.0\"}}", true, false);
+        assertExtensions(projects, "{\"name\": \"ssr\", \"dependencies\": {\"vue\": \"^3.5.0\", \"nuxt\": \"^4.0.0\"}}", true, true);
+    }
+
+    private static void assertExtensions(HeadlessProjects projects, String packageJson, boolean web, boolean nodejs) throws Exception {
+        Path directory = createPackage(projects, packageJson);
+        Project project = projects.open(directory);
+        importData(project, resolve(project, directory));
+        HeadlessProjects.awaitIdle(project);
+        ReadAction.run(() -> {
+            Module module = ModuleManager.getInstance(project).findModuleByName(directory.getFileName().toString());
+            assertThat(module).isNotNull();
+            assertThat((Object) module.getExtension(NpmConstants.WEB_EXTENSION_ID) != null).as("Web of " + packageJson).isEqualTo(web);
+            assertThat(module.getExtension(NodeJSModuleExtension.class) != null).as("Node.js of " + packageJson).isEqualTo(nodejs);
+            // npm is marked under Node.js when it runs there, else under Web
+            assertThat(NpmUtil.isLinked(module)).isTrue();
+            assertThat((Object) module.getExtension(NpmSystem.SYSTEM_ID.getId()) != null).as("npm (Node.js) of " + packageJson).isEqualTo(nodejs);
+            assertThat((Object) module.getExtension(NpmSystem.WEB_EXTENSION_ID) != null).as("npm (Web) of " + packageJson).isEqualTo(!nodejs);
+        });
+    }
+
+    /**
+     * The package of the tests depends on vue: a frontend, Web and not Node.js
+     */
+    private static void assertFrontend(Module module) {
+        assertThat((Object) module.getExtension(NpmConstants.WEB_EXTENSION_ID)).isNotNull();
+        assertThat(module.getExtension(NodeJSModuleExtension.class)).isNull();
     }
 
     private static Path createPackage(HeadlessProjects projects, String packageJson) throws Exception {

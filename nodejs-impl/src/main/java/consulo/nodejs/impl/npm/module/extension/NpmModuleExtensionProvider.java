@@ -30,7 +30,7 @@ import consulo.ui.image.Image;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Marks the modules imported from a linked npm package.
+ * Marks the modules imported from a linked npm package which run in Node.js.
  *
  * @since 2026-10-31
  */
@@ -41,9 +41,12 @@ public class NpmModuleExtensionProvider implements ModuleExtensionProvider<Exter
         return NpmSystem.SYSTEM_ID.getId();
     }
 
+    /**
+     * npm of a server: under Node.js (a frontend: {@link NpmWebModuleExtensionProvider} under Web)
+     */
     @Override
     public @Nullable String getParentId() {
-        return null;
+        return "nodejs";
     }
 
     @Override

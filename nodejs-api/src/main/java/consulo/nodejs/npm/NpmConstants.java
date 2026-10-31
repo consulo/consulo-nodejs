@@ -56,6 +56,26 @@ public interface NpmConstants {
         ".github"
     );
 
+    /**
+     * The id of the Web extension (the browser): a frontend
+     */
+    String WEB_EXTENSION_ID = "client-javascript";
+
+    /**
+     * The packages of a frontend: code running in a browser (Web), not in Node.js
+     */
+    List<String> CLIENT_PACKAGES = List.of(
+        "vite", "react", "react-dom", "preact", "vue", "@angular/core", "svelte", "solid-js", "lit", "jquery"
+    );
+
+    /**
+     * The frameworks rendering on the server too: the module is a frontend and runs in Node.js (Web and Node.js)
+     */
+    List<String> SERVER_RENDERING_PACKAGES = List.of(
+        "nuxt", "next", "@angular/ssr", "@nguniversal/express-engine", "@sveltejs/kit", "astro", "@remix-run/node",
+        "@analogjs/platform", "@solidjs/start"
+    );
+
     String TASK_INSTALL = "install";
     String TASK_CI = "ci";
     String TASK_UPDATE = "update";

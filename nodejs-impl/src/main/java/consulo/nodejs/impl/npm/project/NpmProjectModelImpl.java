@@ -30,7 +30,9 @@ import consulo.disposer.Disposer;
 import consulo.javascript.library.JavaScriptStandardLibrary;
 import consulo.externalSystem.importing.ImportSpecBuilder;
 import consulo.externalSystem.model.task.ProgressExecutionMode;
+import consulo.externalSystem.service.module.extension.ExternalSystemMutableModuleExtension;
 import consulo.externalSystem.service.project.ExternalSystemProjectRefresher;
+import consulo.externalSystem.util.ExternalSystemConstants;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
 import consulo.module.content.ModuleRootManager;
@@ -72,6 +74,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 @ServiceImpl
 public class NpmProjectModelImpl implements NpmProjectModel {
+    private static final List<String> MARKER_OPTIONS = List.of(
+        ExternalSystemConstants.EXTERNAL_SYSTEM_ID_KEY,
+        ExternalSystemConstants.LINKED_PROJECT_PATH_KEY,
+        ExternalSystemConstants.LINKED_PROJECT_ID_KEY,
+        ExternalSystemConstants.ROOT_PROJECT_PATH_KEY,
+        ExternalSystemConstants.EXTERNAL_SYSTEM_MODULE_GROUP_KEY,
+        ExternalSystemConstants.EXTERNAL_SYSTEM_MODULE_VERSION_KEY
+    );
+
     private static final String[] ROOT_TYPES = {BinariesOrderRootType.ID, SourcesOrderRootType.ID};
 
     private final Project myProject;
@@ -101,14 +112,18 @@ public class NpmProjectModelImpl implements NpmProjectModel {
     private boolean apply(ModifiableRootModel model, VirtualFile packageRoot, NpmPackage npmPackage, Map<String, Module> localPackages) {
         Module module = model.getModule();
 
-        enableNodeJS(module, model);
-
         // frameworks configure the module from the dependencies, like Maven importers
         for (NpmImporter importer : myApplication.getExtensionList(NpmImporter.class)) {
             if (importer.isApplicable(npmPackage)) {
                 importer.process(module, model, npmPackage, packageRoot);
             }
         }
+
+        // a frontend runs in a browser (Web), a server in Node.js; a framework rendering on the server is both
+        if (!isFrontend(model, npmPackage) || requiresAny(npmPackage, NpmConstants.SERVER_RENDERING_PACKAGES)) {
+            enableNodeJS(module, model);
+        }
+        selectMarker(model);
 
         syncModuleDependencies(model, npmPackage, localPackages);
         syncLibraries(model, packageRoot, npmPackage, localPackages.keySet());
@@ -131,16 +146,23 @@ public class NpmProjectModelImpl implements NpmProjectModel {
     }
 
     @Override
-    public void linkAndImport(String packageDirectory) {
+    public void linkAndImport(String packageDirectory, @Nullable Sdk bundle) {
         // linking updates the npm tool window: on the UI thread (the generators link from a background task)
         myProject.getUIAccess().giveIfNeed(() -> {
             if (myProject.isDisposed()) {
                 return;
             }
-            if (NpmUtil.findProjectSettings(myProject, packageDirectory) == null) {
-                NpmProjectSettings projectSettings = new NpmProjectSettings();
+            NpmProjectSettings projectSettings = NpmUtil.findProjectSettings(myProject, packageDirectory);
+            if (projectSettings == null) {
+                projectSettings = new NpmProjectSettings();
                 projectSettings.setExternalProjectPath(packageDirectory);
+                if (bundle != null) {
+                    projectSettings.setNodeSdkName(bundle.getName());
+                }
                 NpmSettings.getInstance(myProject).linkProject(projectSettings);
+            }
+            else if (bundle != null && projectSettings.getNodeSdkName() == null) {
+                projectSettings.setNodeSdkName(bundle.getName());
             }
             ExternalSystemProjectRefresher.getInstance().refreshProjects(
                 new ImportSpecBuilder(myProject, NpmSystem.SYSTEM_ID)
@@ -201,6 +223,48 @@ public class NpmProjectModelImpl implements NpmProjectModel {
             throw e;
         }
         return null;
+    }
+
+    /**
+     * A module of npm is marked under Node.js when it runs in Node.js, else (a frontend) under Web: the options of the
+     * import move to the marker; a module of another build system keeps its own
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static void selectMarker(ModifiableRootModel model) {
+        ExternalSystemMutableModuleExtension current = model.getExtension(ExternalSystemMutableModuleExtension.class);
+        if (current == null || !NpmSystem.SYSTEM_ID.getId().equals(current.getOption(ExternalSystemConstants.EXTERNAL_SYSTEM_ID_KEY))) {
+            return;
+        }
+        String wanted = model.getExtension(NodeJSMutableModuleExtension.class) != null ? NpmSystem.SYSTEM_ID.getId() : NpmSystem.WEB_EXTENSION_ID;
+        if (wanted.equals(current.getId())) {
+            return;
+        }
+        ExternalSystemMutableModuleExtension target = model.getExtensionWithoutCheck(wanted);
+        if (target == null) {
+            return;
+        }
+        target.setEnabled(true);
+        for (String key : MARKER_OPTIONS) {
+            target.setOption(key, current.getOption(key));
+        }
+        current.setEnabled(false);
+        current.removeAllOptions();
+    }
+
+    /**
+     * A frontend: Web is enabled (by a framework, or by hand), or the package depends on a browser library
+     */
+    private static boolean isFrontend(ModifiableRootModel model, NpmPackage npmPackage) {
+        return model.getExtension(NpmConstants.WEB_EXTENSION_ID) != null || requiresAny(npmPackage, NpmConstants.CLIENT_PACKAGES);
+    }
+
+    private static boolean requiresAny(NpmPackage npmPackage, List<String> packageNames) {
+        for (String packageName : packageNames) {
+            if (npmPackage.requires(packageName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

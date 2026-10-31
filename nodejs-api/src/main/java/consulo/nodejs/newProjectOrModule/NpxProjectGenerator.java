@@ -96,7 +96,7 @@ public final class NpxProjectGenerator {
                     return;
                 }
                 // the generated package.json: its dependencies (and the frameworks of them) and scripts are imported
-                NpmProjectModel.getInstance(project).linkAndImport(moduleDirectory.toString());
+                NpmProjectModel.getInstance(project).linkAndImport(moduleDirectory.toString(), sdk);
                 if (runScript != null) {
                     project.getApplication().invokeLater(() -> createRunConfiguration(project, moduleDirectory, runScript));
                 }

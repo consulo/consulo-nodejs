@@ -112,7 +112,7 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 		}
 		else
 		{
-			targetSdk = ModuleUtilCore.getSdk(module, NodeJSModuleExtension.class);
+			targetSdk = findModuleBundle(module);
 			if(targetSdk == null)
 			{
 				throw new ExecutionException("NodeJS bundle is undefined in module '" + module.getName() + "'");
@@ -120,6 +120,15 @@ public abstract class NodeJSConfigurationBase extends ModuleBasedConfiguration<R
 		}
 
 		return createRunState(module, targetSdk, executor, executionEnvironment);
+	}
+
+	/**
+	 * The bundle running the configuration of a module: of its Node.js extension
+	 */
+	@Nullable
+	protected Sdk findModuleBundle(@Nonnull Module module)
+	{
+		return ModuleUtilCore.getSdk(module, NodeJSModuleExtension.class);
 	}
 
 	@Nonnull

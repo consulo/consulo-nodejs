@@ -114,13 +114,26 @@ public final class NpmModuleExtensions {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void attachSdk(ModifiableRootModel model, MutableModuleExtensionWithSdk extension) {
         if (extension.getInheritableSdk().isNull()) {
-            Sdk sdk = findSdk(extension.getSdkTypeClass());
+            Sdk sdk = findSdk(sdkTypeClass(extension));
             if (sdk != null) {
                 extension.getInheritableSdk().set(null, sdk);
             }
         }
         if (!extension.getInheritableSdk().isNull() && model.findModuleExtensionSdkEntry(extension) == null) {
             model.addModuleExtensionSdkEntry(extension);
+        }
+    }
+
+    /**
+     * The SDK type of the extension, {@code null} for an extension without one of its own (Vaadin Flow throws)
+     */
+    @SuppressWarnings("rawtypes")
+    private static @Nullable Class<? extends SdkType> sdkTypeClass(MutableModuleExtensionWithSdk extension) {
+        try {
+            return extension.getSdkTypeClass();
+        }
+        catch (UnsupportedOperationException | IllegalArgumentException e) {
+            return null;
         }
     }
 

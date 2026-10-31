@@ -18,6 +18,7 @@ package consulo.nodejs.npm;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ServiceAPI;
+import consulo.content.bundle.Sdk;
 import consulo.module.Module;
 import consulo.module.content.layer.ModifiableRootModel;
 import consulo.project.Project;
@@ -64,7 +65,15 @@ public interface NpmProjectModel {
      *
      * @param packageDirectory the directory of the {@code package.json}
      */
-    void linkAndImport(String packageDirectory);
+    default void linkAndImport(String packageDirectory) {
+        linkAndImport(packageDirectory, null);
+    }
+
+    /**
+     * @param bundle the Node.js bundle running npm for the package, kept in its npm settings: a frontend module has no
+     *               Node.js extension to take it from
+     */
+    void linkAndImport(String packageDirectory, @Nullable Sdk bundle);
 
     /**
      * @return the {@code package.json} of the module: in one of its content roots

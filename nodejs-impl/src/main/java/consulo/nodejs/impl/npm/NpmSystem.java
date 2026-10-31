@@ -26,4 +26,9 @@ import consulo.nodejs.localize.NodeJSLocalize;
  */
 public interface NpmSystem {
     ProjectSystemId SYSTEM_ID = new ProjectSystemId("NPM", NodeJSLocalize.npmSystemName(), NodeJSApiIconGroup.npm());
+
+    /**
+     * The extension marking a module of npm which is a frontend: under Web, the one of {@link #SYSTEM_ID} under Node.js
+     */
+    String WEB_EXTENSION_ID = "npm-web";
 }

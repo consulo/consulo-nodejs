@@ -112,6 +112,9 @@ public class NpmStandardLibraryTest {
         VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(directory);
         assertThat(root).isNotNull();
         root.refresh(false, true);
+        // the lib directory is recognized by its lib.es5.d.ts: in the VFS before the npm library is set up
+        assertThat(LocalFileSystem.getInstance().refreshAndFindFileByNioFile(
+            directory.resolve("node_modules/typescript/lib/" + JavaScriptStandardLibrary.ES5_LIB_FILE))).isNotNull();
 
         Project project = projects.open(directory);
         Module module = WriteAction.compute(() -> {
