@@ -31,6 +31,7 @@ module consulo.nodejs {
     requires consulo.platform.api;
     requires consulo.process.api;
     requires consulo.project.api;
+    requires consulo.repository.ui.api;
     requires consulo.ui.api;
     requires consulo.ui.ex.api;
     requires consulo.ui.ex.awt.api;
