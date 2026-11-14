@@ -33,7 +33,7 @@ import java.util.List;
 public class NpmAutoImportAware implements ExternalSystemAutoImportAware {
     @Override
     public @Nullable String getAffectedExternalProjectPath(String changedFileOrDirPath, Project project) {
-        Path changed = Path.of(changedFileOrDirPath);
+        Path changed = NpmUtil.toPath(project, changedFileOrDirPath);
         Path fileName = changed.getFileName();
         if (fileName == null || !NpmConstants.AUTO_IMPORT_FILES.contains(fileName.toString())) {
             return null;
@@ -53,7 +53,7 @@ public class NpmAutoImportAware implements ExternalSystemAutoImportAware {
 
     @Override
     public List<Path> getAffectedExternalProjectFilePaths(String projectPath, Project project) {
-        Path directory = NpmUtil.toPackageDirectory(Path.of(projectPath));
+        Path directory = NpmUtil.toPackageDirectory(NpmUtil.toPath(project, projectPath));
         List<Path> result = new ArrayList<>();
         for (String file : NpmConstants.AUTO_IMPORT_FILES) {
             result.add(directory.resolve(file));

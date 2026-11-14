@@ -16,7 +16,10 @@
 package consulo.nodejs.impl.npm;
 
 import consulo.annotation.access.RequiredReadAction;
+import consulo.application.Application;
 import consulo.application.ReadAction;
+import consulo.application.platform.PlatformTarget;
+import consulo.application.platform.PlatformTargetManager;
 import consulo.content.bundle.Sdk;
 import consulo.content.bundle.SdkTable;
 import consulo.externalSystem.util.ExternalSystemApiUtil;
@@ -30,17 +33,19 @@ import consulo.nodejs.impl.npm.setting.NpmProjectSettings;
 import consulo.nodejs.impl.npm.setting.NpmSettings;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.nodejs.npm.NpmConstants;
+import consulo.platform.Platform;
 import consulo.process.cmd.GeneralCommandLine;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import org.jspecify.annotations.Nullable;
 
-import java.io.File;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @since 2026-10-31
@@ -55,10 +60,10 @@ public final class NpmUtil {
      * A package may be linked by its directory or by its {@code package.json} - both name the same settings.
      */
     public static @Nullable NpmProjectSettings findProjectSettings(Project project, String packagePath) {
-        Path packageDirectory = toPackageDirectory(Path.of(packagePath));
+        Path packageDirectory = toPackageDirectory(toPath(project, packagePath));
         for (NpmProjectSettings settings : NpmSettings.getInstance(project).getLinkedProjectsSettings()) {
             String linkedProjectPath = settings.getExternalProjectPath();
-            if (linkedProjectPath != null && toPackageDirectory(Path.of(linkedProjectPath)).equals(packageDirectory)) {
+            if (linkedProjectPath != null && toPackageDirectory(toPath(project, linkedProjectPath)).equals(packageDirectory)) {
                 return settings;
             }
         }
@@ -87,7 +92,7 @@ public final class NpmUtil {
     public static @Nullable Module findModule(Project project, Path packageDirectory) {
         for (Module module : ModuleManager.getInstance(project).getModules()) {
             for (VirtualFile contentRoot : ModuleRootManager.getInstance(module).getContentRoots()) {
-                if (contentRoot.isInLocalFileSystem() && contentRoot.toNioPath().equals(packageDirectory)) {
+                if (contentRoot.isInLocalLikeFileSystem() && contentRoot.toNioPath().equals(packageDirectory)) {
                     return module;
                 }
             }
@@ -114,7 +119,7 @@ public final class NpmUtil {
 
     public static NpmExecutionSettings createExecutionSettings(Project project, String linkedProjectPath) {
         NpmProjectSettings settings = findProjectSettings(project, linkedProjectPath);
-        Path packageDirectory = toPackageDirectory(Path.of(linkedProjectPath));
+        Path packageDirectory = toPackageDirectory(toPath(project, linkedProjectPath));
         Module module = ReadAction.compute(() -> findModule(project, packageDirectory));
         Sdk sdk = findNodeSdk(settings == null ? null : settings.getNodeSdkName(), module);
         return createExecutionSettings(sdk);
@@ -144,7 +149,10 @@ public final class NpmUtil {
             sdk = extension == null ? null : extension.getSdk();
         }
         if (sdk == null) {
-            sdk = ContainerUtil.getFirstItem(SdkTable.getInstance().getSdksOfType(NodeJSBundleType.getInstance()));
+            // a bundle of the machine of the project
+            String targetId = module == null ? null : module.getProject().getPlatformTargetId();
+            sdk = ContainerUtil.find(SdkTable.getInstance().getSdksOfType(NodeJSBundleType.getInstance()),
+                it -> Objects.equals(it.getPlatformTargetId(), targetId));
         }
         return sdk;
     }
@@ -156,15 +164,35 @@ public final class NpmUtil {
         List<String> command = new ArrayList<>();
         command.add(settings.getNpmExecutable());
         command.addAll(arguments);
+        // on the machine of the package
+        Platform platform = platformOf(workDirectory);
         GeneralCommandLine commandLine = new GeneralCommandLine(command);
+        commandLine.withPlatform(platform);
         commandLine.withWorkingDirectory(workDirectory);
         commandLine.withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE);
         String nodeDirectory = settings.getNodeDirectory();
         if (nodeDirectory != null) {
-            String path = commandLine.getParentEnvironment().get("PATH");
-            commandLine.withEnvironment("PATH", nodeDirectory + File.pathSeparator + (path == null ? "" : path));
+            String path = platform.os().getEnvironmentVariable("PATH");
+            commandLine.withEnvironment("PATH", nodeDirectory + platform.fs().getPathListSeparator() + (path == null ? "" : path));
         }
         return commandLine;
+    }
+
+    /**
+     * A path of the settings - a path of the machine of the project.
+     */
+    public static Path toPath(@Nullable Project project, String path) {
+        Platform platform = project != null ? project.getPlatform() : Platform.current();
+        return platform == Platform.current() ? Path.of(path) : platform.fs().getPath(path);
+    }
+
+    private static Platform platformOf(Path path) {
+        if (path.getFileSystem() == FileSystems.getDefault()) {
+            return Platform.current();
+        }
+        PlatformTarget target = Application.get().getInstance(PlatformTargetManager.class).findTargetOf(path);
+        Platform platform = target == null ? null : target.getPlatform();
+        return platform != null ? platform : Platform.current();
     }
 
     /**

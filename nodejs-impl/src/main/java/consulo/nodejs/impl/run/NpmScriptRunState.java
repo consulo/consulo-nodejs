@@ -24,7 +24,6 @@ import consulo.platform.Platform;
 import consulo.process.cmd.GeneralCommandLine;
 import org.jspecify.annotations.Nullable;
 
-import java.io.File;
 import java.nio.file.Path;
 
 /**
@@ -42,7 +41,7 @@ public class NpmScriptRunState extends NodeJSRunState {
         Path nodeDirectory = NodeJSBundleType.getExePath(sdk).getParent();
         if (nodeDirectory != null) {
             String path = platform.os().getEnvironmentVariable("PATH");
-            commandLine.withEnvironment("PATH", nodeDirectory + File.pathSeparator + (path == null ? "" : path));
+            commandLine.withEnvironment("PATH", nodeDirectory + platform.fs().getPathListSeparator() + (path == null ? "" : path));
         }
     }
 }

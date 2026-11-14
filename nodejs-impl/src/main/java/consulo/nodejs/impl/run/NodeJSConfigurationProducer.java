@@ -47,8 +47,9 @@ public class NodeJSConfigurationProducer extends RunConfigurationProducer<NodeJS
             assert module != null;
             configuration.setModule(module);
             String moduleDirPath = module.getModuleDirPath();
-            String path = executableFile.getPath();
-            String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, FileUtil.toSystemIndependentName(path), '/');
+            String relativePath = moduleDirPath == null ? null : FileUtil.getRelativePath(moduleDirPath, executableFile.getPath(), '/');
+            // a file outside of the module is kept by its path on its machine
+            String path = FileUtil.toSystemIndependentName(executableFile.toNioPath().toString());
 
             configuration.setName(ObjectUtil.notNull(relativePath, path));
             configuration.setScriptFilePath(ObjectUtil.notNull(relativePath, path));

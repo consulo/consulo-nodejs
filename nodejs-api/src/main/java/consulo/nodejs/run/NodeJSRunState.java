@@ -30,11 +30,12 @@ import consulo.nodejs.bundle.NodeJSBundleType;
 import consulo.platform.Platform;
 import consulo.process.ExecutionException;
 import consulo.process.ProcessHandler;
+import consulo.process.ProcessHandlerBuilder;
 import consulo.process.cmd.GeneralCommandLine;
 import consulo.process.event.ProcessListener;
-import consulo.process.local.ProcessHandlerFactory;
 import consulo.util.collection.SmartList;
 import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -58,6 +59,13 @@ public class NodeJSRunState implements RunProfileState {
         myConfiguration = configuration;
     }
 
+    /**
+     * The machine node runs on - the one of the bundle
+     */
+    public Platform getPlatform() {
+        return mySdk.getPlatform();
+    }
+
     public void addProcessListener(ProcessListener processListener) {
         myProcessListeners.add(processListener);
     }
@@ -79,17 +87,19 @@ public class NodeJSRunState implements RunProfileState {
     @Nullable
     @Override
     public ExecutionResult execute(Executor executor, @Nonnull ProgramRunner programRunner) throws ExecutionException {
-        Platform platform = Platform.current();
+        // node runs on the machine of its bundle
+        Platform platform = mySdk.getPlatform();
 
         GeneralCommandLine generalCommandLine = new GeneralCommandLine();
         generalCommandLine.withPlatform(platform);
 
         String workingDirectory = myConfiguration.getWorkingDirectory();
+        VirtualFile moduleDir = myModule == null ? null : myModule.getModuleDir();
         if (!StringUtil.isEmpty(workingDirectory)) {
-            generalCommandLine.withWorkDirectory(myConfiguration.getWorkingDirectory());
+            generalCommandLine.withWorkingDirectory(platform.fs().getPath(workingDirectory));
         }
-        else if (myModule != null) {
-            generalCommandLine.withWorkDirectory(myModule.getModuleDirPath());
+        else if (moduleDir != null) {
+            generalCommandLine.withWorkingDirectory(moduleDir.toNioPath());
         }
 
         setupExePath(generalCommandLine, mySdk, platform);
@@ -109,7 +119,7 @@ public class NodeJSRunState implements RunProfileState {
             generalCommandLine.addParameters(StringUtil.splitHonorQuotes(programParameters, ' '));
         }
 
-        ProcessHandler processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(generalCommandLine);
+        ProcessHandler processHandler = ProcessHandlerBuilder.create(generalCommandLine).colored().build();
         for (ProcessListener processListener : myProcessListeners) {
             processHandler.addProcessListener(processListener);
         }

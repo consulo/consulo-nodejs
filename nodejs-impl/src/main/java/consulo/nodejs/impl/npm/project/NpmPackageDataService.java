@@ -32,8 +32,8 @@ import consulo.module.content.layer.ModifiableRootModel;
 import consulo.nodejs.impl.npm.NpmUtil;
 import consulo.nodejs.npm.NpmProjectModel;
 import consulo.project.Project;
-import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -67,8 +67,9 @@ public class NpmPackageDataService implements ProjectDataService<NpmPackageData,
                     DataNode<ModuleData> moduleNode = ExternalSystemApiUtil.findParent(node, ProjectKeys.MODULE);
                     Module module = moduleNode != null
                         ? moduleManager.findModuleByName(moduleNode.getData().getInternalName())
-                        : NpmUtil.findModule(project, Path.of(data.getPackageDirectory()));
-                    VirtualFile packageRoot = LocalFileSystem.getInstance().findFileByPath(data.getPackageDirectory());
+                        : NpmUtil.findModule(project, NpmUtil.toPath(project, data.getPackageDirectory()));
+                    VirtualFile packageRoot =
+                        VirtualFileManager.getInstance().findFileByNioPath(NpmUtil.toPath(project, data.getPackageDirectory()));
                     if (module == null || packageRoot == null) {
                         LOG.warn("npm package is not imported, there is no module for " + data.getPackageDirectory());
                         continue;

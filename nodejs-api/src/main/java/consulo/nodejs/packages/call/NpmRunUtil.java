@@ -16,18 +16,18 @@
 
 package consulo.nodejs.packages.call;
 
-import consulo.application.util.SystemInfo;
 import consulo.content.bundle.Sdk;
 import consulo.execution.RunContentExecutor;
 import consulo.execution.process.ProcessTerminatedListener;
 import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
 import consulo.nodejs.NodeJSConstants;
+import consulo.nodejs.bundle.NodeJSBundleType;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.process.ExecutionException;
 import consulo.process.ProcessHandler;
+import consulo.process.ProcessHandlerBuilder;
 import consulo.process.cmd.GeneralCommandLine;
-import consulo.process.local.ProcessHandlerFactory;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
@@ -35,7 +35,8 @@ import consulo.virtualFileSystem.VirtualFile;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * @author VISTALL
@@ -77,17 +78,13 @@ public class NpmRunUtil
 		return homeDirectory.findFileByRelativePath(NodeJSConstants.NODE_MODULES + "/" + moduleName);
 	}
 
+	/**
+	 * The npm of the bundle - a path of the machine of the bundle
+	 */
 	@Nonnull
-	public static File getNpmExecutable(@Nonnull String home)
+	public static Path getNpmExecutable(@Nonnull Sdk sdk)
 	{
-		String executable = SystemInfo.isWindows ? "npm.cmd" : "npm";
-
-		File firstTry = new File(home, "bin/" + executable);
-		if(firstTry.exists())
-		{
-			return firstTry;
-		}
-		return new File(home, executable);
+		return NodeJSBundleType.getExePath(sdk.getPlatform(), sdk.getHomeNioPath(), "npm.cmd", "npm");
 	}
 
 	@RequiredUIAccess
@@ -106,21 +103,22 @@ public class NpmRunUtil
 			return;
 		}
 
-		File npmExecutable = getNpmExecutable(sdk.getHomePath());
-		if(!npmExecutable.exists())
+		Path npmExecutable = getNpmExecutable(sdk);
+		if(!Files.exists(npmExecutable))
 		{
 			Messages.showErrorDialog(project, "'npm' executable is not found", "Error");
 			return;
 		}
 		GeneralCommandLine commandLine = new GeneralCommandLine();
-		commandLine.setExePath(npmExecutable.getPath());
+		commandLine.withPlatform(sdk.getPlatform());
+		commandLine.withExecutablePath(npmExecutable);
 		commandLine.addParameter(action);
-		commandLine.setWorkDirectory(packageFile.getParent().getPath());
+		commandLine.withWorkingDirectory(packageFile.getParent().toNioPath());
 
 		final RunContentExecutor contentExecutor;
 		try
 		{
-			ProcessHandler process = ProcessHandlerFactory.getInstance().createProcessHandler(commandLine);
+			ProcessHandler process = ProcessHandlerBuilder.create(commandLine).build();
 			ProcessTerminatedListener.attach(process);
 			contentExecutor = new RunContentExecutor(project, process).withTitle("npm " + action).withActivateToolWindow(false);
 			contentExecutor.run();

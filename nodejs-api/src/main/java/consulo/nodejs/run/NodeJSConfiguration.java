@@ -29,12 +29,14 @@ import consulo.module.Module;
 import consulo.module.ModuleManager;
 import consulo.nodejs.module.extension.NodeJSModuleExtension;
 import consulo.process.ExecutionException;
+import consulo.util.io.FileUtil;
 import consulo.util.lang.StringUtil;
-import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,22 +123,15 @@ public class NodeJSConfiguration extends NodeJSConfigurationBase
 		{
 			return null;
 		}
-		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(scriptFilePath);
-		if(fileByPath != null)
+		// the path is one of the machine of the project, absolute or relative to the module
+		Path path = getProject().getPlatform().fs().getPath(scriptFilePath);
+		if(path.isAbsolute())
 		{
-			return fileByPath;
+			return VirtualFileManager.getInstance().findFileByNioPath(path);
 		}
 		Module module = getConfigurationModule().getModule();
-		if(module == null)
-		{
-			return null;
-		}
-		String moduleDirPath = module.getModuleDirPath();
-		if(moduleDirPath == null)
-		{
-			return null;
-		}
-		return LocalFileSystem.getInstance().findFileByPath(moduleDirPath + "/" + scriptFilePath);
+		VirtualFile moduleDir = module == null ? null : module.getModuleDir();
+		return moduleDir == null ? null : moduleDir.findFileByRelativePath(FileUtil.toSystemIndependentName(scriptFilePath));
 	}
 
 	public String getScriptFilePath()

@@ -44,7 +44,7 @@ public class NpmTaskManager implements ExternalSystemTaskManager<NpmExecutionSet
                              @Nullable String debuggerSetup,
                              ExternalSystemTaskNotificationListener listener) throws ExternalSystemException {
         NpmExecutionSettings executionSettings = settings != null ? settings : NpmUtil.createExecutionSettings(null);
-        Path packageDirectory = NpmUtil.toPackageDirectory(Path.of(projectPath));
+        Path packageDirectory = NpmUtil.toPackageDirectory(NpmUtil.toPath(id.findProject(), projectPath));
         for (String taskName : taskNames) {
             List<String> arguments = NpmUtil.toArguments(taskName);
             if (!scriptParameters.isEmpty()) {

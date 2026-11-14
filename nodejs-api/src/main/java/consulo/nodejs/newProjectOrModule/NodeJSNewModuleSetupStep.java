@@ -53,6 +53,8 @@ public class NodeJSNewModuleSetupStep<C extends NodeJSNewModuleWizardContext> ex
         if (component.getDataModel().getSize() > 0) {
             component.setValueByIndex(0);
         }
+        // the bundles of the target machine
+        bindBundleBox(myBundleBox);
     }
 
     @Override

@@ -38,8 +38,8 @@ import consulo.repository.ui.RepoPackage;
 import consulo.repository.ui.SearchablePackageManagementService;
 import consulo.util.concurrent.AsyncResult;
 import consulo.util.lang.StringUtil;
-import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
@@ -228,7 +228,7 @@ public class NpmPackageManagementService extends PackageManagementServiceEx impl
                     error = ErrorDescription.fromMessage(StringUtil.notNullize(e.getMessage(), e.getClass().getName()));
                 }
                 // package.json is changed by the tool: the model of the module follows it
-                VirtualFile packageJson = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(getPackageDirectory().resolve("package.json"));
+                VirtualFile packageJson = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(getPackageDirectory().resolve("package.json"));
                 if (packageJson != null) {
                     packageJson.refresh(false, false);
                 }

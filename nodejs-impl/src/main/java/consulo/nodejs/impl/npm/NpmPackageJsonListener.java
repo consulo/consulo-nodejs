@@ -26,6 +26,7 @@ import consulo.nodejs.npm.NpmConstants;
 import consulo.nodejs.npm.NpmProjectModel;
 import consulo.project.Project;
 import consulo.project.ProjectManager;
+import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.event.AsyncFileListener;
 import consulo.virtualFileSystem.event.VFileContentChangeEvent;
 import consulo.virtualFileSystem.event.VFileCreateEvent;
@@ -69,11 +70,8 @@ public class NpmPackageJsonListener implements AsyncFileListener {
                 || event instanceof VFileDeleteEvent || event instanceof VFileMoveEvent)) {
                 continue;
             }
-            Path path;
-            try {
-                path = Path.of(event.getPath());
-            }
-            catch (RuntimeException e) {
+            Path path = toNioPath(event);
+            if (path == null) {
                 continue;
             }
             Path fileName = path.getFileName();
@@ -158,5 +156,25 @@ public class NpmPackageJsonListener implements AsyncFileListener {
             }
         }
         return false;
+    }
+
+    /**
+     * The path of the event on the machine of the file - the path of the event names a remote file by its file system.
+     */
+    private static @Nullable Path toNioPath(VFileEvent event) {
+        try {
+            if (event instanceof VFileCreateEvent createEvent) {
+                VirtualFile parent = createEvent.getParent();
+                return parent.isInLocalLikeFileSystem() ? parent.toNioPath().resolve(createEvent.getChildName()) : null;
+            }
+            VirtualFile file = event.getFile();
+            if (file != null) {
+                return file.isInLocalLikeFileSystem() ? file.toNioPath() : null;
+            }
+            return Path.of(event.getPath());
+        }
+        catch (RuntimeException e) {
+            return null;
+        }
     }
 }

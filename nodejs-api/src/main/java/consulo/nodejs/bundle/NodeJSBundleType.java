@@ -43,6 +43,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -88,14 +90,15 @@ public class NodeJSBundleType extends PlatformAwareSdkType {
 
     @Override
     public void collectHomePaths(Platform platform, Consumer<Path> consumer) {
+        Set<Path> homes = new LinkedHashSet<>();
         if (platform.os().isWindows()) {
-            collectNodePathsAtWindows(platform, consumer, "ProgramFiles");
-            collectNodePathsAtWindows(platform, consumer, "ProgramFiles(x86)");
+            collectNodePathsAtWindows(platform, homes::add, "ProgramFiles");
+            collectNodePathsAtWindows(platform, homes::add, "ProgramFiles(x86)");
         }
         else {
             Path usrBinNode = platform.fs().getPath("/usr/bin/node");
             if (Files.exists(usrBinNode)) {
-                consumer.accept(usrBinNode.getParent());
+                homes.add(usrBinNode.getParent());
             }
 
             Path userHome = platform.user().homePath();
@@ -105,13 +108,33 @@ public class NodeJSBundleType extends PlatformAwareSdkType {
                 try {
                     Files.list(nvmNodeDir).forEach(path -> {
                         if (Files.isDirectory(path)) {
-                            consumer.accept(path);
+                            homes.add(path);
                         }
                     });
                 }
                 catch (IOException e) {
                     LOG.warn("Fail to visit dir " + nvmNodeDir, e);
                 }
+            }
+        }
+
+        // the node of the path - a machine may have it anywhere (a tools directory, a version manager)
+        String path = platform.os().getEnvironmentVariable("PATH");
+        if (path != null) {
+            for (String entry : StringUtil.split(path, platform.fs().getPathListSeparator())) {
+                Path directory = platform.fs().getPath(entry);
+                if (Files.isRegularFile(getExePath(platform, directory))) {
+                    // the home of an installation is the parent of its bin directory
+                    Path parent = directory.getParent();
+                    homes.add(parent != null && "bin".equals(String.valueOf(directory.getFileName())) ? parent : directory);
+                }
+            }
+        }
+        // one home for one node - the bin directory and its parent are the same installation
+        Set<Path> executables = new HashSet<>();
+        for (Path home : homes) {
+            if (executables.add(getExePath(platform, home))) {
+                consumer.accept(home);
             }
         }
     }
@@ -179,7 +202,7 @@ public class NodeJSBundleType extends PlatformAwareSdkType {
 
     @Override
     public boolean canCreatePredefinedSdks(Platform platform) {
-        return Platform.LOCAL.equals(platform.getId());
+        return true;
     }
 
     @Override

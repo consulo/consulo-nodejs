@@ -41,8 +41,8 @@ import consulo.nodejs.npm.NpmImporter;
 import consulo.nodejs.npm.NpmPackage;
 import consulo.project.Project;
 import consulo.util.lang.StringUtil;
-import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Files;
@@ -74,7 +74,7 @@ public class NpmProjectResolver implements ExternalSystemProjectResolver<NpmExec
                                                               @Nullable NpmExecutionSettings settings,
                                                               ExternalSystemTaskNotificationListener listener)
         throws ExternalSystemException, IllegalArgumentException, IllegalStateException {
-        Path packageDirectory = NpmUtil.toPackageDirectory(Path.of(projectPath));
+        Path packageDirectory = NpmUtil.toPackageDirectory(NpmUtil.toPath(id.findProject(), projectPath));
         Path packageJson = packageDirectory.resolve(NpmConstants.PACKAGE_JSON);
         if (!Files.isRegularFile(packageJson)) {
             throw new IllegalArgumentException(NodeJSLocalize.npmErrorNoPackageJson(packageDirectory).get());
@@ -85,7 +85,7 @@ public class NpmProjectResolver implements ExternalSystemProjectResolver<NpmExec
         }
         listener.onStatusChange(new ExternalSystemTaskNotificationEvent(id, NodeJSLocalize.npmStatusReading().get()));
 
-        VirtualFile packageJsonFile = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(packageJson);
+        VirtualFile packageJsonFile = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(packageJson);
         if (packageJsonFile == null) {
             throw new IllegalArgumentException(NodeJSLocalize.npmErrorNoPackageJson(packageDirectory).get());
         }
@@ -98,7 +98,7 @@ public class NpmProjectResolver implements ExternalSystemProjectResolver<NpmExec
             throw new ExternalSystemException(NodeJSLocalize.npmErrorCannotRead(packageJson).get());
         }
         for (Path workspaceDirectory : NpmWorkspaces.findPackageDirectories(packageDirectory, rootPackage.workspaces())) {
-            VirtualFile file = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(workspaceDirectory.resolve(NpmConstants.PACKAGE_JSON));
+            VirtualFile file = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(workspaceDirectory.resolve(NpmConstants.PACKAGE_JSON));
             if (file != null) {
                 workspaceDirectories.add(workspaceDirectory);
                 workspacePackageJsons.add(file);

@@ -30,6 +30,8 @@ import consulo.execution.ui.console.ConsoleViewContentType;
 import consulo.javascript.debugger.cdt.ChromeDevToolsFactory;
 import consulo.nodejs.run.NodeJSConfigurationBase;
 import consulo.nodejs.run.NodeJSRunState;
+import consulo.platform.ForwardedPort;
+import consulo.platform.Platform;
 import consulo.process.ExecutionException;
 import consulo.process.ProcessOutputTypes;
 import consulo.process.event.ProcessEvent;
@@ -38,6 +40,7 @@ import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.dataholder.Key;
 import consulo.util.io.NetUtil;
 import consulo.util.lang.ExceptionUtil;
+import consulo.util.lang.StringUtil;
 import consulo.util.lang.ref.SimpleReference;
 import jakarta.annotation.Nonnull;
 
@@ -51,7 +54,7 @@ import java.util.regex.Pattern;
  */
 @ExtensionImpl
 public class NodeJSDebuggerRunner extends DefaultProgramRunner {
-    private static final Pattern CONNECT_PATTERN = Pattern.compile("wss?://(?:\\[[0-9a-fA-F:]+\\]|[^/\\s:]+):\\d+/[^/\\s]+");
+    private static final Pattern CONNECT_PATTERN = Pattern.compile("(wss?)://((?:\\[[0-9a-fA-F:]+\\]|[^/\\s:]+)):(\\d+)(/[^/\\s]+)");
 
     @Nonnull
     @Override
@@ -64,9 +67,12 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner {
     protected RunContentDescriptor doExecute(@Nonnull final RunProfileState state, @Nonnull final ExecutionEnvironment env) throws ExecutionException {
         FileDocumentManager.getInstance().saveAllDocuments();
         try {
-            final int wsPort = NetUtil.findAvailableSocketPort();
             final NodeJSRunState nodeJSRunState = (NodeJSRunState) state;
-            nodeJSRunState.addVmArgument("--inspect-brk=" + wsPort);
+            Platform platform = nodeJSRunState.getPlatform();
+            boolean local = platform == Platform.current();
+            // a free port of the machine of node - another machine picks it itself, the url names it
+            nodeJSRunState.addVmArgument(local ? "--inspect-brk=" + NetUtil.findAvailableSocketPort() : "--inspect-brk=127.0.0.1:0");
+            SimpleReference<ForwardedPort> forwardedPort = SimpleReference.create();
 
             final SimpleReference<NodeJSDebugProcess> vm = SimpleReference.create(null);
 
@@ -87,6 +93,13 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner {
                                 if (matcher.find()) {
                                     try {
                                         String url = matcher.group();
+                                        if (!local) {
+                                            // the inspector listens on the machine of node - reached through a forwarded port
+                                            String host = StringUtil.trimStart(StringUtil.trimEnd(matcher.group(2), "]"), "[");
+                                            ForwardedPort forward = platform.net().forward(host, Integer.parseInt(matcher.group(3)));
+                                            forwardedPort.set(forward);
+                                            url = matcher.group(1) + "://" + forward.host() + ":" + forward.port() + matcher.group(4);
+                                        }
 
                                         ChromeDevToolsServiceImpl tools = ChromeDevToolsFactory.create(new NodeJSWebSocketConnection(url));
 
@@ -105,6 +118,15 @@ public class NodeJSDebuggerRunner extends DefaultProgramRunner {
                                     // remove this listener from handling
                                     debugProcess.getProcessHandler().removeProcessListener(this);
                                 }
+                            }
+                        }
+                    });
+                    nodeJSRunState.addProcessListener(new ProcessListener() {
+                        @Override
+                        public void processTerminated(ProcessEvent event) {
+                            ForwardedPort forward = forwardedPort.get();
+                            if (forward != null) {
+                                forward.close();
                             }
                         }
                     });

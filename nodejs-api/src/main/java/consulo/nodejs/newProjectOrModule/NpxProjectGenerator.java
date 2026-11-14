@@ -39,10 +39,9 @@ import consulo.project.Project;
 import consulo.project.startup.StartupManager;
 import consulo.project.ui.notification.NotificationGroup;
 import consulo.project.ui.notification.NotificationService;
-import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -114,7 +113,7 @@ public final class NpxProjectGenerator {
         if (configuration instanceof NpmScriptRunConfiguration npmScript) {
             npmScript.setScript(script);
         }
-        VirtualFile directory = LocalFileSystem.getInstance().findFileByNioFile(moduleDirectory);
+        VirtualFile directory = VirtualFileManager.getInstance().findFileByNioPath(moduleDirectory);
         Module module = directory != null ? project.getApplication().runReadAction((java.util.function.Supplier<Module>) () -> ModuleUtilCore.findModuleForFile(directory, project)) : null;
         if (module != null && configuration instanceof ModuleBasedConfiguration<?> moduleBased) {
             moduleBased.setModule(module);
@@ -134,9 +133,10 @@ public final class NpxProjectGenerator {
     private static @Nullable String install(Sdk sdk, Path directory) {
         Path npm = NodeJSBundleType.getExePath(sdk.getPlatform(), sdk.getHomeNioPath(), "npm.cmd", "npm");
         GeneralCommandLine commandLine = new GeneralCommandLine()
+            .withPlatform(sdk.getPlatform())
             .withExePath(Files.exists(npm) ? npm.toString() : "npm")
             .withParameters(List.of("install"))
-            .withWorkDirectory(directory.toString());
+            .withWorkingDirectory(directory);
         withBundlePath(commandLine, sdk);
         try {
             ProcessOutput output = CapturingProcessUtil.execAndGetOutput(commandLine, TIMEOUT_MILLIS);
@@ -153,8 +153,9 @@ public final class NpxProjectGenerator {
     private static void withBundlePath(GeneralCommandLine commandLine, Sdk sdk) {
         Path nodeDirectory = NodeJSBundleType.getExePath(sdk).getParent();
         if (nodeDirectory != null) {
-            String path = Platform.current().os().getEnvironmentVariable("PATH");
-            commandLine.withEnvironment("PATH", nodeDirectory + File.pathSeparator + (path == null ? "" : path));
+            Platform platform = sdk.getPlatform();
+            String path = platform.os().getEnvironmentVariable("PATH");
+            commandLine.withEnvironment("PATH", nodeDirectory + platform.fs().getPathListSeparator() + (path == null ? "" : path));
         }
     }
 
@@ -176,10 +177,12 @@ public final class NpxProjectGenerator {
                 parameters.add(PROJECT_NAME.equals(argument) ? projectName : argument);
             }
 
+            // npx runs on the machine of the bundle, in a directory beside the module
             GeneralCommandLine commandLine = new GeneralCommandLine()
-                .withExePath(npx.toString())
+                .withPlatform(sdk.getPlatform())
+                .withExecutablePath(npx)
                 .withParameters(parameters)
-                .withWorkDirectory(temp.toString());
+                .withWorkingDirectory(temp);
             withBundlePath(commandLine, sdk);
 
             ProcessOutput output = CapturingProcessUtil.execAndGetOutput(commandLine, TIMEOUT_MILLIS);
@@ -204,7 +207,7 @@ public final class NpxProjectGenerator {
             // the dependencies are installed before the import: the libraries of the module see the packages
             String installError = install(sdk, moduleDirectory);
 
-            VirtualFile directory = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(moduleDirectory);
+            VirtualFile directory = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(moduleDirectory);
             if (directory != null) {
                 directory.refresh(false, true);
             }
